@@ -1,0 +1,1948 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+ <meta charset="UTF-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+ <title>Générateur de Badge — Semaine de l'Évangile CUA</title>
+ <style>
+   :root {
+     --bg-page: #f1f5f9;
+     --bg-card: #ffffff;
+     --bg-subtle: #f8fafc;
+     --text-main: #0f172a;
+     --text-muted: #475569;
+     --border-soft: #cbd5e1;
+     --navy-pure: #0a1e47;
+     --navy-arc: #122d66;
+     --orange-accent: #d49a2a;
+     --white-pure: #ffffff;
+     --whatsapp-green: #16a34a;
+     --whatsapp-hover: #15803d;
+     --danger-red: #dc2626;
+     --danger-bg: #fef2f2;
+     --success-green: #15803d;
+     --success-bg: #f0fdf4;
+   }
+
+   *,
+   *::before,
+   *::after {
+     box-sizing: border-box;
+     margin: 0;
+     padding: 0;
+   }
+
+   html,
+   body {
+     width: 100%;
+     min-height: 100%;
+     background-color: var(--bg-page);
+     color: var(--text-main);
+     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+     line-height: 1.5;
+     overflow-x: hidden;
+     -webkit-tap-highlight-color: transparent;
+   }
+
+   .app-shell {
+     width: 100%;
+     max-width: 1160px;
+     margin: 0 auto;
+     padding: 16px 14px 40px;
+   }
+
+   .app-header {
+     text-align: center;
+     margin-bottom: 18px;
+   }
+
+   .app-header h1 {
+     font-size: clamp(1.3rem, 3.6vw, 1.95rem);
+     font-weight: 800;
+     color: var(--navy-pure);
+     letter-spacing: -0.02em;
+   }
+
+   .main-grid {
+     display: grid;
+     grid-template-columns: 1fr;
+     gap: 20px;
+     align-items: start;
+   }
+
+   @media (min-width: 880px) {
+     .main-grid {
+       grid-template-columns: minmax(320px, 410px) minmax(340px, 1fr);
+       gap: 24px;
+     }
+
+     .app-shell {
+       padding: 24px 20px 48px;
+     }
+   }
+
+   .panel {
+     background: var(--bg-card);
+     border: 1px solid var(--border-soft);
+     border-radius: 20px;
+     padding: 18px;
+     box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+   }
+
+   @media (min-width: 600px) {
+     .panel {
+       padding: 22px;
+     }
+   }
+
+   .panel-title {
+     font-size: 1.05rem;
+     font-weight: 700;
+     color: var(--navy-pure);
+     margin-bottom: 14px;
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     gap: 8px;
+   }
+
+   .field-block {
+     margin-bottom: 16px;
+     border-radius: 14px;
+     transition: background-color 0.2s ease, box-shadow 0.2s ease;
+   }
+
+   .field-block.field-error {
+     background-color: var(--danger-bg);
+     padding: 10px;
+     margin-left: -10px;
+     margin-right: -10px;
+     box-shadow: 0 0 0 2px var(--danger-red);
+     animation: shakeField 0.35s ease;
+   }
+
+   @keyframes shakeField {
+     0%, 100% { transform: translateX(0); }
+     25% { transform: translateX(-5px); }
+     75% { transform: translateX(5px); }
+   }
+
+   .field-label {
+     display: block;
+     font-size: 0.9rem;
+     font-weight: 700;
+     color: var(--text-main);
+     margin-bottom: 6px;
+   }
+
+   .req-star {
+     color: var(--danger-red);
+     font-weight: 800;
+   }
+
+   .text-input {
+     width: 100%;
+     padding: 12px 14px;
+     font-size: 1rem;
+     font-weight: 600;
+     color: var(--text-main);
+     background: var(--bg-subtle);
+     border: 1.5px solid var(--border-soft);
+     border-radius: 12px;
+     outline: none;
+     transition: border-color 0.2s ease, background-color 0.2s ease;
+   }
+
+   .text-input:focus {
+     border-color: var(--navy-pure);
+     background: var(--white-pure);
+     box-shadow: 0 0 0 3px rgba(10, 30, 71, 0.12);
+   }
+
+   .text-input.input-invalid {
+     border-color: var(--danger-red);
+     background: var(--white-pure);
+   }
+
+   .upload-dropzone {
+     position: relative;
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     justify-content: center;
+     gap: 6px;
+     width: 100%;
+     min-height: 104px;
+     padding: 14px;
+     border: 2px dashed #94a3b8;
+     border-radius: 14px;
+     background: var(--bg-subtle);
+     cursor: pointer;
+     text-align: center;
+     transition: border-color 0.2s ease, background-color 0.2s ease;
+   }
+
+   .upload-dropzone:hover,
+   .upload-dropzone.dragover {
+     border-color: var(--navy-pure);
+     background: #eff6ff;
+   }
+
+   .upload-dropzone.invalid-zone {
+     border-color: var(--danger-red);
+     background: var(--white-pure);
+   }
+
+   .upload-dropzone input[type="file"] {
+     position: absolute;
+     inset: 0;
+     width: 100%;
+     height: 100%;
+     opacity: 0;
+     cursor: pointer;
+   }
+
+   .upload-main-text {
+     font-size: 0.9rem;
+     font-weight: 700;
+     color: var(--navy-pure);
+   }
+
+   .upload-sub-text {
+     font-size: 0.78rem;
+     color: var(--text-muted);
+   }
+
+   .photo-status-row {
+     margin-top: 8px;
+     display: none;
+     align-items: center;
+     justify-content: space-between;
+     gap: 8px;
+     font-size: 0.8rem;
+     color: var(--success-green);
+     font-weight: 600;
+   }
+
+   .photo-status-row.visible {
+     display: flex;
+   }
+
+   .clear-photo-btn {
+     padding: 5px 10px;
+     font-size: 0.76rem;
+     font-weight: 700;
+     color: var(--danger-red);
+     background: var(--danger-bg);
+     border: 1px solid #fecaca;
+     border-radius: 8px;
+     cursor: pointer;
+   }
+
+   .clear-photo-btn:hover {
+     background: #fee2e2;
+   }
+
+   .status-banner {
+     padding: 11px 13px;
+     border-radius: 12px;
+     font-size: 0.84rem;
+     font-weight: 600;
+     margin-bottom: 14px;
+     border: 1px solid transparent;
+   }
+
+   .status-banner.locked {
+     background: #fffbeb;
+     color: #92400e;
+     border-color: #fde68a;
+   }
+
+   .status-banner.error {
+     background: var(--danger-bg);
+     color: #991b1b;
+     border-color: #fca5a5;
+   }
+
+   .status-banner.ready {
+     background: var(--success-bg);
+     color: var(--success-green);
+     border-color: #86efac;
+   }
+
+   .actions-stack {
+     display: flex;
+     flex-direction: column;
+     gap: 10px;
+   }
+
+   .btn-action {
+     width: 100%;
+     padding: 13px 16px;
+     font-size: 0.95rem;
+     font-weight: 700;
+     border: none;
+     border-radius: 13px;
+     cursor: pointer;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     gap: 8px;
+     transition: transform 0.12s ease, opacity 0.2s ease, background-color 0.2s ease;
+   }
+
+   .btn-action:active:not(:disabled) {
+     transform: scale(0.985);
+   }
+
+   .btn-action:disabled {
+     opacity: 0.55;
+     cursor: not-allowed;
+   }
+
+   .btn-whatsapp {
+     background: var(--whatsapp-green);
+     color: var(--white-pure);
+     box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25);
+   }
+
+   .btn-whatsapp:hover:not(:disabled) {
+     background: var(--whatsapp-hover);
+   }
+
+   .btn-download {
+     background: var(--navy-pure);
+     color: var(--white-pure);
+     box-shadow: 0 4px 12px rgba(10, 30, 71, 0.2);
+   }
+
+   .btn-download:hover:not(:disabled) {
+     background: var(--navy-arc);
+   }
+
+   .preview-column {
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     width: 100%;
+   }
+
+   .preview-header {
+     width: 100%;
+     max-width: 540px;
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     gap: 8px;
+     margin-bottom: 10px;
+     font-size: 0.92rem;
+     font-weight: 800;
+     color: var(--navy-pure);
+   }
+
+   .canvas-frame-box {
+     position: relative;
+     width: 100%;
+     max-width: 540px;
+     aspect-ratio: 1 / 1;
+     border-radius: 18px;
+     overflow: hidden;
+     background: var(--navy-pure);
+     box-shadow: 0 14px 34px rgba(10, 30, 71, 0.22);
+     border: 2px solid #cbd5e1;
+     touch-action: none;
+     user-select: none;
+     -webkit-user-select: none;
+   }
+
+   .canvas-frame-box.can-drag {
+     cursor: grab;
+   }
+
+   .canvas-frame-box.is-dragging {
+     cursor: grabbing;
+   }
+
+   #badgeCanvas {
+     display: block;
+     width: 100%;
+     height: 100%;
+   }
+
+   .crop-toolbar {
+     width: 100%;
+     max-width: 540px;
+     margin-top: 12px;
+     padding: 8px 12px;
+     background: var(--bg-subtle);
+     border: 1px solid var(--border-soft);
+     border-radius: 14px;
+     display: none;
+     align-items: center;
+     justify-content: space-between;
+     gap: 8px;
+   }
+
+   .crop-toolbar.visible {
+     display: flex;
+   }
+
+   .zoom-group {
+     display: inline-flex;
+     align-items: center;
+     gap: 6px;
+   }
+
+   .crop-btn {
+     min-width: 38px;
+     height: 36px;
+     padding: 0 10px;
+     border-radius: 10px;
+     border: 1px solid var(--border-soft);
+     background: var(--white-pure);
+     color: var(--navy-pure);
+     font-size: 1rem;
+     font-weight: 800;
+     cursor: pointer;
+     display: inline-flex;
+     align-items: center;
+     justify-content: center;
+     transition: background-color 0.15s ease, border-color 0.15s ease;
+   }
+
+   .crop-btn:hover {
+     background: #e2e8f0;
+     border-color: #94a3b8;
+   }
+
+   .crop-btn:active {
+     background: #cbd5e1;
+   }
+
+   .crop-btn.reset-btn {
+     font-size: 0.78rem;
+     font-weight: 700;
+     padding: 0 12px;
+   }
+
+   .zoom-readout {
+     min-width: 54px;
+     text-align: center;
+     font-size: 0.85rem;
+     font-weight: 800;
+     color: var(--navy-pure);
+     font-variant-numeric: tabular-nums;
+   }
+
+   .modal-backdrop {
+     position: fixed;
+     inset: 0;
+     background: rgba(15, 23, 42, 0.58);
+     display: none;
+     align-items: center;
+     justify-content: center;
+     padding: 16px;
+     z-index: 100;
+   }
+
+   .modal-backdrop.open {
+     display: flex;
+   }
+
+   .modal-card {
+     width: 100%;
+     max-width: 440px;
+     background: var(--white-pure);
+     border-radius: 18px;
+     padding: 20px;
+     box-shadow: 0 20px 45px rgba(15, 23, 42, 0.28);
+   }
+
+   .modal-card h3 {
+     font-size: 1.05rem;
+     font-weight: 800;
+     color: var(--navy-pure);
+     margin-bottom: 8px;
+   }
+
+   .modal-card p {
+     font-size: 0.86rem;
+     color: var(--text-muted);
+     margin-bottom: 12px;
+   }
+
+   .caption-box {
+     width: 100%;
+     min-height: 104px;
+     padding: 10px;
+     font-size: 0.82rem;
+     font-family: inherit;
+     color: var(--text-main);
+     background: var(--bg-subtle);
+     border: 1px solid var(--border-soft);
+     border-radius: 10px;
+     resize: vertical;
+     margin-bottom: 12px;
+   }
+
+   .modal-actions {
+     display: flex;
+     flex-wrap: wrap;
+     gap: 8px;
+     justify-content: flex-end;
+   }
+
+   .modal-btn {
+     padding: 9px 14px;
+     border-radius: 10px;
+     font-size: 0.84rem;
+     font-weight: 700;
+     border: 1px solid var(--border-soft);
+     background: var(--white-pure);
+     color: var(--text-main);
+     cursor: pointer;
+   }
+
+   .modal-btn.primary {
+     background: var(--whatsapp-green);
+     color: var(--white-pure);
+     border-color: var(--whatsapp-green);
+   }
+ </style>
+</head>
+<body>
+ <main class="app-shell">
+   <header class="app-header">
+     <h1>Générateur de Badge — Semaine de l'Évangile</h1>
+   </header>
+
+   <div class="main-grid">
+     <section class="panel" aria-label="Formulaire de personnalisation">
+       <div class="panel-title">
+         <span>Vos informations</span>
+         <span style="font-size:0.76rem;color:#64748b;font-weight:600;">* Obligatoires</span>
+       </div>
+
+       <div id="nameBlock" class="field-block">
+         <label for="fullNameInput" class="field-label">
+           Nom & Prénom <span class="req-star">*</span>
+         </label>
+         <input
+           id="fullNameInput"
+           type="text"
+           class="text-input"
+           placeholder="Ex. : Jean-Marc KOUASSI"
+           maxlength="44"
+           autocomplete="name"
+         />
+       </div>
+
+       <div id="photoBlock" class="field-block">
+         <label for="photoFileInput" class="field-label">
+           Votre photo <span class="req-star">*</span>
+         </label>
+         <div id="dropzone" class="upload-dropzone">
+           <input
+             id="photoFileInput"
+             type="file"
+             accept="image/jpeg,image/png,image/webp,image/heic,image/*"
+           />
+           <span class="upload-main-text">Choisir ou déposer une photo</span>
+           <span class="upload-sub-text">JPG, PNG ou WEBP</span>
+         </div>
+         <div id="photoStatusRow" class="photo-status-row">
+           <span id="photoFileName">Photo chargée</span>
+           <button type="button" id="clearPhotoBtn" class="clear-photo-btn">Retirer</button>
+         </div>
+       </div>
+
+       <div id="statusBanner" class="status-banner locked" role="status" aria-live="polite">
+         Veuillez renseigner votre nom complet et importer votre photo pour débloquer le badge.
+       </div>
+
+       <div class="actions-stack">
+         <button type="button" id="whatsappShareBtn" class="btn-action btn-whatsapp">
+           <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+             <circle cx="18" cy="5" r="3"></circle>
+             <circle cx="6" cy="12" r="3"></circle>
+             <circle cx="18" cy="19" r="3"></circle>
+             <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+             <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+           </svg>
+           <span>Partager sur le statut WhatsApp</span>
+         </button>
+
+         <button type="button" id="downloadPngBtn" class="btn-action btn-download">
+           <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+             <polyline points="7 10 12 15 17 10"></polyline>
+             <line x1="12" y1="15" x2="12" y2="3"></line>
+           </svg>
+           <span>Télécharger PNG (1080 × 1080)</span>
+         </button>
+       </div>
+     </section>
+
+     <section class="preview-column" aria-label="Aperçu du badge">
+       <div class="preview-header">
+         <span>Aperçu du badge</span>
+       </div>
+
+       <div id="canvasFrameBox" class="canvas-frame-box">
+         <!-- Tampon interne 2x suréchantillonné (2160 x 2160 px) mappé en coordonnées logiques 1080 x 1080 px -->
+         <canvas id="badgeCanvas" width="2160" height="2160"></canvas>
+       </div>
+
+       <div id="cropToolbar" class="crop-toolbar" aria-label="Outils de zoom et recentrage photo">
+         <div class="zoom-group">
+           <button type="button" id="zoomOutBtn" class="crop-btn" title="Dézoomer" aria-label="Dézoomer">−</button>
+           <span id="zoomReadout" class="zoom-readout">100%</span>
+           <button type="button" id="zoomInBtn" class="crop-btn" title="Zoomer" aria-label="Zoomer">+</button>
+         </div>
+         <button type="button" id="resetCropBtn" class="crop-btn reset-btn">Recentrer</button>
+       </div>
+     </section>
+   </div>
+ </main>
+
+ <div id="whatsappModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+   <div class="modal-card">
+     <h3 id="modalTitle">Publier sur votre statut WhatsApp</h3>
+     <p id="modalDescription">
+       Votre badge PNG 1080×1080 px a été préparé. Copiez la légende ci-dessous, ouvrez WhatsApp, puis sélectionnez l'image pour l'ajouter à votre Statut.
+     </p>
+     <textarea id="whatsappCaptionBox" class="caption-box" readonly></textarea>
+     <div class="modal-actions">
+       <button type="button" id="copyCaptionBtn" class="modal-btn">Copier le texte</button>
+       <a id="openWhatsAppLink" href="https://wa.me/" target="_blank" rel="noopener noreferrer" class="modal-btn primary" style="text-decoration:none;">
+         Ouvrir WhatsApp
+       </a>
+       <button type="button" id="closeModalBtn" class="modal-btn">Fermer</button>
+     </div>
+   </div>
+ </div>
+
+ <script>
+   (function () {
+     'use strict';
+
+     // Système de coordonnées logiques 1080 x 1080 px rendu sur un tampon 2x (2160 x 2160 px)
+     const LOGICAL_SIZE = 1080;
+     const SUPERSAMPLE_SCALE = 2;
+     const TARGET_INTERNAL_SIZE = LOGICAL_SIZE * SUPERSAMPLE_SCALE;
+
+     // Palette officielle : bleu nuit pur (#0A1E47) et orange doré (#D49A2A)
+     const NAVY_PURE = '#0a1e47';
+     const NAVY_ARC = '#122d66';
+     const ORANGE_ACCENT = '#d49a2a';
+     const WHITE_PURE = '#ffffff';
+
+     // Couleurs fidèles de l'emblème CUA sans déformation
+     const LOGO_CUA_BLUE = '#1d3f8a';
+     const LOGO_BOOK_GREY = '#9aa4b2';
+     const LOGO_BOOK_GOLD = '#dfb03a';
+     const LOGO_SUBTITLE_SLATE = '#33435c';
+
+     // Cadre photo carré arrondi (450 x 450 px) à gauche
+     const PHOTO_BOX = Object.freeze({
+       x: 52,
+       y: 298,
+       size: 450,
+       radius: 34
+     });
+
+     const ZOOM_MIN = 0.5;
+     const ZOOM_MAX = 3.5;
+     const ZOOM_STEP = 0.12;
+
+     // Textes exacts et inchangés du badge
+     const BADGE_COPY = Object.freeze({
+       logoCode: 'CUA',
+       logoFullName: 'CENTRE UNIVERSITAIRE APOSTOLIQUE',
+       pill: "SEMAINE DE L'ÉVANGILE",
+       headline: "J'Y SERAI !",
+       sublineLine1: 'POUR PRÊCHER ET GAGNER',
+       sublineLine2: 'DES ÂMES À CHRIST',
+       placeholderName: 'VOTRE NOM & PRÉNOM',
+       verseQuote: '« Allez par tout le monde, et prêchez la bonne nouvelle à toute la création. »',
+       verseRef: '— MARC 16 : 15',
+       dateText: 'Du Lundi 30 Novembre au Samedi 05 Décembre 2026',
+       placeText: 'Campus UAC',
+       timeText: 'Départ 16h45 • Ensemble pour Christ',
+       bottomFooter: 'GAGNER DES ÂMES • ENSEMBLE POUR CHRIST'
+     });
+
+     const INCOMPLETE_STATUS_MSG = 'Veuillez renseigner votre nom complet et importer votre photo pour débloquer le badge.';
+     const NAME_ERROR_MSG = 'Veuillez renseigner votre nom complet (au moins 2 caractères) et importer votre photo.';
+     const PHOTO_ERROR_MSG = 'Veuillez importer votre photo pour débloquer le badge.';
+     const BOTH_ERROR_MSG = 'Veuillez renseigner votre nom complet et importer votre photo.';
+
+     const canvas = document.getElementById('badgeCanvas');
+     const canvasFrameBox = document.getElementById('canvasFrameBox');
+     const fullNameInput = document.getElementById('fullNameInput');
+     const nameBlock = document.getElementById('nameBlock');
+     const photoFileInput = document.getElementById('photoFileInput');
+     const photoBlock = document.getElementById('photoBlock');
+     const dropzone = document.getElementById('dropzone');
+     const photoStatusRow = document.getElementById('photoStatusRow');
+     const photoFileName = document.getElementById('photoFileName');
+     const clearPhotoBtn = document.getElementById('clearPhotoBtn');
+     const statusBanner = document.getElementById('statusBanner');
+     const whatsappShareBtn = document.getElementById('whatsappShareBtn');
+     const downloadPngBtn = document.getElementById('downloadPngBtn');
+     const cropToolbar = document.getElementById('cropToolbar');
+     const zoomOutBtn = document.getElementById('zoomOutBtn');
+     const zoomInBtn = document.getElementById('zoomInBtn');
+     const zoomReadout = document.getElementById('zoomReadout');
+     const resetCropBtn = document.getElementById('resetCropBtn');
+     const whatsappModal = document.getElementById('whatsappModal');
+     const whatsappCaptionBox = document.getElementById('whatsappCaptionBox');
+     const copyCaptionBtn = document.getElementById('copyCaptionBtn');
+     const closeModalBtn = document.getElementById('closeModalBtn');
+
+     const state = {
+       fullName: '',
+       photoImg: null,
+       photoLoaded: false,
+       zoom: 1,
+       offsetX: 0,
+       offsetY: 0,
+       dragging: false,
+       dragStartX: 0,
+       dragStartY: 0,
+       pinchStartDist: 0,
+       pinchStartZoom: 1,
+       holdTimer: null,
+       holdInterval: null,
+       hasValidationAttempt: false,
+       customStatusError: ''
+     };
+
+     function clamp(val, min, max) {
+       return Math.max(min, Math.min(max, val));
+     }
+
+     function getCleanName() {
+       return (state.fullName || '').trim().replace(/\s+/g, ' ');
+     }
+
+     function isNameValid() {
+       return getCleanName().length >= 2;
+     }
+
+     function isPhotoValid() {
+       return Boolean(state.photoLoaded && state.photoImg);
+     }
+
+     function isFormComplete() {
+       return isNameValid() && isPhotoValid();
+     }
+
+     function updateZoomReadout() {
+       if (zoomReadout) {
+         zoomReadout.textContent = `${Math.round(state.zoom * 100)}%`;
+       }
+     }
+
+     function syncUiState() {
+       try {
+         const complete = isFormComplete();
+         const nameOk = isNameValid();
+         const photoOk = isPhotoValid();
+
+         if (whatsappShareBtn) {
+           whatsappShareBtn.disabled = !complete;
+           whatsappShareBtn.setAttribute('aria-disabled', String(!complete));
+         }
+         if (downloadPngBtn) {
+           downloadPngBtn.disabled = !complete;
+           downloadPngBtn.setAttribute('aria-disabled', String(!complete));
+         }
+
+         if (cropToolbar) {
+           cropToolbar.classList.toggle('visible', photoOk);
+         }
+         if (canvasFrameBox) {
+           canvasFrameBox.classList.toggle('can-drag', photoOk);
+         }
+
+         updateZoomReadout();
+
+         const showNameErr = state.hasValidationAttempt && !nameOk;
+         const showPhotoErr = state.hasValidationAttempt && !photoOk;
+
+         if (nameBlock) nameBlock.classList.toggle('field-error', showNameErr);
+         if (fullNameInput) fullNameInput.classList.toggle('input-invalid', showNameErr);
+         if (photoBlock) photoBlock.classList.toggle('field-error', showPhotoErr);
+         if (dropzone) dropzone.classList.toggle('invalid-zone', showPhotoErr);
+
+         if (!statusBanner) return;
+         statusBanner.classList.remove('locked', 'error', 'ready');
+
+         if (state.customStatusError) {
+           statusBanner.classList.add('error');
+           statusBanner.textContent = state.customStatusError;
+           return;
+         }
+
+         if (complete) {
+           statusBanner.classList.add('ready');
+           statusBanner.textContent = 'Badge prêt pour le téléchargement PNG et le statut WhatsApp.';
+           return;
+         }
+
+         if (state.hasValidationAttempt) {
+           statusBanner.classList.add('error');
+           if (!nameOk && !photoOk) {
+             statusBanner.textContent = BOTH_ERROR_MSG;
+           } else if (!nameOk) {
+             statusBanner.textContent = NAME_ERROR_MSG;
+           } else {
+             statusBanner.textContent = PHOTO_ERROR_MSG;
+           }
+           return;
+         }
+
+         statusBanner.classList.add('locked');
+         statusBanner.textContent = INCOMPLETE_STATUS_MSG;
+       } catch (_) {
+         // Ne jamais bloquer le rendu si une mise à jour DOM échoue
+       }
+     }
+
+     function validateMandatoryFields() {
+       state.hasValidationAttempt = true;
+       state.customStatusError = '';
+       syncUiState();
+
+       if (isFormComplete()) {
+         return true;
+       }
+
+       let targetEl = null;
+       if (!isNameValid()) {
+         targetEl = fullNameInput || nameBlock;
+       } else if (!isPhotoValid()) {
+         targetEl = photoBlock || dropzone;
+       }
+
+       if (targetEl && typeof targetEl.scrollIntoView === 'function') {
+         try {
+           targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+         } catch (_) {
+           try {
+             targetEl.scrollIntoView();
+           } catch (__) {
+             // Ignorer
+           }
+         }
+       }
+       return false;
+     }
+
+     function traceRoundedRect(c, x, y, w, h, r) {
+       const radius = Math.max(0, Math.min(r, w / 2, h / 2));
+       c.beginPath();
+       if (typeof c.roundRect === 'function') {
+         c.roundRect(x, y, w, h, radius);
+       } else {
+         c.moveTo(x + radius, y);
+         c.arcTo(x + w, y, x + w, y + h, radius);
+         c.arcTo(x + w, y + h, x, y + h, radius);
+         c.arcTo(x, y + h, x, y, radius);
+         c.arcTo(x, y, x + w, y, radius);
+         c.closePath();
+       }
+     }
+
+     function drawBackgroundAndFrame(c) {
+       c.fillStyle = NAVY_PURE;
+       c.fillRect(0, 0, LOGICAL_SIZE, LOGICAL_SIZE);
+
+       c.save();
+       c.strokeStyle = NAVY_ARC;
+       c.lineWidth = 2.4;
+       const radii = [220, 355, 490, 625];
+       for (let i = 0; i < radii.length; i += 1) {
+         c.beginPath();
+         c.arc(LOGICAL_SIZE / 2, 515, radii[i], 0, Math.PI * 2);
+         c.stroke();
+       }
+
+       c.beginPath();
+       c.moveTo(-40, 180);
+       c.bezierCurveTo(220, 120, 260, 420, 520, 460);
+       c.stroke();
+
+       c.beginPath();
+       c.moveTo(LOGICAL_SIZE + 40, 240);
+       c.bezierCurveTo(840, 210, 810, 540, 560, 590);
+       c.stroke();
+       c.restore();
+
+       c.strokeStyle = ORANGE_ACCENT;
+       c.lineWidth = 4;
+       traceRoundedRect(c, 28, 28, LOGICAL_SIZE - 56, LOGICAL_SIZE - 56, 36);
+       c.stroke();
+     }
+
+     function drawCuaPlaque(c, boxX, boxY, boxW, boxH, boxR) {
+       c.save();
+       c.shadowColor = 'rgba(3, 10, 28, 0.35)';
+       c.shadowBlur = 14;
+       c.shadowOffsetY = 5;
+
+       traceRoundedRect(c, boxX - 2.5, boxY - 2.5, boxW + 5, boxH + 5, boxR + 2.5);
+       c.fillStyle = ORANGE_ACCENT;
+       c.fill();
+
+       c.shadowColor = 'transparent';
+       traceRoundedRect(c, boxX, boxY, boxW, boxH, boxR);
+       c.fillStyle = WHITE_PURE;
+       c.fill();
+
+       c.strokeStyle = 'rgba(29, 63, 138, 0.22)';
+       c.lineWidth = 1.5;
+       c.stroke();
+
+       const cx = boxX + boxW / 2;
+
+       c.fillStyle = LOGO_CUA_BLUE;
+       c.font = '800 32px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+       c.textAlign = 'center';
+       c.textBaseline = 'alphabetic';
+       c.fillText(BADGE_COPY.logoCode, cx, boxY + 34);
+
+       const bookCenterY = boxY + 46;
+       const halfSpan = Math.min(126, boxW * 0.28);
+
+       c.strokeStyle = LOGO_BOOK_GREY;
+       c.lineCap = 'round';
+       c.lineWidth = 2.2;
+       c.beginPath();
+       c.moveTo(cx - 12, bookCenterY - 2);
+       c.quadraticCurveTo(cx - halfSpan * 0.56, bookCenterY - 8.5, cx - halfSpan * 0.94, bookCenterY - 1.5);
+       c.moveTo(cx - 12, bookCenterY + 3.5);
+       c.quadraticCurveTo(cx - halfSpan * 0.54, bookCenterY - 2.5, cx - halfSpan * 0.88, bookCenterY + 3.5);
+       c.moveTo(cx + 12, bookCenterY - 2);
+       c.quadraticCurveTo(cx + halfSpan * 0.56, bookCenterY - 8.5, cx + halfSpan * 0.94, bookCenterY - 1.5);
+       c.moveTo(cx + 12, bookCenterY + 3.5);
+       c.quadraticCurveTo(cx + halfSpan * 0.54, bookCenterY - 2.5, cx + halfSpan * 0.88, bookCenterY + 3.5);
+       c.stroke();
+
+       c.fillStyle = LOGO_BOOK_GOLD;
+       c.beginPath();
+       c.moveTo(cx - halfSpan * 1.06, bookCenterY + 8.5);
+       c.quadraticCurveTo(cx - halfSpan * 0.45, bookCenterY + 3.5, cx, bookCenterY + 10.2);
+       c.quadraticCurveTo(cx + halfSpan * 0.45, bookCenterY + 3.5, cx + halfSpan * 1.06, bookCenterY + 8.5);
+       c.quadraticCurveTo(cx + halfSpan * 0.45, bookCenterY + 6.8, cx, bookCenterY + 13.6);
+       c.quadraticCurveTo(cx - halfSpan * 0.45, bookCenterY + 6.8, cx - halfSpan * 1.06, bookCenterY + 8.5);
+       c.closePath();
+       c.fill();
+
+       c.fillStyle = LOGO_SUBTITLE_SLATE;
+       c.textAlign = 'center';
+       c.textBaseline = 'alphabetic';
+       let subFont = 16.5;
+       c.font = `700 ${subFont}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+       while (c.measureText(BADGE_COPY.logoFullName).width > boxW - 26 && subFont > 11) {
+         subFont -= 0.4;
+         c.font = `700 ${subFont}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+       }
+       c.fillText(BADGE_COPY.logoFullName, cx, boxY + boxH - 11);
+       c.restore();
+     }
+
+     function drawEventPill(c) {
+       const pillW = 810;
+       const pillH = 66;
+       const pillX = (LOGICAL_SIZE - pillW) / 2;
+       const pillY = 186;
+
+       c.save();
+       c.shadowColor = 'rgba(3, 10, 28, 0.35)';
+       c.shadowBlur = 12;
+       c.shadowOffsetY = 4;
+
+       traceRoundedRect(c, pillX, pillY, pillW, pillH, pillH / 2);
+       c.fillStyle = ORANGE_ACCENT;
+       c.fill();
+
+       c.shadowColor = 'transparent';
+       c.strokeStyle = WHITE_PURE;
+       c.lineWidth = 2;
+       c.stroke();
+
+       c.fillStyle = NAVY_PURE;
+       c.font = '900 40px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+       c.textAlign = 'center';
+       c.textBaseline = 'middle';
+       c.fillText(BADGE_COPY.pill, LOGICAL_SIZE / 2, pillY + pillH / 2 + 1);
+       c.restore();
+     }
+
+     function drawPhotoFrame(c) {
+       const px = PHOTO_BOX.x;
+       const py = PHOTO_BOX.y;
+       const pSize = PHOTO_BOX.size;
+       const pRadius = PHOTO_BOX.radius;
+
+       c.save();
+       c.shadowColor = 'rgba(3, 10, 28, 0.45)';
+       c.shadowBlur = 16;
+       c.shadowOffsetY = 6;
+
+       traceRoundedRect(c, px - 5, py - 5, pSize + 10, pSize + 10, pRadius + 5);
+       c.fillStyle = ORANGE_ACCENT;
+       c.fill();
+       c.restore();
+
+       c.save();
+       traceRoundedRect(c, px, py, pSize, pSize, pRadius);
+       c.clip();
+
+       c.fillStyle = '#102657';
+       c.fillRect(px, py, pSize, pSize);
+
+       if (state.photoLoaded && state.photoImg && state.photoImg.width > 0 && state.photoImg.height > 0) {
+         const imgW = state.photoImg.width;
+         const imgH = state.photoImg.height;
+         const coverScale = Math.max(pSize / imgW, pSize / imgH);
+         const finalScale = coverScale * state.zoom;
+         const drawW = imgW * finalScale;
+         const drawH = imgH * finalScale;
+         const centerX = px + pSize / 2 + state.offsetX;
+         const centerY = py + pSize / 2 + state.offsetY;
+
+         c.drawImage(
+           state.photoImg,
+           centerX - drawW / 2,
+           centerY - drawH / 2,
+           drawW,
+           drawH
+         );
+       } else {
+         const cx = px + pSize / 2;
+         const cy = py + pSize / 2 - 20;
+
+         c.strokeStyle = 'rgba(212, 154, 42, 0.55)';
+         c.setLineDash([10, 8]);
+         c.lineWidth = 2.5;
+         traceRoundedRect(c, px + 20, py + 20, pSize - 40, pSize - 40, Math.max(12, pRadius - 8));
+         c.stroke();
+         c.setLineDash([]);
+
+         c.strokeStyle = ORANGE_ACCENT;
+         c.lineWidth = 3.5;
+         c.beginPath();
+         c.arc(cx, cy - 24, 38, 0, Math.PI * 2);
+         c.stroke();
+
+         c.beginPath();
+         c.arc(cx, cy + 62, 62, Math.PI * 1.12, Math.PI * 1.88);
+         c.stroke();
+
+         c.fillStyle = ORANGE_ACCENT;
+         c.font = '900 30px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+         c.textAlign = 'center';
+         c.textBaseline = 'middle';
+         c.fillText('VOTRE PHOTO', cx, py + pSize / 2 + 72);
+
+         c.fillStyle = WHITE_PURE;
+         c.font = '700 19px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+         c.fillText('450 × 450 px', cx, py + pSize / 2 + 108);
+       }
+       c.restore();
+
+       c.save();
+       c.strokeStyle = ORANGE_ACCENT;
+       c.lineWidth = 2;
+       traceRoundedRect(c, px, py, pSize, pSize, pRadius);
+       c.stroke();
+       c.restore();
+     }
+
+     function drawFancyWaveUnderline(c, centerX, startY, width, color) {
+       c.save();
+       const halfW = width * 0.48;
+       const leftX = centerX - halfW;
+       const rightX = centerX + halfW;
+       const segments = 6;
+       const stepW = (rightX - leftX) / segments;
+
+       c.strokeStyle = color;
+       c.lineWidth = 3.4;
+       c.lineCap = 'round';
+       c.lineJoin = 'round';
+       c.beginPath();
+       c.moveTo(leftX, startY);
+       for (let i = 0; i < segments; i += 1) {
+         const x0 = leftX + i * stepW;
+         const xMid = x0 + stepW * 0.5;
+         const x1 = x0 + stepW;
+         const amp = (i % 2 === 0 ? -1 : 1) * 5.5;
+         c.quadraticCurveTo(xMid, startY + amp, x1, startY);
+       }
+       c.stroke();
+
+       c.lineWidth = 1.7;
+       c.globalAlpha = 0.88;
+       c.beginPath();
+       const innerLeft = leftX + 16;
+       const innerRight = rightX - 16;
+       const innerSegs = segments - 1;
+       const innerStep = (innerRight - innerLeft) / innerSegs;
+       c.moveTo(innerLeft, startY + 7);
+       for (let i = 0; i < innerSegs; i += 1) {
+         const x0 = innerLeft + i * innerStep;
+         const xMid = x0 + innerStep * 0.5;
+         const x1 = x0 + innerStep;
+         const amp = (i % 2 === 0 ? 1 : -1) * 3.5;
+         c.quadraticCurveTo(xMid, startY + 7 + amp, x1, startY + 7);
+       }
+       c.stroke();
+
+       c.globalAlpha = 1;
+       c.fillStyle = color;
+       const drawDiamond = function (dx, dy) {
+         c.beginPath();
+         c.moveTo(dx, dy - 4.4);
+         c.lineTo(dx + 4.4, dy);
+         c.lineTo(dx, dy + 4.4);
+         c.lineTo(dx - 4.4, dy);
+         c.closePath();
+         c.fill();
+       };
+       drawDiamond(leftX - 10, startY);
+       drawDiamond(rightX + 10, startY);
+       c.restore();
+     }
+
+     function drawCalendarIcon(c, cx, cy, size, color) {
+       c.save();
+       c.strokeStyle = color;
+       c.fillStyle = color;
+       c.lineWidth = 2.6;
+       c.lineCap = 'round';
+       c.lineJoin = 'round';
+
+       const w = size;
+       const h = size * 0.92;
+       const x = cx - w / 2;
+       const y = cy - h / 2;
+
+       traceRoundedRect(c, x, y + 2, w, h - 2, 4);
+       c.stroke();
+
+       c.beginPath();
+       c.moveTo(x + 1, y + 9.5);
+       c.lineTo(x + w - 1, y + 9.5);
+       c.stroke();
+
+       c.beginPath();
+       c.moveTo(x + w * 0.3, y);
+       c.lineTo(x + w * 0.3, y + 4.8);
+       c.moveTo(x + w * 0.7, y);
+       c.lineTo(x + w * 0.7, y + 4.8);
+       c.stroke();
+
+       c.beginPath();
+       c.arc(cx, y + h * 0.68, 2.4, 0, Math.PI * 2);
+       c.fill();
+       c.restore();
+     }
+
+     function drawLocationPinIcon(c, cx, cy, size, color) {
+       c.save();
+       c.strokeStyle = color;
+       c.fillStyle = color;
+       c.lineWidth = 2.6;
+       c.lineCap = 'round';
+       c.lineJoin = 'round';
+
+       const r = size * 0.35;
+       const headY = cy - size * 0.14;
+       const tipY = cy + size * 0.48;
+
+       c.beginPath();
+       c.arc(cx, headY, r, Math.PI * 0.85, Math.PI * 2.15, false);
+       c.lineTo(cx, tipY);
+       c.closePath();
+       c.stroke();
+
+       c.beginPath();
+       c.arc(cx, headY, r * 0.38, 0, Math.PI * 2);
+       c.fill();
+       c.restore();
+     }
+
+     function drawClockIcon(c, cx, cy, size, color) {
+       c.save();
+       c.strokeStyle = color;
+       c.fillStyle = color;
+       c.lineWidth = 2.6;
+       c.lineCap = 'round';
+       c.lineJoin = 'round';
+
+       const r = size * 0.44;
+       c.beginPath();
+       c.arc(cx, cy, r, 0, Math.PI * 2);
+       c.stroke();
+
+       c.beginPath();
+       c.moveTo(cx, cy);
+       c.lineTo(cx, cy - r * 0.56);
+       c.moveTo(cx, cy);
+       c.lineTo(cx + r * 0.46, cy + r * 0.16);
+       c.stroke();
+
+       c.beginPath();
+       c.arc(cx, cy, 2.2, 0, Math.PI * 2);
+       c.fill();
+       c.restore();
+     }
+
+     function drawRightColumn(c) {
+       const px = PHOTO_BOX.x;
+       const py = PHOTO_BOX.y;
+       const pSize = PHOTO_BOX.size;
+       const photoBottomY = py + pSize;
+
+       const rightX = px + pSize + 24;
+       const rightW = LOGICAL_SIZE - rightX - 46;
+       const rightCenterX = rightX + rightW / 2;
+
+       c.save();
+       c.textBaseline = 'middle';
+
+       c.textAlign = 'center';
+       let headlineSize = 86;
+       c.font = `900 ${headlineSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+       while (c.measureText(BADGE_COPY.headline).width > rightW && headlineSize > 54) {
+         headlineSize -= 2;
+         c.font = `900 ${headlineSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+       }
+       c.fillStyle = ORANGE_ACCENT;
+       const headlineY = py + 58;
+       c.fillText(BADGE_COPY.headline, rightCenterX, headlineY);
+
+       const measuredHeadlineW = Math.min(rightW - 12, c.measureText(BADGE_COPY.headline).width);
+       const waveY = headlineY + headlineSize * 0.54;
+       drawFancyWaveUnderline(c, rightCenterX, waveY, measuredHeadlineW, ORANGE_ACCENT);
+
+       const infoW = rightW;
+       const infoH = 148;
+       const infoX = rightX;
+       const infoY = photoBottomY - infoH;
+
+       c.fillStyle = WHITE_PURE;
+       let subSize = 31;
+       c.font = `800 ${subSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+       while (
+         (c.measureText(BADGE_COPY.sublineLine1).width > rightW ||
+           c.measureText(BADGE_COPY.sublineLine2).width > rightW) &&
+         subSize > 18
+       ) {
+         subSize -= 0.5;
+         c.font = `800 ${subSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+       }
+       const lineGap = Math.round(subSize * 1.18);
+       const subLine2Y = infoY - 24;
+       const subLine1Y = subLine2Y - lineGap;
+       c.fillText(BADGE_COPY.sublineLine1, rightCenterX, subLine1Y);
+       c.fillText(BADGE_COPY.sublineLine2, rightCenterX, subLine2Y);
+
+       traceRoundedRect(c, infoX, infoY, infoW, infoH, 16);
+       c.fillStyle = ORANGE_ACCENT;
+       c.fill();
+       c.strokeStyle = WHITE_PURE;
+       c.lineWidth = 2.2;
+       c.stroke();
+
+       const iconCenterX = infoX + 25;
+       const textLeftX = infoX + 44;
+       const maxTextW = infoW - 54;
+       const row1Y = infoY + 28;
+       const row2Y = infoY + 74;
+       const row3Y = infoY + 120;
+
+       c.textAlign = 'left';
+
+       drawCalendarIcon(c, iconCenterX, row1Y, 21, NAVY_PURE);
+       c.fillStyle = NAVY_PURE;
+       let dateSize = 20.5;
+       c.font = `900 ${dateSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+       while (c.measureText(BADGE_COPY.dateText).width > maxTextW && dateSize > 12) {
+         dateSize -= 0.4;
+         c.font = `900 ${dateSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+       }
+       c.fillText(BADGE_COPY.dateText, textLeftX, row1Y);
+
+       drawLocationPinIcon(c, iconCenterX, row2Y, 21, NAVY_PURE);
+       c.fillStyle = NAVY_PURE;
+       let placeSize = 22;
+       c.font = `900 ${placeSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+       while (c.measureText(BADGE_COPY.placeText).width > maxTextW && placeSize > 13) {
+         placeSize -= 0.4;
+         c.font = `900 ${placeSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+       }
+       c.fillText(BADGE_COPY.placeText, textLeftX, row2Y);
+
+       drawClockIcon(c, iconCenterX, row3Y, 21, NAVY_PURE);
+       c.fillStyle = NAVY_PURE;
+       let timeSize = 21;
+       c.font = `900 ${timeSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+       while (c.measureText(BADGE_COPY.timeText).width > maxTextW && timeSize > 13) {
+         timeSize -= 0.4;
+         c.font = `900 ${timeSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+       }
+       c.fillText(BADGE_COPY.timeText, textLeftX, row3Y);
+
+       c.restore();
+     }
+
+     function drawLowerSection(c) {
+       const nameBoxW = 860;
+       const nameBoxH = 64;
+       const nameBoxX = (LOGICAL_SIZE - nameBoxW) / 2;
+       const nameBoxY = 774;
+
+       c.save();
+       c.shadowColor = 'rgba(3, 10, 28, 0.35)';
+       c.shadowBlur = 12;
+       c.shadowOffsetY = 4;
+
+       traceRoundedRect(c, nameBoxX - 3, nameBoxY - 3, nameBoxW + 6, nameBoxH + 6, 18);
+       c.fillStyle = ORANGE_ACCENT;
+       c.fill();
+
+       c.shadowColor = 'transparent';
+       traceRoundedRect(c, nameBoxX, nameBoxY, nameBoxW, nameBoxH, 15);
+       c.fillStyle = WHITE_PURE;
+       c.fill();
+
+       const cleanName = getCleanName();
+       const shownName = cleanName || BADGE_COPY.placeholderName;
+       let nameFontSize = 37;
+       c.font = `900 ${nameFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+       while (c.measureText(shownName).width > nameBoxW - 44 && nameFontSize > 20) {
+         nameFontSize -= 1;
+         c.font = `900 ${nameFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+       }
+
+       c.fillStyle = cleanName ? NAVY_PURE : '#64748b';
+       c.textAlign = 'center';
+       c.textBaseline = 'middle';
+       c.fillText(shownName, LOGICAL_SIZE / 2, nameBoxY + nameBoxH / 2 + 1);
+       c.restore();
+
+       c.save();
+       c.textAlign = 'center';
+       c.textBaseline = 'middle';
+
+       let quoteSize = 31;
+       c.font = `italic bold ${quoteSize}px Georgia, "Times New Roman", serif`;
+       while (c.measureText(BADGE_COPY.verseQuote).width > 980 && quoteSize > 22) {
+         quoteSize -= 1;
+         c.font = `italic bold ${quoteSize}px Georgia, "Times New Roman", serif`;
+       }
+       c.fillStyle = WHITE_PURE;
+       c.fillText(BADGE_COPY.verseQuote, LOGICAL_SIZE / 2, 872);
+
+       c.fillStyle = ORANGE_ACCENT;
+       c.font = '800 26px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+       c.fillText(BADGE_COPY.verseRef, LOGICAL_SIZE / 2, 916);
+
+       c.fillStyle = ORANGE_ACCENT;
+       let bottomFooterSize = 27;
+       c.font = `900 ${bottomFooterSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+       while (c.measureText(BADGE_COPY.bottomFooter).width > 940 && bottomFooterSize > 16) {
+         bottomFooterSize -= 1;
+         c.font = `900 ${bottomFooterSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+       }
+       c.fillText(BADGE_COPY.bottomFooter, LOGICAL_SIZE / 2, 968);
+       c.restore();
+     }
+
+     // Dessin de secours minimal garanti afin que le canevas ne reste jamais vide
+     function drawFallbackBadge(ctx) {
+       try {
+         ctx.fillStyle = NAVY_PURE;
+         ctx.fillRect(0, 0, LOGICAL_SIZE, LOGICAL_SIZE);
+         ctx.strokeStyle = ORANGE_ACCENT;
+         ctx.lineWidth = 4;
+         traceRoundedRect(ctx, 28, 28, LOGICAL_SIZE - 56, LOGICAL_SIZE - 56, 36);
+         ctx.stroke();
+
+         ctx.fillStyle = ORANGE_ACCENT;
+         ctx.font = '900 44px sans-serif';
+         ctx.textAlign = 'center';
+         ctx.textBaseline = 'middle';
+         ctx.fillText(BADGE_COPY.pill, LOGICAL_SIZE / 2, 220);
+         ctx.fillText(BADGE_COPY.headline, 780, 360);
+         ctx.fillText(BADGE_COPY.bottomFooter, LOGICAL_SIZE / 2, 968);
+
+         ctx.fillStyle = WHITE_PURE;
+         ctx.font = '800 28px sans-serif';
+         ctx.fillText(BADGE_COPY.sublineLine1, 780, 560);
+         ctx.fillText(BADGE_COPY.sublineLine2, 780, 596);
+         ctx.fillText(BADGE_COPY.verseRef, LOGICAL_SIZE / 2, 916);
+       } catch (_) {
+         // Dernier recours absolu
+       }
+     }
+
+     // Rendu sur tampon 2160 x 2160 px avec ctx.setTransform(2, 0, 0, 2, 0, 0) sur coordonnées 1080 x 1080 px
+     function renderBadge() {
+       if (!canvas) return;
+
+       let ctx = null;
+       try {
+         ctx = canvas.getContext('2d');
+       } catch (_) {
+         ctx = null;
+       }
+       if (!ctx) return;
+
+       try {
+         if (canvas.width !== TARGET_INTERNAL_SIZE) {
+           canvas.width = TARGET_INTERNAL_SIZE;
+         }
+         if (canvas.height !== TARGET_INTERNAL_SIZE) {
+           canvas.height = TARGET_INTERNAL_SIZE;
+         }
+       } catch (_) {
+         // Conserver les dimensions existantes si nécessaire
+       }
+
+       const scale = canvas.width === TARGET_INTERNAL_SIZE ? SUPERSAMPLE_SCALE : (canvas.width > 0 ? canvas.width / LOGICAL_SIZE : SUPERSAMPLE_SCALE);
+
+       try {
+         ctx.setTransform(scale, 0, 0, scale, 0, 0);
+       } catch (_) {
+         try {
+           ctx.resetTransform();
+           ctx.scale(scale, scale);
+         } catch (__) {
+           // Ignorer
+         }
+       }
+
+       try {
+         ctx.imageSmoothingEnabled = true;
+         ctx.imageSmoothingQuality = 'high';
+       } catch (_) {
+         // Ignorer
+       }
+
+       try {
+         drawBackgroundAndFrame(ctx);
+         drawCuaPlaque(ctx, (LOGICAL_SIZE - 420) / 2, 48, 420, 98, 22);
+         drawEventPill(ctx);
+         drawPhotoFrame(ctx);
+         drawRightColumn(ctx);
+         drawLowerSection(ctx);
+       } catch (_) {
+         drawFallbackBadge(ctx);
+       }
+     }
+
+     function handlePhotoFile(file) {
+       if (!file) return;
+       if (file.type && !file.type.startsWith('image/')) {
+         state.customStatusError = 'Veuillez sélectionner un fichier image valide (JPG, PNG, WEBP).';
+         syncUiState();
+         return;
+       }
+
+       state.customStatusError = '';
+
+       const applyLoadedImage = function (img) {
+         state.photoImg = img;
+         state.photoLoaded = true;
+         state.zoom = 1;
+         state.offsetX = 0;
+         state.offsetY = 0;
+
+         if (photoFileName) {
+           photoFileName.textContent = file.name || 'Photo chargée';
+         }
+         if (photoStatusRow) {
+           photoStatusRow.classList.add('visible');
+         }
+         syncUiState();
+         renderBadge();
+       };
+
+       try {
+         const reader = new FileReader();
+         reader.onload = function (evt) {
+           const img = new Image();
+           img.onload = function () {
+             applyLoadedImage(img);
+           };
+           img.onerror = function () {
+             state.customStatusError = 'Impossible de lire cette image.';
+             syncUiState();
+           };
+           img.src = String(evt && evt.target && evt.target.result ? evt.target.result : '');
+         };
+         reader.onerror = function () {
+           state.customStatusError = 'Erreur lors du chargement de la photo.';
+           syncUiState();
+         };
+         reader.readAsDataURL(file);
+       } catch (_) {
+         try {
+           const objectUrl = URL.createObjectURL(file);
+           const img = new Image();
+           img.onload = function () {
+             applyLoadedImage(img);
+             setTimeout(function () {
+               try {
+                 URL.revokeObjectURL(objectUrl);
+               } catch (__) {
+                 // Ignorer
+               }
+             }, 2000);
+           };
+           img.onerror = function () {
+             state.customStatusError = 'Impossible de charger la photo.';
+             syncUiState();
+           };
+           img.src = objectUrl;
+         } catch (__) {
+           state.customStatusError = 'Chargement photo indisponible sur cet appareil.';
+           syncUiState();
+         }
+       }
+     }
+
+     function clearPhoto() {
+       state.photoImg = null;
+       state.photoLoaded = false;
+       state.zoom = 1;
+       state.offsetX = 0;
+       state.offsetY = 0;
+       state.customStatusError = '';
+       if (photoFileInput) photoFileInput.value = '';
+       if (photoStatusRow) photoStatusRow.classList.remove('visible');
+       syncUiState();
+       renderBadge();
+     }
+
+     function setZoom(nextZoom) {
+       if (!state.photoLoaded) return;
+       state.zoom = clamp(Number(nextZoom.toFixed(2)), ZOOM_MIN, ZOOM_MAX);
+       updateZoomReadout();
+       renderBadge();
+     }
+
+     function resetCrop() {
+       if (!state.photoLoaded) return;
+       state.zoom = 1;
+       state.offsetX = 0;
+       state.offsetY = 0;
+       updateZoomReadout();
+       renderBadge();
+     }
+
+     function clientToBadgeCoords(clientX, clientY) {
+       if (!canvasFrameBox) return { x: 0, y: 0 };
+       const rect = canvasFrameBox.getBoundingClientRect();
+       if (!rect.width || !rect.height) return { x: 0, y: 0 };
+       return {
+         x: ((clientX - rect.left) / rect.width) * LOGICAL_SIZE,
+         y: ((clientY - rect.top) / rect.height) * LOGICAL_SIZE
+       };
+     }
+
+     function isInsidePhotoBox(bx, by) {
+       return (
+         bx >= PHOTO_BOX.x &&
+         bx <= PHOTO_BOX.x + PHOTO_BOX.size &&
+         by >= PHOTO_BOX.y &&
+         by <= PHOTO_BOX.y + PHOTO_BOX.size
+       );
+     }
+
+     function getTouchDistance(t1, t2) {
+       return Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+     }
+
+     if (canvasFrameBox) {
+       canvasFrameBox.addEventListener('mousedown', function (e) {
+         if (!state.photoLoaded || e.button !== 0) return;
+         const pt = clientToBadgeCoords(e.clientX, e.clientY);
+         if (!isInsidePhotoBox(pt.x, pt.y)) return;
+
+         state.dragging = true;
+         state.dragStartX = pt.x - state.offsetX;
+         state.dragStartY = pt.y - state.offsetY;
+         canvasFrameBox.classList.add('is-dragging');
+       });
+
+       window.addEventListener('mousemove', function (e) {
+         if (!state.dragging || !state.photoLoaded) return;
+         const pt = clientToBadgeCoords(e.clientX, e.clientY);
+         state.offsetX = clamp(pt.x - state.dragStartX, -550, 550);
+         state.offsetY = clamp(pt.y - state.dragStartY, -550, 550);
+         renderBadge();
+       });
+
+       window.addEventListener('mouseup', function () {
+         if (state.dragging) {
+           state.dragging = false;
+           canvasFrameBox.classList.remove('is-dragging');
+         }
+       });
+
+       canvasFrameBox.addEventListener('wheel', function (e) {
+         if (!state.photoLoaded) return;
+         const pt = clientToBadgeCoords(e.clientX, e.clientY);
+         if (!isInsidePhotoBox(pt.x, pt.y)) return;
+         e.preventDefault();
+         setZoom(state.zoom + (e.deltaY < 0 ? ZOOM_STEP : -ZOOM_STEP));
+       }, { passive: false });
+
+       canvasFrameBox.addEventListener('touchstart', function (e) {
+         if (!state.photoLoaded) return;
+
+         if (e.touches.length === 2) {
+           state.dragging = false;
+           state.pinchStartDist = getTouchDistance(e.touches[0], e.touches[1]);
+           state.pinchStartZoom = state.zoom;
+           e.preventDefault();
+           return;
+         }
+
+         if (e.touches.length === 1) {
+           const t = e.touches[0];
+           const pt = clientToBadgeCoords(t.clientX, t.clientY);
+           if (!isInsidePhotoBox(pt.x, pt.y)) return;
+           state.dragging = true;
+           state.dragStartX = pt.x - state.offsetX;
+           state.dragStartY = pt.y - state.offsetY;
+           canvasFrameBox.classList.add('is-dragging');
+           e.preventDefault();
+         }
+       }, { passive: false });
+
+       canvasFrameBox.addEventListener('touchmove', function (e) {
+         if (!state.photoLoaded) return;
+
+         if (e.touches.length === 2 && state.pinchStartDist > 0) {
+           const dist = getTouchDistance(e.touches[0], e.touches[1]);
+           setZoom(state.pinchStartZoom * (dist / state.pinchStartDist));
+           e.preventDefault();
+           return;
+         }
+
+         if (e.touches.length === 1 && state.dragging) {
+           const t = e.touches[0];
+           const pt = clientToBadgeCoords(t.clientX, t.clientY);
+           state.offsetX = clamp(pt.x - state.dragStartX, -550, 550);
+           state.offsetY = clamp(pt.y - state.dragStartY, -550, 550);
+           renderBadge();
+           e.preventDefault();
+         }
+       }, { passive: false });
+
+       canvasFrameBox.addEventListener('touchend', function (e) {
+         if (e.touches.length < 2) {
+           state.pinchStartDist = 0;
+         }
+         if (e.touches.length === 0) {
+           state.dragging = false;
+           canvasFrameBox.classList.remove('is-dragging');
+         }
+       });
+     }
+
+     function bindHoldZoom(btn, delta) {
+       if (!btn) return;
+       const stopHold = function () {
+         if (state.holdTimer) {
+           clearTimeout(state.holdTimer);
+           state.holdTimer = null;
+         }
+         if (state.holdInterval) {
+           clearInterval(state.holdInterval);
+           state.holdInterval = null;
+         }
+       };
+
+       btn.addEventListener('click', function () {
+         setZoom(state.zoom + delta);
+       });
+
+       btn.addEventListener('mousedown', function () {
+         stopHold();
+         state.holdTimer = setTimeout(function () {
+           state.holdInterval = setInterval(function () {
+             setZoom(state.zoom + delta * 0.5);
+           }, 80);
+         }, 260);
+       });
+
+       btn.addEventListener('touchstart', function () {
+         stopHold();
+         state.holdTimer = setTimeout(function () {
+           state.holdInterval = setInterval(function () {
+             setZoom(state.zoom + delta * 0.5);
+           }, 80);
+         }, 260);
+       }, { passive: true });
+
+       ['mouseup', 'mouseleave', 'touchend', 'touchcancel'].forEach(function (ev) {
+         btn.addEventListener(ev, stopHold);
+       });
+     }
+
+     bindHoldZoom(zoomOutBtn, -ZOOM_STEP);
+     bindHoldZoom(zoomInBtn, ZOOM_STEP);
+
+     if (resetCropBtn) {
+       resetCropBtn.addEventListener('click', resetCrop);
+     }
+
+     function canvasToBlob() {
+       return new Promise(function (resolve, reject) {
+         renderBadge();
+         if (!canvas || typeof canvas.toBlob !== 'function') {
+           reject(new Error('Export indisponible'));
+           return;
+         }
+         canvas.toBlob(function (blob) {
+           if (blob) {
+             resolve(blob);
+           } else {
+             reject(new Error('Échec de génération du PNG'));
+           }
+         }, 'image/png', 1);
+       });
+     }
+
+     function buildFileName() {
+       const slug = getCleanName()
+         .toLowerCase()
+         .normalize('NFD')
+         .replace(/[\u0300-\u036f]/g, '')
+         .replace(/[^a-z0-9]+/g, '-')
+         .replace(/^-+|-+$/g, '');
+       return `badge-cua-${slug || 'membre'}-1080x1080.png`;
+     }
+
+     function buildWhatsAppCaption() {
+       const cleanName = getCleanName();
+       return (
+         `J'Y SERAI ! — ${cleanName}\n` +
+         `Pour prêcher et gagner des âmes à Christ\n` +
+         `Semaine de l'Évangile • Centre Universitaire Apostolique (CUA)\n` +
+         `${BADGE_COPY.dateText} • ${BADGE_COPY.placeText}\n` +
+         `${BADGE_COPY.timeText}\n` +
+         `Gagner des âmes • Ensemble pour Christ`
+       );
+     }
+
+     async function triggerDownload() {
+       if (!validateMandatoryFields()) return;
+       try {
+         const blob = await canvasToBlob();
+         const url = URL.createObjectURL(blob);
+         const link = document.createElement('a');
+         link.href = url;
+         link.download = buildFileName();
+         document.body.appendChild(link);
+         link.click();
+         document.body.removeChild(link);
+         setTimeout(function () {
+           URL.revokeObjectURL(url);
+         }, 2500);
+         state.customStatusError = '';
+         syncUiState();
+       } catch (_) {
+         state.customStatusError = 'Impossible de télécharger le badge pour le moment.';
+         syncUiState();
+       }
+     }
+
+     function openWhatsAppModal(caption) {
+       if (whatsappCaptionBox) {
+         whatsappCaptionBox.value = caption;
+       }
+       if (whatsappModal) {
+         whatsappModal.classList.add('open');
+       }
+     }
+
+     async function shareToWhatsAppStatus() {
+       if (!validateMandatoryFields()) return;
+
+       const caption = buildWhatsAppCaption();
+       const fileName = buildFileName();
+
+       try {
+         const blob = await canvasToBlob();
+         const file = new File([blob], fileName, { type: 'image/png' });
+
+         if (
+           typeof navigator !== 'undefined' &&
+           typeof navigator.share === 'function' &&
+           (!navigator.canShare || navigator.canShare({ files: [file] }))
+         ) {
+           await navigator.share({
+             title: "Badge Semaine de l'Évangile — CUA",
+             text: caption,
+             files: [file]
+           });
+           state.customStatusError = '';
+           syncUiState();
+           return;
+         }
+
+         const url = URL.createObjectURL(blob);
+         const link = document.createElement('a');
+         link.href = url;
+         link.download = fileName;
+         document.body.appendChild(link);
+         link.click();
+         document.body.removeChild(link);
+         setTimeout(function () {
+           URL.revokeObjectURL(url);
+         }, 2500);
+
+         if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+           try {
+             await navigator.clipboard.writeText(caption);
+           } catch (_) {
+             // Ignorer
+           }
+         }
+         openWhatsAppModal(caption);
+       } catch (err) {
+         if (err && err.name === 'AbortError') {
+           state.customStatusError = '';
+           syncUiState();
+           return;
+         }
+         openWhatsAppModal(caption);
+       }
+     }
+
+     if (fullNameInput) {
+       fullNameInput.addEventListener('input', function () {
+         state.fullName = fullNameInput.value;
+         state.customStatusError = '';
+         syncUiState();
+         renderBadge();
+       });
+     }
+
+     if (photoFileInput) {
+       photoFileInput.addEventListener('change', function () {
+         const f = photoFileInput.files && photoFileInput.files[0];
+         if (f) handlePhotoFile(f);
+       });
+     }
+
+     if (dropzone) {
+       dropzone.addEventListener('dragover', function (e) {
+         e.preventDefault();
+         dropzone.classList.add('dragover');
+       });
+       dropzone.addEventListener('dragleave', function () {
+         dropzone.classList.remove('dragover');
+       });
+       dropzone.addEventListener('drop', function (e) {
+         e.preventDefault();
+         dropzone.classList.remove('dragover');
+         const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+         if (f) handlePhotoFile(f);
+       });
+     }
+
+     if (clearPhotoBtn) {
+       clearPhotoBtn.addEventListener('click', clearPhoto);
+     }
+
+     if (whatsappShareBtn) {
+       whatsappShareBtn.addEventListener('click', shareToWhatsAppStatus);
+     }
+
+     if (downloadPngBtn) {
+       downloadPngBtn.addEventListener('click', triggerDownload);
+     }
+
+     if (copyCaptionBtn) {
+       copyCaptionBtn.addEventListener('click', function () {
+         if (!whatsappCaptionBox) return;
+         whatsappCaptionBox.focus();
+         whatsappCaptionBox.select();
+         try {
+           document.execCommand('copy');
+           copyCaptionBtn.textContent = 'Copié !';
+           setTimeout(function () {
+             copyCaptionBtn.textContent = 'Copier le texte';
+           }, 1800);
+         } catch (_) {
+           // Ignorer
+         }
+       });
+     }
+
+     if (closeModalBtn && whatsappModal) {
+       closeModalBtn.addEventListener('click', function () {
+         whatsappModal.classList.remove('open');
+       });
+       whatsappModal.addEventListener('click', function (e) {
+         if (e.target === whatsappModal) {
+           whatsappModal.classList.remove('open');
+         }
+       });
+     }
+
+     function refreshBadgeAndUi() {
+       syncUiState();
+       renderBadge();
+     }
+
+     // Déclenchement immédiat, via requestAnimationFrame, DOM prêt, load, polices et ResizeObserver
+     refreshBadgeAndUi();
+
+     if (typeof requestAnimationFrame === 'function') {
+       requestAnimationFrame(refreshBadgeAndUi);
+     }
+
+     if (document.readyState === 'loading') {
+       document.addEventListener('DOMContentLoaded', refreshBadgeAndUi, { once: true });
+     }
+
+     window.addEventListener('load', refreshBadgeAndUi);
+     window.addEventListener('resize', refreshBadgeAndUi);
+     window.addEventListener('orientationchange', function () {
+       refreshBadgeAndUi();
+       setTimeout(refreshBadgeAndUi, 140);
+     });
+
+     if (document.fonts && document.fonts.ready && typeof document.fonts.ready.then === 'function') {
+       document.fonts.ready.then(refreshBadgeAndUi).catch(function () {});
+     }
+
+     if (typeof ResizeObserver === 'function' && canvasFrameBox) {
+       try {
+         const ro = new ResizeObserver(function () {
+           renderBadge();
+         });
+         ro.observe(canvasFrameBox);
+       } catch (_) {
+         // Ignorer
+       }
+     }
+
+     setTimeout(refreshBadgeAndUi, 120);
+     setTimeout(refreshBadgeAndUi, 400);
+   })();
+ </script>
+</body>
+</html>
