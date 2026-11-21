@@ -4,6 +4,9 @@
  <meta charset="UTF-8" />
  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
  <title>Générateur de Badge — Semaine de l'Évangile CUA</title>
+ <link rel="preconnect" href="https://fonts.googleapis.com" />
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+ <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet" />
  <style>
    :root {
      --bg-page: #f1f5f9;
@@ -13,11 +16,11 @@
      --text-muted: #475569;
      --border-soft: #cbd5e1;
      --navy-pure: #0a1e47;
-     --navy-arc: #122d66;
+     --navy-arc: #112c63;
      --orange-accent: #d49a2a;
      --white-pure: #ffffff;
-     --whatsapp-green: #16a34a;
-     --whatsapp-hover: #15803d;
+     --share-green: #16a34a;
+     --share-hover: #15803d;
      --danger-red: #dc2626;
      --danger-bg: #fef2f2;
      --success-green: #15803d;
@@ -38,7 +41,7 @@
      min-height: 100%;
      background-color: var(--bg-page);
      color: var(--text-main);
-     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+     font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
      line-height: 1.5;
      overflow-x: hidden;
      -webkit-tap-highlight-color: transparent;
@@ -46,9 +49,9 @@
 
    .app-shell {
      width: 100%;
-     max-width: 1160px;
+     max-width: 1140px;
      margin: 0 auto;
-     padding: 16px 14px 40px;
+     padding: 18px 14px 40px;
    }
 
    .app-header {
@@ -57,8 +60,8 @@
    }
 
    .app-header h1 {
-     font-size: clamp(1.3rem, 3.6vw, 1.95rem);
-     font-weight: 800;
+     font-size: clamp(1.25rem, 3.6vw, 1.9rem);
+     font-weight: 900;
      color: var(--navy-pure);
      letter-spacing: -0.02em;
    }
@@ -72,12 +75,12 @@
 
    @media (min-width: 880px) {
      .main-grid {
-       grid-template-columns: minmax(320px, 410px) minmax(340px, 1fr);
+       grid-template-columns: minmax(320px, 400px) minmax(340px, 1fr);
        gap: 24px;
      }
 
      .app-shell {
-       padding: 24px 20px 48px;
+       padding: 26px 20px 48px;
      }
    }
 
@@ -93,17 +96,6 @@
      .panel {
        padding: 22px;
      }
-   }
-
-   .panel-title {
-     font-size: 1.05rem;
-     font-weight: 700;
-     color: var(--navy-pure);
-     margin-bottom: 14px;
-     display: flex;
-     align-items: center;
-     justify-content: space-between;
-     gap: 8px;
    }
 
    .field-block {
@@ -145,6 +137,7 @@
      padding: 12px 14px;
      font-size: 1rem;
      font-weight: 600;
+     font-family: inherit;
      color: var(--text-main);
      background: var(--bg-subtle);
      border: 1.5px solid var(--border-soft);
@@ -172,7 +165,7 @@
      justify-content: center;
      gap: 6px;
      width: 100%;
-     min-height: 104px;
+     min-height: 98px;
      padding: 14px;
      border: 2px dashed #94a3b8;
      border-radius: 14px;
@@ -203,14 +196,12 @@
    }
 
    .upload-main-text {
-     font-size: 0.9rem;
+     font-size: 0.92rem;
      font-weight: 700;
      color: var(--navy-pure);
-   }
-
-   .upload-sub-text {
-     font-size: 0.78rem;
-     color: var(--text-muted);
+     display: inline-flex;
+     align-items: center;
+     gap: 8px;
    }
 
    .photo-status-row {
@@ -219,7 +210,7 @@
      align-items: center;
      justify-content: space-between;
      gap: 8px;
-     font-size: 0.8rem;
+     font-size: 0.82rem;
      color: var(--success-green);
      font-weight: 600;
    }
@@ -228,46 +219,60 @@
      display: flex;
    }
 
+   .photo-file-name {
+     overflow: hidden;
+     text-overflow: ellipsis;
+     white-space: nowrap;
+     max-width: 220px;
+   }
+
    .clear-photo-btn {
      padding: 5px 10px;
      font-size: 0.76rem;
      font-weight: 700;
+     font-family: inherit;
      color: var(--danger-red);
      background: var(--danger-bg);
      border: 1px solid #fecaca;
      border-radius: 8px;
      cursor: pointer;
+     flex-shrink: 0;
    }
 
    .clear-photo-btn:hover {
      background: #fee2e2;
    }
 
-   .status-banner {
+   .validation-alert {
+     display: none;
+     padding: 11px 13px;
+     border-radius: 12px;
+     font-size: 0.85rem;
+     font-weight: 600;
+     margin-bottom: 14px;
+     background: var(--danger-bg);
+     color: #991b1b;
+     border: 1px solid #fca5a5;
+   }
+
+   .validation-alert.visible {
+     display: block;
+   }
+
+   .toast-notice {
+     display: none;
      padding: 11px 13px;
      border-radius: 12px;
      font-size: 0.84rem;
      font-weight: 600;
      margin-bottom: 14px;
-     border: 1px solid transparent;
-   }
-
-   .status-banner.locked {
-     background: #fffbeb;
-     color: #92400e;
-     border-color: #fde68a;
-   }
-
-   .status-banner.error {
-     background: var(--danger-bg);
-     color: #991b1b;
-     border-color: #fca5a5;
-   }
-
-   .status-banner.ready {
      background: var(--success-bg);
      color: var(--success-green);
-     border-color: #86efac;
+     border: 1px solid #86efac;
+   }
+
+   .toast-notice.visible {
+     display: block;
    }
 
    .actions-stack {
@@ -281,33 +286,33 @@
      padding: 13px 16px;
      font-size: 0.95rem;
      font-weight: 700;
+     font-family: inherit;
      border: none;
      border-radius: 13px;
      cursor: pointer;
      display: flex;
      align-items: center;
      justify-content: center;
-     gap: 8px;
+     gap: 9px;
      transition: transform 0.12s ease, opacity 0.2s ease, background-color 0.2s ease;
    }
 
-   .btn-action:active:not(:disabled) {
+   .btn-action:active {
      transform: scale(0.985);
    }
 
-   .btn-action:disabled {
-     opacity: 0.55;
-     cursor: not-allowed;
+   .btn-action.incomplete {
+     opacity: 0.85;
    }
 
-   .btn-whatsapp {
-     background: var(--whatsapp-green);
+   .btn-share {
+     background: var(--share-green);
      color: var(--white-pure);
      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25);
    }
 
-   .btn-whatsapp:hover:not(:disabled) {
-     background: var(--whatsapp-hover);
+   .btn-share:hover {
+     background: var(--share-hover);
    }
 
    .btn-download {
@@ -316,7 +321,7 @@
      box-shadow: 0 4px 12px rgba(10, 30, 71, 0.2);
    }
 
-   .btn-download:hover:not(:disabled) {
+   .btn-download:hover {
      background: var(--navy-arc);
    }
 
@@ -325,19 +330,6 @@
      flex-direction: column;
      align-items: center;
      width: 100%;
-   }
-
-   .preview-header {
-     width: 100%;
-     max-width: 540px;
-     display: flex;
-     align-items: center;
-     justify-content: space-between;
-     gap: 8px;
-     margin-bottom: 10px;
-     font-size: 0.92rem;
-     font-weight: 800;
-     color: var(--navy-pure);
    }
 
    .canvas-frame-box {
@@ -374,17 +366,19 @@
      max-width: 540px;
      margin-top: 12px;
      padding: 8px 12px;
-     background: var(--bg-subtle);
+     background: var(--bg-card);
      border: 1px solid var(--border-soft);
      border-radius: 14px;
-     display: none;
+     display: flex;
      align-items: center;
      justify-content: space-between;
      gap: 8px;
+     box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
    }
 
-   .crop-toolbar.visible {
-     display: flex;
+   .crop-toolbar.disabled {
+     opacity: 0.5;
+     pointer-events: none;
    }
 
    .zoom-group {
@@ -399,10 +393,11 @@
      padding: 0 10px;
      border-radius: 10px;
      border: 1px solid var(--border-soft);
-     background: var(--white-pure);
+     background: var(--bg-subtle);
      color: var(--navy-pure);
      font-size: 1rem;
      font-weight: 800;
+     font-family: inherit;
      cursor: pointer;
      display: inline-flex;
      align-items: center;
@@ -420,7 +415,7 @@
    }
 
    .crop-btn.reset-btn {
-     font-size: 0.78rem;
+     font-size: 0.8rem;
      font-weight: 700;
      padding: 0 12px;
    }
@@ -433,81 +428,6 @@
      color: var(--navy-pure);
      font-variant-numeric: tabular-nums;
    }
-
-   .modal-backdrop {
-     position: fixed;
-     inset: 0;
-     background: rgba(15, 23, 42, 0.58);
-     display: none;
-     align-items: center;
-     justify-content: center;
-     padding: 16px;
-     z-index: 100;
-   }
-
-   .modal-backdrop.open {
-     display: flex;
-   }
-
-   .modal-card {
-     width: 100%;
-     max-width: 440px;
-     background: var(--white-pure);
-     border-radius: 18px;
-     padding: 20px;
-     box-shadow: 0 20px 45px rgba(15, 23, 42, 0.28);
-   }
-
-   .modal-card h3 {
-     font-size: 1.05rem;
-     font-weight: 800;
-     color: var(--navy-pure);
-     margin-bottom: 8px;
-   }
-
-   .modal-card p {
-     font-size: 0.86rem;
-     color: var(--text-muted);
-     margin-bottom: 12px;
-   }
-
-   .caption-box {
-     width: 100%;
-     min-height: 104px;
-     padding: 10px;
-     font-size: 0.82rem;
-     font-family: inherit;
-     color: var(--text-main);
-     background: var(--bg-subtle);
-     border: 1px solid var(--border-soft);
-     border-radius: 10px;
-     resize: vertical;
-     margin-bottom: 12px;
-   }
-
-   .modal-actions {
-     display: flex;
-     flex-wrap: wrap;
-     gap: 8px;
-     justify-content: flex-end;
-   }
-
-   .modal-btn {
-     padding: 9px 14px;
-     border-radius: 10px;
-     font-size: 0.84rem;
-     font-weight: 700;
-     border: 1px solid var(--border-soft);
-     background: var(--white-pure);
-     color: var(--text-main);
-     cursor: pointer;
-   }
-
-   .modal-btn.primary {
-     background: var(--whatsapp-green);
-     color: var(--white-pure);
-     border-color: var(--whatsapp-green);
-   }
  </style>
 </head>
 <body>
@@ -517,12 +437,8 @@
    </header>
 
    <div class="main-grid">
-     <section class="panel" aria-label="Formulaire de personnalisation">
-       <div class="panel-title">
-         <span>Vos informations</span>
-         <span style="font-size:0.76rem;color:#64748b;font-weight:600;">* Obligatoires</span>
-       </div>
-
+     <!-- Formulaire épuré -->
+     <section class="panel" aria-label="Personnalisation du badge">
        <div id="nameBlock" class="field-block">
          <label for="fullNameInput" class="field-label">
            Nom & Prénom <span class="req-star">*</span>
@@ -539,29 +455,34 @@
 
        <div id="photoBlock" class="field-block">
          <label for="photoFileInput" class="field-label">
-           Votre photo <span class="req-star">*</span>
+           Photo <span class="req-star">*</span>
          </label>
          <div id="dropzone" class="upload-dropzone">
            <input
              id="photoFileInput"
              type="file"
-             accept="image/jpeg,image/png,image/webp,image/heic,image/*"
+             accept="image/*"
            />
-           <span class="upload-main-text">Choisir ou déposer une photo</span>
-           <span class="upload-sub-text">JPG, PNG ou WEBP</span>
+           <span class="upload-main-text">
+             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+               <rect x="3" y="3" width="18" height="18" rx="3" ry="3"></rect>
+               <circle cx="8.5" cy="8.5" r="1.5"></circle>
+               <polyline points="21 15 16 10 5 21"></polyline>
+             </svg>
+             <span>Choisir une photo</span>
+           </span>
          </div>
          <div id="photoStatusRow" class="photo-status-row">
-           <span id="photoFileName">Photo chargée</span>
+           <span id="photoFileName" class="photo-file-name">Photo chargée</span>
            <button type="button" id="clearPhotoBtn" class="clear-photo-btn">Retirer</button>
          </div>
        </div>
 
-       <div id="statusBanner" class="status-banner locked" role="status" aria-live="polite">
-         Veuillez renseigner votre nom complet et importer votre photo pour débloquer le badge.
-       </div>
+       <div id="validationAlert" class="validation-alert" role="alert" aria-live="assertive"></div>
+       <div id="toastNotice" class="toast-notice" role="status" aria-live="polite"></div>
 
        <div class="actions-stack">
-         <button type="button" id="whatsappShareBtn" class="btn-action btn-whatsapp">
+         <button type="button" id="shareAppBtn" class="btn-action btn-share incomplete">
            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
              <circle cx="18" cy="5" r="3"></circle>
              <circle cx="6" cy="12" r="3"></circle>
@@ -569,31 +490,28 @@
              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
            </svg>
-           <span>Partager sur le statut WhatsApp</span>
+           <span>Partager (WhatsApp, Facebook...)</span>
          </button>
 
-         <button type="button" id="downloadPngBtn" class="btn-action btn-download">
+         <button type="button" id="downloadPngBtn" class="btn-action btn-download incomplete">
            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
              <polyline points="7 10 12 15 17 10"></polyline>
              <line x1="12" y1="15" x2="12" y2="3"></line>
            </svg>
-           <span>Télécharger PNG (1080 × 1080)</span>
+           <span>Télécharger le badge PNG</span>
          </button>
        </div>
      </section>
 
+     <!-- Aperçu interactif & barre de recadrage -->
      <section class="preview-column" aria-label="Aperçu du badge">
-       <div class="preview-header">
-         <span>Aperçu du badge</span>
-       </div>
-
        <div id="canvasFrameBox" class="canvas-frame-box">
-         <!-- Tampon interne 2x suréchantillonné (2160 x 2160 px) mappé en coordonnées logiques 1080 x 1080 px -->
+         <!-- Tampon interne 2x (2160 x 2160 px) mappé sur 0..1080 en coordonnées logiques -->
          <canvas id="badgeCanvas" width="2160" height="2160"></canvas>
        </div>
 
-       <div id="cropToolbar" class="crop-toolbar" aria-label="Outils de zoom et recentrage photo">
+       <div id="cropToolbar" class="crop-toolbar disabled" aria-label="Outils de recadrage photo">
          <div class="zoom-group">
            <button type="button" id="zoomOutBtn" class="crop-btn" title="Dézoomer" aria-label="Dézoomer">−</button>
            <span id="zoomReadout" class="zoom-readout">100%</span>
@@ -605,77 +523,48 @@
    </div>
  </main>
 
- <div id="whatsappModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-   <div class="modal-card">
-     <h3 id="modalTitle">Publier sur votre statut WhatsApp</h3>
-     <p id="modalDescription">
-       Votre badge PNG 1080×1080 px a été préparé. Copiez la légende ci-dessous, ouvrez WhatsApp, puis sélectionnez l'image pour l'ajouter à votre Statut.
-     </p>
-     <textarea id="whatsappCaptionBox" class="caption-box" readonly></textarea>
-     <div class="modal-actions">
-       <button type="button" id="copyCaptionBtn" class="modal-btn">Copier le texte</button>
-       <a id="openWhatsAppLink" href="https://wa.me/" target="_blank" rel="noopener noreferrer" class="modal-btn primary" style="text-decoration:none;">
-         Ouvrir WhatsApp
-       </a>
-       <button type="button" id="closeModalBtn" class="modal-btn">Fermer</button>
-     </div>
-   </div>
- </div>
-
  <script>
    (function () {
      'use strict';
 
-     // Système de coordonnées logiques 1080 x 1080 px rendu sur un tampon 2x (2160 x 2160 px)
+     // Dimensions logiques 1080x1080 rendues sur tampon 2x (2160x2160)
      const LOGICAL_SIZE = 1080;
-     const SUPERSAMPLE_SCALE = 2;
-     const TARGET_INTERNAL_SIZE = LOGICAL_SIZE * SUPERSAMPLE_SCALE;
+     const SUPERSAMPLE = 2;
+     const INTERNAL_SIZE = LOGICAL_SIZE * SUPERSAMPLE;
 
-     // Palette officielle : bleu nuit pur (#0A1E47) et orange doré (#D49A2A)
-     const NAVY_PURE = '#0a1e47';
-     const NAVY_ARC = '#122d66';
-     const ORANGE_ACCENT = '#d49a2a';
-     const WHITE_PURE = '#ffffff';
+     // Palette officielle : fond bleu nuit #0A1E47 et orange doré #D49A2A
+     const NAVY_PURE = '#0A1E47';
+     const NAVY_RADIAL = '#16377A';
+     const ORANGE_GOLD = '#D49A2A';
+     const WHITE_PURE = '#FFFFFF';
 
-     // Couleurs fidèles de l'emblème CUA sans déformation
-     const LOGO_CUA_BLUE = '#1d3f8a';
-     const LOGO_BOOK_GREY = '#9aa4b2';
-     const LOGO_BOOK_GOLD = '#dfb03a';
-     const LOGO_SUBTITLE_SLATE = '#33435c';
-
-     // Cadre photo carré arrondi (450 x 450 px) à gauche
+     // Cadre photo carré arrondi au centre-gauche (450 x 450 px)
      const PHOTO_BOX = Object.freeze({
        x: 52,
-       y: 298,
+       y: 282,
        size: 450,
-       radius: 34
+       radius: 28
      });
 
      const ZOOM_MIN = 0.5;
      const ZOOM_MAX = 3.5;
      const ZOOM_STEP = 0.12;
 
-     // Textes exacts et inchangés du badge
-     const BADGE_COPY = Object.freeze({
+     // Textes officiels exacts (inchangés)
+     const COPY = Object.freeze({
        logoCode: 'CUA',
-       logoFullName: 'CENTRE UNIVERSITAIRE APOSTOLIQUE',
+       logoFull: 'Centre Universitaire Apostolique',
        pill: "SEMAINE DE L'ÉVANGILE",
        headline: "J'Y SERAI !",
-       sublineLine1: 'POUR PRÊCHER ET GAGNER',
-       sublineLine2: 'DES ÂMES À CHRIST',
-       placeholderName: 'VOTRE NOM & PRÉNOM',
-       verseQuote: '« Allez par tout le monde, et prêchez la bonne nouvelle à toute la création. »',
-       verseRef: '— MARC 16 : 15',
+       subline1: 'POUR PRÊCHER ET GAGNER',
+       subline2: 'DES ÂMES À CHRIST',
        dateText: 'Du Lundi 30 Novembre au Samedi 05 Décembre 2026',
-       placeText: 'Campus UAC',
+       placeText: "Université d'Abomey-Calavi",
        timeText: 'Départ 16h45 • Ensemble pour Christ',
-       bottomFooter: 'GAGNER DES ÂMES • ENSEMBLE POUR CHRIST'
+       placeholderName: 'VOTRE NOM & PRÉNOM',
+       verseText: '« Allez par tout le monde, et prêchez la bonne nouvelle à toute la création. » — Marc 16:15',
+       footerText: 'GAGNER DES ÂMES • ENSEMBLE POUR CHRIST'
      });
-
-     const INCOMPLETE_STATUS_MSG = 'Veuillez renseigner votre nom complet et importer votre photo pour débloquer le badge.';
-     const NAME_ERROR_MSG = 'Veuillez renseigner votre nom complet (au moins 2 caractères) et importer votre photo.';
-     const PHOTO_ERROR_MSG = 'Veuillez importer votre photo pour débloquer le badge.';
-     const BOTH_ERROR_MSG = 'Veuillez renseigner votre nom complet et importer votre photo.';
 
      const canvas = document.getElementById('badgeCanvas');
      const canvasFrameBox = document.getElementById('canvasFrameBox');
@@ -687,18 +576,15 @@
      const photoStatusRow = document.getElementById('photoStatusRow');
      const photoFileName = document.getElementById('photoFileName');
      const clearPhotoBtn = document.getElementById('clearPhotoBtn');
-     const statusBanner = document.getElementById('statusBanner');
-     const whatsappShareBtn = document.getElementById('whatsappShareBtn');
+     const validationAlert = document.getElementById('validationAlert');
+     const toastNotice = document.getElementById('toastNotice');
+     const shareAppBtn = document.getElementById('shareAppBtn');
      const downloadPngBtn = document.getElementById('downloadPngBtn');
      const cropToolbar = document.getElementById('cropToolbar');
      const zoomOutBtn = document.getElementById('zoomOutBtn');
      const zoomInBtn = document.getElementById('zoomInBtn');
      const zoomReadout = document.getElementById('zoomReadout');
      const resetCropBtn = document.getElementById('resetCropBtn');
-     const whatsappModal = document.getElementById('whatsappModal');
-     const whatsappCaptionBox = document.getElementById('whatsappCaptionBox');
-     const copyCaptionBtn = document.getElementById('copyCaptionBtn');
-     const closeModalBtn = document.getElementById('closeModalBtn');
 
      const state = {
        fullName: '',
@@ -714,12 +600,39 @@
        pinchStartZoom: 1,
        holdTimer: null,
        holdInterval: null,
-       hasValidationAttempt: false,
-       customStatusError: ''
+       attemptedSubmit: false
      };
 
-     function clamp(val, min, max) {
-       return Math.max(min, Math.min(max, val));
+     // 1. Helper universel de rectangle arrondi (beginPath, moveTo, arcTo, closePath)
+     function drawRoundedRect(ctx, x, y, w, h, r) {
+       const radius = Math.max(0, Math.min(r, Math.min(w, h) / 2));
+       ctx.beginPath();
+       ctx.moveTo(x + radius, y);
+       ctx.arcTo(x + w, y, x + w, y + h, radius);
+       ctx.arcTo(x + w, y + h, x, y + h, radius);
+       ctx.arcTo(x, y + h, x, y, radius);
+       ctx.arcTo(x, y, x + w, y, radius);
+       ctx.closePath();
+     }
+
+     // 2. Exécution isolée et protégée d'une étape de dessin avec secours visuel
+     function safeDrawStep(fn, fallbackFn) {
+       try {
+         fn();
+       } catch (err) {
+         if (typeof console !== 'undefined' && console.warn) {
+           console.warn('Étape de rendu interceptée :', err);
+         }
+         if (typeof fallbackFn === 'function') {
+           try {
+             fallbackFn();
+           } catch (_) {}
+         }
+       }
+     }
+
+     function clamp(value, min, max) {
+       return Math.max(min, Math.min(max, value));
      }
 
      function getCleanName() {
@@ -731,280 +644,277 @@
      }
 
      function isPhotoValid() {
-       return Boolean(state.photoLoaded && state.photoImg);
+       return Boolean(state.photoLoaded && state.photoImg && state.photoImg.width > 0);
      }
 
-     function isFormComplete() {
-       return isNameValid() && isPhotoValid();
-     }
-
-     function updateZoomReadout() {
-       if (zoomReadout) {
-         zoomReadout.textContent = `${Math.round(state.zoom * 100)}%`;
-       }
+     function showToast(message) {
+       if (!toastNotice) return;
+       toastNotice.textContent = message;
+       toastNotice.classList.add('visible');
+       setTimeout(function () {
+         if (toastNotice.textContent === message) {
+           toastNotice.classList.remove('visible');
+         }
+       }, 4200);
      }
 
      function syncUiState() {
-       try {
-         const complete = isFormComplete();
-         const nameOk = isNameValid();
-         const photoOk = isPhotoValid();
+       const nameOk = isNameValid();
+       const photoOk = isPhotoValid();
+       const allOk = nameOk && photoOk;
 
-         if (whatsappShareBtn) {
-           whatsappShareBtn.disabled = !complete;
-           whatsappShareBtn.setAttribute('aria-disabled', String(!complete));
+       if (shareAppBtn) shareAppBtn.classList.toggle('incomplete', !allOk);
+       if (downloadPngBtn) downloadPngBtn.classList.toggle('incomplete', !allOk);
+
+       if (cropToolbar) cropToolbar.classList.toggle('disabled', !photoOk);
+       if (canvasFrameBox) canvasFrameBox.classList.toggle('can-drag', photoOk);
+       if (zoomReadout) zoomReadout.textContent = Math.round(state.zoom * 100) + '%';
+
+       if (state.attemptedSubmit) {
+         if (nameBlock) nameBlock.classList.toggle('field-error', !nameOk);
+         if (fullNameInput) fullNameInput.classList.toggle('input-invalid', !nameOk);
+         if (photoBlock) photoBlock.classList.toggle('field-error', !photoOk);
+         if (dropzone) dropzone.classList.toggle('invalid-zone', !photoOk);
+
+         if (allOk && validationAlert) {
+           validationAlert.classList.remove('visible');
+           validationAlert.textContent = '';
          }
-         if (downloadPngBtn) {
-           downloadPngBtn.disabled = !complete;
-           downloadPngBtn.setAttribute('aria-disabled', String(!complete));
-         }
-
-         if (cropToolbar) {
-           cropToolbar.classList.toggle('visible', photoOk);
-         }
-         if (canvasFrameBox) {
-           canvasFrameBox.classList.toggle('can-drag', photoOk);
-         }
-
-         updateZoomReadout();
-
-         const showNameErr = state.hasValidationAttempt && !nameOk;
-         const showPhotoErr = state.hasValidationAttempt && !photoOk;
-
-         if (nameBlock) nameBlock.classList.toggle('field-error', showNameErr);
-         if (fullNameInput) fullNameInput.classList.toggle('input-invalid', showNameErr);
-         if (photoBlock) photoBlock.classList.toggle('field-error', showPhotoErr);
-         if (dropzone) dropzone.classList.toggle('invalid-zone', showPhotoErr);
-
-         if (!statusBanner) return;
-         statusBanner.classList.remove('locked', 'error', 'ready');
-
-         if (state.customStatusError) {
-           statusBanner.classList.add('error');
-           statusBanner.textContent = state.customStatusError;
-           return;
-         }
-
-         if (complete) {
-           statusBanner.classList.add('ready');
-           statusBanner.textContent = 'Badge prêt pour le téléchargement PNG et le statut WhatsApp.';
-           return;
-         }
-
-         if (state.hasValidationAttempt) {
-           statusBanner.classList.add('error');
-           if (!nameOk && !photoOk) {
-             statusBanner.textContent = BOTH_ERROR_MSG;
-           } else if (!nameOk) {
-             statusBanner.textContent = NAME_ERROR_MSG;
-           } else {
-             statusBanner.textContent = PHOTO_ERROR_MSG;
-           }
-           return;
-         }
-
-         statusBanner.classList.add('locked');
-         statusBanner.textContent = INCOMPLETE_STATUS_MSG;
-       } catch (_) {
-         // Ne jamais bloquer le rendu si une mise à jour DOM échoue
+       } else {
+         if (nameBlock) nameBlock.classList.remove('field-error');
+         if (fullNameInput) fullNameInput.classList.remove('input-invalid');
+         if (photoBlock) photoBlock.classList.remove('field-error');
+         if (dropzone) dropzone.classList.remove('invalid-zone');
        }
      }
 
-     function validateMandatoryFields() {
-       state.hasValidationAttempt = true;
-       state.customStatusError = '';
+     function validateAndHighlight() {
+       state.attemptedSubmit = true;
+       const nameOk = isNameValid();
+       const photoOk = isPhotoValid();
        syncUiState();
 
-       if (isFormComplete()) {
-         return true;
-       }
-
-       let targetEl = null;
-       if (!isNameValid()) {
-         targetEl = fullNameInput || nameBlock;
-       } else if (!isPhotoValid()) {
-         targetEl = photoBlock || dropzone;
-       }
-
-       if (targetEl && typeof targetEl.scrollIntoView === 'function') {
-         try {
-           targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-         } catch (_) {
-           try {
-             targetEl.scrollIntoView();
-           } catch (__) {
-             // Ignorer
-           }
+       if (!nameOk && !photoOk) {
+         if (validationAlert) {
+           validationAlert.textContent = 'Veuillez saisir votre Nom & Prénom (2 caractères min.) et choisir une photo.';
+           validationAlert.classList.add('visible');
          }
-       }
-       return false;
-     }
-
-     function traceRoundedRect(c, x, y, w, h, r) {
-       const radius = Math.max(0, Math.min(r, w / 2, h / 2));
-       c.beginPath();
-       if (typeof c.roundRect === 'function') {
-         c.roundRect(x, y, w, h, radius);
-       } else {
-         c.moveTo(x + radius, y);
-         c.arcTo(x + w, y, x + w, y + h, radius);
-         c.arcTo(x + w, y + h, x, y + h, radius);
-         c.arcTo(x, y + h, x, y, radius);
-         c.arcTo(x, y, x + w, y, radius);
-         c.closePath();
-       }
-     }
-
-     function drawBackgroundAndFrame(c) {
-       c.fillStyle = NAVY_PURE;
-       c.fillRect(0, 0, LOGICAL_SIZE, LOGICAL_SIZE);
-
-       c.save();
-       c.strokeStyle = NAVY_ARC;
-       c.lineWidth = 2.4;
-       const radii = [220, 355, 490, 625];
-       for (let i = 0; i < radii.length; i += 1) {
-         c.beginPath();
-         c.arc(LOGICAL_SIZE / 2, 515, radii[i], 0, Math.PI * 2);
-         c.stroke();
+         if (fullNameInput) fullNameInput.focus();
+         return false;
        }
 
-       c.beginPath();
-       c.moveTo(-40, 180);
-       c.bezierCurveTo(220, 120, 260, 420, 520, 460);
-       c.stroke();
-
-       c.beginPath();
-       c.moveTo(LOGICAL_SIZE + 40, 240);
-       c.bezierCurveTo(840, 210, 810, 540, 560, 590);
-       c.stroke();
-       c.restore();
-
-       c.strokeStyle = ORANGE_ACCENT;
-       c.lineWidth = 4;
-       traceRoundedRect(c, 28, 28, LOGICAL_SIZE - 56, LOGICAL_SIZE - 56, 36);
-       c.stroke();
-     }
-
-     function drawCuaPlaque(c, boxX, boxY, boxW, boxH, boxR) {
-       c.save();
-       c.shadowColor = 'rgba(3, 10, 28, 0.35)';
-       c.shadowBlur = 14;
-       c.shadowOffsetY = 5;
-
-       traceRoundedRect(c, boxX - 2.5, boxY - 2.5, boxW + 5, boxH + 5, boxR + 2.5);
-       c.fillStyle = ORANGE_ACCENT;
-       c.fill();
-
-       c.shadowColor = 'transparent';
-       traceRoundedRect(c, boxX, boxY, boxW, boxH, boxR);
-       c.fillStyle = WHITE_PURE;
-       c.fill();
-
-       c.strokeStyle = 'rgba(29, 63, 138, 0.22)';
-       c.lineWidth = 1.5;
-       c.stroke();
-
-       const cx = boxX + boxW / 2;
-
-       c.fillStyle = LOGO_CUA_BLUE;
-       c.font = '800 32px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-       c.textAlign = 'center';
-       c.textBaseline = 'alphabetic';
-       c.fillText(BADGE_COPY.logoCode, cx, boxY + 34);
-
-       const bookCenterY = boxY + 46;
-       const halfSpan = Math.min(126, boxW * 0.28);
-
-       c.strokeStyle = LOGO_BOOK_GREY;
-       c.lineCap = 'round';
-       c.lineWidth = 2.2;
-       c.beginPath();
-       c.moveTo(cx - 12, bookCenterY - 2);
-       c.quadraticCurveTo(cx - halfSpan * 0.56, bookCenterY - 8.5, cx - halfSpan * 0.94, bookCenterY - 1.5);
-       c.moveTo(cx - 12, bookCenterY + 3.5);
-       c.quadraticCurveTo(cx - halfSpan * 0.54, bookCenterY - 2.5, cx - halfSpan * 0.88, bookCenterY + 3.5);
-       c.moveTo(cx + 12, bookCenterY - 2);
-       c.quadraticCurveTo(cx + halfSpan * 0.56, bookCenterY - 8.5, cx + halfSpan * 0.94, bookCenterY - 1.5);
-       c.moveTo(cx + 12, bookCenterY + 3.5);
-       c.quadraticCurveTo(cx + halfSpan * 0.54, bookCenterY - 2.5, cx + halfSpan * 0.88, bookCenterY + 3.5);
-       c.stroke();
-
-       c.fillStyle = LOGO_BOOK_GOLD;
-       c.beginPath();
-       c.moveTo(cx - halfSpan * 1.06, bookCenterY + 8.5);
-       c.quadraticCurveTo(cx - halfSpan * 0.45, bookCenterY + 3.5, cx, bookCenterY + 10.2);
-       c.quadraticCurveTo(cx + halfSpan * 0.45, bookCenterY + 3.5, cx + halfSpan * 1.06, bookCenterY + 8.5);
-       c.quadraticCurveTo(cx + halfSpan * 0.45, bookCenterY + 6.8, cx, bookCenterY + 13.6);
-       c.quadraticCurveTo(cx - halfSpan * 0.45, bookCenterY + 6.8, cx - halfSpan * 1.06, bookCenterY + 8.5);
-       c.closePath();
-       c.fill();
-
-       c.fillStyle = LOGO_SUBTITLE_SLATE;
-       c.textAlign = 'center';
-       c.textBaseline = 'alphabetic';
-       let subFont = 16.5;
-       c.font = `700 ${subFont}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
-       while (c.measureText(BADGE_COPY.logoFullName).width > boxW - 26 && subFont > 11) {
-         subFont -= 0.4;
-         c.font = `700 ${subFont}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+       if (!nameOk) {
+         if (validationAlert) {
+           validationAlert.textContent = 'Veuillez saisir votre Nom & Prénom (au moins 2 caractères).';
+           validationAlert.classList.add('visible');
+         }
+         if (fullNameInput) fullNameInput.focus();
+         return false;
        }
-       c.fillText(BADGE_COPY.logoFullName, cx, boxY + boxH - 11);
-       c.restore();
+
+       if (!photoOk) {
+         if (validationAlert) {
+           validationAlert.textContent = 'Veuillez importer votre photo avant de partager ou télécharger.';
+           validationAlert.classList.add('visible');
+         }
+         if (photoFileInput) photoFileInput.focus();
+         return false;
+       }
+
+       if (validationAlert) {
+         validationAlert.classList.remove('visible');
+         validationAlert.textContent = '';
+       }
+       return true;
      }
 
-     function drawEventPill(c) {
-       const pillW = 810;
-       const pillH = 66;
+     // 3A. Fond bleu nuit #0A1E47 + lueurs et bordure dorée #D49A2A
+     function drawBackground(ctx) {
+       ctx.save();
+       ctx.fillStyle = NAVY_PURE;
+       ctx.fillRect(0, 0, LOGICAL_SIZE, LOGICAL_SIZE);
+
+       const radGrad = ctx.createRadialGradient(
+         LOGICAL_SIZE * 0.5,
+         LOGICAL_SIZE * 0.44,
+         40,
+         LOGICAL_SIZE * 0.5,
+         LOGICAL_SIZE * 0.48,
+         LOGICAL_SIZE * 0.72
+       );
+       radGrad.addColorStop(0, NAVY_RADIAL);
+       radGrad.addColorStop(0.58, NAVY_PURE);
+       radGrad.addColorStop(1, '#06132E');
+       ctx.fillStyle = radGrad;
+       ctx.fillRect(0, 0, LOGICAL_SIZE, LOGICAL_SIZE);
+
+       ctx.strokeStyle = 'rgba(255, 255, 255, 0.045)';
+       ctx.lineWidth = 2;
+       const rings = [220, 350, 480, 610];
+       for (let i = 0; i < rings.length; i += 1) {
+         ctx.beginPath();
+         ctx.arc(LOGICAL_SIZE / 2, 500, rings[i], 0, Math.PI * 2);
+         ctx.stroke();
+       }
+
+       ctx.strokeStyle = 'rgba(212, 154, 42, 0.14)';
+       ctx.lineWidth = 2;
+       ctx.beginPath();
+       ctx.moveTo(-25, 168);
+       ctx.bezierCurveTo(240, 108, 295, 412, 540, 452);
+       ctx.stroke();
+
+       ctx.beginPath();
+       ctx.moveTo(LOGICAL_SIZE + 25, 232);
+       ctx.bezierCurveTo(820, 202, 790, 522, 540, 572);
+       ctx.stroke();
+
+       ctx.strokeStyle = ORANGE_GOLD;
+       ctx.lineWidth = 4;
+       drawRoundedRect(ctx, 26, 26, LOGICAL_SIZE - 52, LOGICAL_SIZE - 52, 34);
+       ctx.stroke();
+       ctx.restore();
+     }
+
+     // 3B. Cartouche supérieure blanche avec le logo net CUA
+     function drawCuaPlaque(ctx) {
+       const cardW = 356;
+       const cardH = 126;
+       const cardX = (LOGICAL_SIZE - cardW) / 2;
+       const cardY = 38;
+       const cardR = 20;
+       const cx = LOGICAL_SIZE / 2;
+
+       ctx.save();
+       ctx.shadowColor = 'rgba(3, 10, 28, 0.42)';
+       ctx.shadowBlur = 14;
+       ctx.shadowOffsetY = 5;
+
+       drawRoundedRect(ctx, cardX, cardY, cardW, cardH, cardR);
+       ctx.fillStyle = WHITE_PURE;
+       ctx.fill();
+
+       ctx.shadowColor = 'transparent';
+       ctx.strokeStyle = ORANGE_GOLD;
+       ctx.lineWidth = 2.8;
+       ctx.stroke();
+
+       // "CUA" en grand bleu royal gras
+       ctx.fillStyle = '#23408E';
+       ctx.font = '900 47px "Inter", system-ui, -apple-system, sans-serif';
+       ctx.textAlign = 'center';
+       ctx.textBaseline = 'middle';
+       ctx.fillText(COPY.logoCode, cx, cardY + 36);
+
+       // Livre ouvert : courbes grises supérieures + base dorée (#E2AE34)
+       const spineY = cardY + 71;
+       ctx.fillStyle = '#A7A9AC';
+
+       ctx.beginPath();
+       ctx.moveTo(cx - 5, spineY - 2.5);
+       ctx.quadraticCurveTo(cx - 48, spineY - 11.5, cx - 104, spineY - 3.5);
+       ctx.quadraticCurveTo(cx - 48, spineY - 7.5, cx - 5, spineY + 0.5);
+       ctx.closePath();
+       ctx.fill();
+
+       ctx.beginPath();
+       ctx.moveTo(cx - 5, spineY + 3.5);
+       ctx.quadraticCurveTo(cx - 48, spineY - 5.5, cx - 104, spineY + 2.5);
+       ctx.quadraticCurveTo(cx - 48, spineY - 1.5, cx - 5, spineY + 6.5);
+       ctx.closePath();
+       ctx.fill();
+
+       ctx.beginPath();
+       ctx.moveTo(cx + 5, spineY - 2.5);
+       ctx.quadraticCurveTo(cx + 48, spineY - 11.5, cx + 104, spineY - 3.5);
+       ctx.quadraticCurveTo(cx + 48, spineY - 7.5, cx + 5, spineY + 0.5);
+       ctx.closePath();
+       ctx.fill();
+
+       ctx.beginPath();
+       ctx.moveTo(cx + 5, spineY + 3.5);
+       ctx.quadraticCurveTo(cx + 48, spineY - 5.5, cx + 104, spineY + 2.5);
+       ctx.quadraticCurveTo(cx + 48, spineY - 1.5, cx + 5, spineY + 6.5);
+       ctx.closePath();
+       ctx.fill();
+
+       ctx.fillStyle = '#E2AE34';
+       ctx.beginPath();
+       ctx.moveTo(cx - 124, spineY + 8.5);
+       ctx.quadraticCurveTo(cx - 55, spineY - 1.5, cx - 10, spineY + 8.5);
+       ctx.quadraticCurveTo(cx, spineY + 12.5, cx + 10, spineY + 8.5);
+       ctx.quadraticCurveTo(cx + 55, spineY - 1.5, cx + 124, spineY + 8.5);
+       ctx.quadraticCurveTo(cx + 55, spineY + 4.5, cx + 11, spineY + 14.5);
+       ctx.quadraticCurveTo(cx, spineY + 18.5, cx - 11, spineY + 14.5);
+       ctx.quadraticCurveTo(cx - 55, spineY + 4.5, cx - 124, spineY + 8.5);
+       ctx.closePath();
+       ctx.fill();
+
+       ctx.fillStyle = '#34425E';
+       let subLogoSize = 18.8;
+       ctx.font = '700 ' + subLogoSize + 'px Georgia, "Times New Roman", serif';
+       while (ctx.measureText(COPY.logoFull).width > cardW - 28 && subLogoSize > 13) {
+         subLogoSize -= 0.4;
+         ctx.font = '700 ' + subLogoSize + 'px Georgia, "Times New Roman", serif';
+       }
+       ctx.fillText(COPY.logoFull, cx, cardY + 107);
+       ctx.restore();
+     }
+
+     // 3C. Pilule dorée "SEMAINE DE L'ÉVANGILE" (#D49A2A)
+     function drawEventPill(ctx) {
+       const pillW = 790;
+       const pillH = 60;
        const pillX = (LOGICAL_SIZE - pillW) / 2;
        const pillY = 186;
 
-       c.save();
-       c.shadowColor = 'rgba(3, 10, 28, 0.35)';
-       c.shadowBlur = 12;
-       c.shadowOffsetY = 4;
+       ctx.save();
+       ctx.shadowColor = 'rgba(3, 10, 28, 0.36)';
+       ctx.shadowBlur = 12;
+       ctx.shadowOffsetY = 4;
 
-       traceRoundedRect(c, pillX, pillY, pillW, pillH, pillH / 2);
-       c.fillStyle = ORANGE_ACCENT;
-       c.fill();
+       drawRoundedRect(ctx, pillX, pillY, pillW, pillH, pillH / 2);
+       ctx.fillStyle = ORANGE_GOLD;
+       ctx.fill();
 
-       c.shadowColor = 'transparent';
-       c.strokeStyle = WHITE_PURE;
-       c.lineWidth = 2;
-       c.stroke();
+       ctx.shadowColor = 'transparent';
+       ctx.strokeStyle = WHITE_PURE;
+       ctx.lineWidth = 2;
+       ctx.stroke();
 
-       c.fillStyle = NAVY_PURE;
-       c.font = '900 40px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-       c.textAlign = 'center';
-       c.textBaseline = 'middle';
-       c.fillText(BADGE_COPY.pill, LOGICAL_SIZE / 2, pillY + pillH / 2 + 1);
-       c.restore();
+       ctx.fillStyle = NAVY_PURE;
+       ctx.font = '900 37px "Inter", system-ui, sans-serif';
+       ctx.textAlign = 'center';
+       ctx.textBaseline = 'middle';
+       ctx.fillText(COPY.pill, LOGICAL_SIZE / 2, pillY + pillH / 2 + 1);
+       ctx.restore();
      }
 
-     function drawPhotoFrame(c) {
+     // 3D. Cadre photo carré arrondi au centre-gauche
+     function drawPhotoFrame(ctx) {
        const px = PHOTO_BOX.x;
        const py = PHOTO_BOX.y;
        const pSize = PHOTO_BOX.size;
        const pRadius = PHOTO_BOX.radius;
 
-       c.save();
-       c.shadowColor = 'rgba(3, 10, 28, 0.45)';
-       c.shadowBlur = 16;
-       c.shadowOffsetY = 6;
+       ctx.save();
+       ctx.shadowColor = 'rgba(3, 10, 28, 0.45)';
+       ctx.shadowBlur = 16;
+       ctx.shadowOffsetY = 6;
 
-       traceRoundedRect(c, px - 5, py - 5, pSize + 10, pSize + 10, pRadius + 5);
-       c.fillStyle = ORANGE_ACCENT;
-       c.fill();
-       c.restore();
+       drawRoundedRect(ctx, px - 6, py - 6, pSize + 12, pSize + 12, pRadius + 6);
+       ctx.fillStyle = ORANGE_GOLD;
+       ctx.fill();
+       ctx.restore();
 
-       c.save();
-       traceRoundedRect(c, px, py, pSize, pSize, pRadius);
-       c.clip();
+       ctx.save();
+       drawRoundedRect(ctx, px, py, pSize, pSize, pRadius);
+       ctx.clip();
 
-       c.fillStyle = '#102657';
-       c.fillRect(px, py, pSize, pSize);
+       ctx.fillStyle = '#071636';
+       ctx.fillRect(px, py, pSize, pSize);
 
-       if (state.photoLoaded && state.photoImg && state.photoImg.width > 0 && state.photoImg.height > 0) {
+       if (isPhotoValid()) {
          const imgW = state.photoImg.width;
          const imgH = state.photoImg.height;
          const coverScale = Math.max(pSize / imgW, pSize / imgH);
@@ -1014,7 +924,7 @@
          const centerX = px + pSize / 2 + state.offsetX;
          const centerY = py + pSize / 2 + state.offsetY;
 
-         c.drawImage(
+         ctx.drawImage(
            state.photoImg,
            centerX - drawW / 2,
            centerY - drawH / 2,
@@ -1023,186 +933,190 @@
          );
        } else {
          const cx = px + pSize / 2;
-         const cy = py + pSize / 2 - 20;
+         const cy = py + pSize / 2 - 22;
 
-         c.strokeStyle = 'rgba(212, 154, 42, 0.55)';
-         c.setLineDash([10, 8]);
-         c.lineWidth = 2.5;
-         traceRoundedRect(c, px + 20, py + 20, pSize - 40, pSize - 40, Math.max(12, pRadius - 8));
-         c.stroke();
-         c.setLineDash([]);
+         ctx.strokeStyle = 'rgba(212, 154, 42, 0.48)';
+         ctx.setLineDash([10, 8]);
+         ctx.lineWidth = 2.4;
+         drawRoundedRect(ctx, px + 22, py + 22, pSize - 44, pSize - 44, Math.max(12, pRadius - 8));
+         ctx.stroke();
+         ctx.setLineDash([]);
 
-         c.strokeStyle = ORANGE_ACCENT;
-         c.lineWidth = 3.5;
-         c.beginPath();
-         c.arc(cx, cy - 24, 38, 0, Math.PI * 2);
-         c.stroke();
+         ctx.fillStyle = 'rgba(212, 154, 42, 0.2)';
+         ctx.beginPath();
+         ctx.arc(cx, cy - 22, 42, 0, Math.PI * 2);
+         ctx.fill();
 
-         c.beginPath();
-         c.arc(cx, cy + 62, 62, Math.PI * 1.12, Math.PI * 1.88);
-         c.stroke();
+         ctx.strokeStyle = ORANGE_GOLD;
+         ctx.lineWidth = 3.5;
+         ctx.beginPath();
+         ctx.arc(cx, cy - 22, 42, 0, Math.PI * 2);
+         ctx.stroke();
 
-         c.fillStyle = ORANGE_ACCENT;
-         c.font = '900 30px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-         c.textAlign = 'center';
-         c.textBaseline = 'middle';
-         c.fillText('VOTRE PHOTO', cx, py + pSize / 2 + 72);
+         ctx.beginPath();
+         ctx.arc(cx, cy + 72, 68, Math.PI * 1.12, Math.PI * 1.88);
+         ctx.stroke();
 
-         c.fillStyle = WHITE_PURE;
-         c.font = '700 19px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-         c.fillText('450 × 450 px', cx, py + pSize / 2 + 108);
+         ctx.fillStyle = ORANGE_GOLD;
+         ctx.font = '800 25px "Inter", system-ui, sans-serif';
+         ctx.textAlign = 'center';
+         ctx.textBaseline = 'middle';
+         ctx.fillText('Votre photo ici', cx, py + pSize / 2 + 78);
        }
-       c.restore();
+       ctx.restore();
 
-       c.save();
-       c.strokeStyle = ORANGE_ACCENT;
-       c.lineWidth = 2;
-       traceRoundedRect(c, px, py, pSize, pSize, pRadius);
-       c.stroke();
-       c.restore();
+       ctx.save();
+       ctx.strokeStyle = 'rgba(255, 255, 255, 0.42)';
+       ctx.lineWidth = 2;
+       drawRoundedRect(ctx, px + 2, py + 2, pSize - 4, pSize - 4, Math.max(8, pRadius - 2));
+       ctx.stroke();
+       ctx.restore();
      }
 
-     function drawFancyWaveUnderline(c, centerX, startY, width, color) {
-       c.save();
+     // Double soulignement décoratif ondulé sous "J'Y SERAI !"
+     function drawDoubleWaveUnderline(ctx, centerX, startY, width, color) {
+       ctx.save();
        const halfW = width * 0.48;
        const leftX = centerX - halfW;
        const rightX = centerX + halfW;
        const segments = 6;
        const stepW = (rightX - leftX) / segments;
 
-       c.strokeStyle = color;
-       c.lineWidth = 3.4;
-       c.lineCap = 'round';
-       c.lineJoin = 'round';
-       c.beginPath();
-       c.moveTo(leftX, startY);
+       ctx.strokeStyle = color;
+       ctx.lineWidth = 3.6;
+       ctx.lineCap = 'round';
+       ctx.lineJoin = 'round';
+       ctx.beginPath();
+       ctx.moveTo(leftX, startY);
        for (let i = 0; i < segments; i += 1) {
          const x0 = leftX + i * stepW;
          const xMid = x0 + stepW * 0.5;
          const x1 = x0 + stepW;
          const amp = (i % 2 === 0 ? -1 : 1) * 5.5;
-         c.quadraticCurveTo(xMid, startY + amp, x1, startY);
+         ctx.quadraticCurveTo(xMid, startY + amp, x1, startY);
        }
-       c.stroke();
+       ctx.stroke();
 
-       c.lineWidth = 1.7;
-       c.globalAlpha = 0.88;
-       c.beginPath();
-       const innerLeft = leftX + 16;
-       const innerRight = rightX - 16;
+       ctx.lineWidth = 1.9;
+       ctx.globalAlpha = 0.9;
+       ctx.beginPath();
+       const innerLeft = leftX + 14;
+       const innerRight = rightX - 14;
        const innerSegs = segments - 1;
        const innerStep = (innerRight - innerLeft) / innerSegs;
-       c.moveTo(innerLeft, startY + 7);
+       ctx.moveTo(innerLeft, startY + 8);
        for (let i = 0; i < innerSegs; i += 1) {
          const x0 = innerLeft + i * innerStep;
          const xMid = x0 + innerStep * 0.5;
          const x1 = x0 + innerStep;
-         const amp = (i % 2 === 0 ? 1 : -1) * 3.5;
-         c.quadraticCurveTo(xMid, startY + 7 + amp, x1, startY + 7);
+         const amp = (i % 2 === 0 ? 1 : -1) * 3.8;
+         ctx.quadraticCurveTo(xMid, startY + 8 + amp, x1, startY + 8);
        }
-       c.stroke();
+       ctx.stroke();
 
-       c.globalAlpha = 1;
-       c.fillStyle = color;
+       ctx.globalAlpha = 1;
+       ctx.fillStyle = color;
        const drawDiamond = function (dx, dy) {
-         c.beginPath();
-         c.moveTo(dx, dy - 4.4);
-         c.lineTo(dx + 4.4, dy);
-         c.lineTo(dx, dy + 4.4);
-         c.lineTo(dx - 4.4, dy);
-         c.closePath();
-         c.fill();
+         ctx.beginPath();
+         ctx.moveTo(dx, dy - 4.4);
+         ctx.lineTo(dx + 4.4, dy);
+         ctx.lineTo(dx, dy + 4.4);
+         ctx.lineTo(dx - 4.4, dy);
+         ctx.closePath();
+         ctx.fill();
        };
        drawDiamond(leftX - 10, startY);
        drawDiamond(rightX + 10, startY);
-       c.restore();
+       ctx.restore();
      }
 
-     function drawCalendarIcon(c, cx, cy, size, color) {
-       c.save();
-       c.strokeStyle = color;
-       c.fillStyle = color;
-       c.lineWidth = 2.6;
-       c.lineCap = 'round';
-       c.lineJoin = 'round';
+     // Icônes vectorielles pour les 3 lignes d'informations pratiques
+     function drawCalendarIcon(ctx, cx, cy, size, color) {
+       ctx.save();
+       ctx.strokeStyle = color;
+       ctx.fillStyle = color;
+       ctx.lineWidth = 2.4;
+       ctx.lineCap = 'round';
+       ctx.lineJoin = 'round';
 
        const w = size;
        const h = size * 0.92;
        const x = cx - w / 2;
        const y = cy - h / 2;
 
-       traceRoundedRect(c, x, y + 2, w, h - 2, 4);
-       c.stroke();
+       drawRoundedRect(ctx, x, y + 2, w, h - 2, 4);
+       ctx.stroke();
 
-       c.beginPath();
-       c.moveTo(x + 1, y + 9.5);
-       c.lineTo(x + w - 1, y + 9.5);
-       c.stroke();
+       ctx.beginPath();
+       ctx.moveTo(x + 1, y + 9.5);
+       ctx.lineTo(x + w - 1, y + 9.5);
+       ctx.stroke();
 
-       c.beginPath();
-       c.moveTo(x + w * 0.3, y);
-       c.lineTo(x + w * 0.3, y + 4.8);
-       c.moveTo(x + w * 0.7, y);
-       c.lineTo(x + w * 0.7, y + 4.8);
-       c.stroke();
+       ctx.beginPath();
+       ctx.moveTo(x + w * 0.3, y);
+       ctx.lineTo(x + w * 0.3, y + 4.8);
+       ctx.moveTo(x + w * 0.7, y);
+       ctx.lineTo(x + w * 0.7, y + 4.8);
+       ctx.stroke();
 
-       c.beginPath();
-       c.arc(cx, y + h * 0.68, 2.4, 0, Math.PI * 2);
-       c.fill();
-       c.restore();
+       ctx.beginPath();
+       ctx.arc(cx, y + h * 0.68, 2.3, 0, Math.PI * 2);
+       ctx.fill();
+       ctx.restore();
      }
 
-     function drawLocationPinIcon(c, cx, cy, size, color) {
-       c.save();
-       c.strokeStyle = color;
-       c.fillStyle = color;
-       c.lineWidth = 2.6;
-       c.lineCap = 'round';
-       c.lineJoin = 'round';
+     function drawPinIcon(ctx, cx, cy, size, color) {
+       ctx.save();
+       ctx.strokeStyle = color;
+       ctx.fillStyle = color;
+       ctx.lineWidth = 2.4;
+       ctx.lineCap = 'round';
+       ctx.lineJoin = 'round';
 
        const r = size * 0.35;
        const headY = cy - size * 0.14;
        const tipY = cy + size * 0.48;
 
-       c.beginPath();
-       c.arc(cx, headY, r, Math.PI * 0.85, Math.PI * 2.15, false);
-       c.lineTo(cx, tipY);
-       c.closePath();
-       c.stroke();
+       ctx.beginPath();
+       ctx.arc(cx, headY, r, Math.PI * 0.85, Math.PI * 2.15, false);
+       ctx.lineTo(cx, tipY);
+       ctx.closePath();
+       ctx.stroke();
 
-       c.beginPath();
-       c.arc(cx, headY, r * 0.38, 0, Math.PI * 2);
-       c.fill();
-       c.restore();
+       ctx.beginPath();
+       ctx.arc(cx, headY, r * 0.38, 0, Math.PI * 2);
+       ctx.fill();
+       ctx.restore();
      }
 
-     function drawClockIcon(c, cx, cy, size, color) {
-       c.save();
-       c.strokeStyle = color;
-       c.fillStyle = color;
-       c.lineWidth = 2.6;
-       c.lineCap = 'round';
-       c.lineJoin = 'round';
+     function drawClockIcon(ctx, cx, cy, size, color) {
+       ctx.save();
+       ctx.strokeStyle = color;
+       ctx.fillStyle = color;
+       ctx.lineWidth = 2.4;
+       ctx.lineCap = 'round';
+       ctx.lineJoin = 'round';
 
        const r = size * 0.44;
-       c.beginPath();
-       c.arc(cx, cy, r, 0, Math.PI * 2);
-       c.stroke();
+       ctx.beginPath();
+       ctx.arc(cx, cy, r, 0, Math.PI * 2);
+       ctx.stroke();
 
-       c.beginPath();
-       c.moveTo(cx, cy);
-       c.lineTo(cx, cy - r * 0.56);
-       c.moveTo(cx, cy);
-       c.lineTo(cx + r * 0.46, cy + r * 0.16);
-       c.stroke();
+       ctx.beginPath();
+       ctx.moveTo(cx, cy);
+       ctx.lineTo(cx, cy - r * 0.56);
+       ctx.moveTo(cx, cy);
+       ctx.lineTo(cx + r * 0.46, cy + r * 0.16);
+       ctx.stroke();
 
-       c.beginPath();
-       c.arc(cx, cy, 2.2, 0, Math.PI * 2);
-       c.fill();
-       c.restore();
+       ctx.beginPath();
+       ctx.arc(cx, cy, 2.1, 0, Math.PI * 2);
+       ctx.fill();
+       ctx.restore();
      }
 
-     function drawRightColumn(c) {
+     // 3E. Colonne droite : "J'Y SERAI !" légèrement abaissé + double vague + slogan 2 lignes + carte orange #D49A2A alignée à gauche
+     function drawRightColumn(ctx) {
        const px = PHOTO_BOX.x;
        const py = PHOTO_BOX.y;
        const pSize = PHOTO_BOX.size;
@@ -1212,190 +1126,192 @@
        const rightW = LOGICAL_SIZE - rightX - 46;
        const rightCenterX = rightX + rightW / 2;
 
-       c.save();
-       c.textBaseline = 'middle';
-
-       c.textAlign = 'center';
-       let headlineSize = 86;
-       c.font = `900 ${headlineSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
-       while (c.measureText(BADGE_COPY.headline).width > rightW && headlineSize > 54) {
-         headlineSize -= 2;
-         c.font = `900 ${headlineSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
-       }
-       c.fillStyle = ORANGE_ACCENT;
-       const headlineY = py + 58;
-       c.fillText(BADGE_COPY.headline, rightCenterX, headlineY);
-
-       const measuredHeadlineW = Math.min(rightW - 12, c.measureText(BADGE_COPY.headline).width);
-       const waveY = headlineY + headlineSize * 0.54;
-       drawFancyWaveUnderline(c, rightCenterX, waveY, measuredHeadlineW, ORANGE_ACCENT);
+       ctx.save();
+       ctx.textBaseline = 'middle';
+       ctx.textAlign = 'center';
 
        const infoW = rightW;
-       const infoH = 148;
+       const infoH = 152;
        const infoX = rightX;
        const infoY = photoBottomY - infoH;
 
-       c.fillStyle = WHITE_PURE;
-       let subSize = 31;
-       c.font = `800 ${subSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+       // Slogan blanc exact sur 2 lignes, proche sous "J'Y SERAI !"
+       ctx.fillStyle = WHITE_PURE;
+       let subSize = 30.5;
+       ctx.font = '800 ' + subSize + 'px "Inter", system-ui, sans-serif';
        while (
-         (c.measureText(BADGE_COPY.sublineLine1).width > rightW ||
-           c.measureText(BADGE_COPY.sublineLine2).width > rightW) &&
+         (ctx.measureText(COPY.subline1).width > rightW ||
+           ctx.measureText(COPY.subline2).width > rightW) &&
          subSize > 18
        ) {
          subSize -= 0.5;
-         c.font = `800 ${subSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+         ctx.font = '800 ' + subSize + 'px "Inter", system-ui, sans-serif';
        }
-       const lineGap = Math.round(subSize * 1.18);
+       const lineGap = Math.round(subSize * 1.16);
        const subLine2Y = infoY - 24;
        const subLine1Y = subLine2Y - lineGap;
-       c.fillText(BADGE_COPY.sublineLine1, rightCenterX, subLine1Y);
-       c.fillText(BADGE_COPY.sublineLine2, rightCenterX, subLine2Y);
 
-       traceRoundedRect(c, infoX, infoY, infoW, infoH, 16);
-       c.fillStyle = ORANGE_ACCENT;
-       c.fill();
-       c.strokeStyle = WHITE_PURE;
-       c.lineWidth = 2.2;
-       c.stroke();
+       ctx.fillText(COPY.subline1, rightCenterX, subLine1Y);
+       ctx.fillText(COPY.subline2, rightCenterX, subLine2Y);
 
-       const iconCenterX = infoX + 25;
-       const textLeftX = infoX + 44;
-       const maxTextW = infoW - 54;
-       const row1Y = infoY + 28;
-       const row2Y = infoY + 74;
-       const row3Y = infoY + 120;
-
-       c.textAlign = 'left';
-
-       drawCalendarIcon(c, iconCenterX, row1Y, 21, NAVY_PURE);
-       c.fillStyle = NAVY_PURE;
-       let dateSize = 20.5;
-       c.font = `900 ${dateSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
-       while (c.measureText(BADGE_COPY.dateText).width > maxTextW && dateSize > 12) {
-         dateSize -= 0.4;
-         c.font = `900 ${dateSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+       // "J'Y SERAI !" légèrement abaissé et proche du slogan
+       let headlineSize = 86;
+       ctx.font = '900 ' + headlineSize + 'px "Inter", system-ui, sans-serif';
+       while (ctx.measureText(COPY.headline).width > rightW && headlineSize > 54) {
+         headlineSize -= 2;
+         ctx.font = '900 ' + headlineSize + 'px "Inter", system-ui, sans-serif';
        }
-       c.fillText(BADGE_COPY.dateText, textLeftX, row1Y);
+       const headlineY = subLine1Y - 82;
+       ctx.fillStyle = ORANGE_GOLD;
+       ctx.fillText(COPY.headline, rightCenterX, headlineY);
 
-       drawLocationPinIcon(c, iconCenterX, row2Y, 21, NAVY_PURE);
-       c.fillStyle = NAVY_PURE;
-       let placeSize = 22;
-       c.font = `900 ${placeSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
-       while (c.measureText(BADGE_COPY.placeText).width > maxTextW && placeSize > 13) {
+       const measuredHeadlineW = Math.min(rightW - 10, ctx.measureText(COPY.headline).width);
+       const waveY = headlineY + headlineSize * 0.5;
+       drawDoubleWaveUnderline(ctx, rightCenterX, waveY, measuredHeadlineW, ORANGE_GOLD);
+
+       // Encadré des informations pratiques rempli avec exactement le même #D49A2A que la pilule
+       ctx.shadowColor = 'rgba(3, 10, 28, 0.34)';
+       ctx.shadowBlur = 12;
+       ctx.shadowOffsetY = 4;
+
+       drawRoundedRect(ctx, infoX, infoY, infoW, infoH, 18);
+       ctx.fillStyle = ORANGE_GOLD;
+       ctx.fill();
+
+       ctx.shadowColor = 'transparent';
+       ctx.strokeStyle = WHITE_PURE;
+       ctx.lineWidth = 2.2;
+       ctx.stroke();
+
+       // Découpage exact de la date en deux lignes bien visibles et lisibles en #0A1E47
+       const dateLine1 = 'Du Lundi 30 Novembre';
+       const dateLine2 = 'au Samedi 05 Décembre 2026';
+
+       const iconCenterX = infoX + 24;
+       const textLeftX = infoX + 43;
+       const maxTextW = infoW - 53;
+
+       // Zone haute : date sur 2 lignes (icône calendrier centrée verticalement sur les 2 lignes)
+       const dateBlockCenterY = infoY + 42;
+       const dateLine1Y = dateBlockCenterY - 12.5;
+       const dateLine2Y = dateBlockCenterY + 12.5;
+
+       // Zone médiane : lieu ("Université d'Abomey-Calavi")
+       const rowPlaceY = infoY + 96;
+
+       // Zone basse : horaire & mention ("Départ 16h45 • Ensemble pour Christ")
+       const rowTimeY = infoY + 131;
+
+       ctx.textAlign = 'left';
+
+       // Ligne 1 & 2 (Date exacte sur deux lignes agrandies)
+       drawCalendarIcon(ctx, iconCenterX, dateBlockCenterY, 22, NAVY_PURE);
+       ctx.fillStyle = NAVY_PURE;
+
+       let dateLine1Size = 23.5;
+       ctx.font = '800 ' + dateLine1Size + 'px "Inter", system-ui, sans-serif';
+       while (ctx.measureText(dateLine1).width > maxTextW && dateLine1Size > 14) {
+         dateLine1Size -= 0.4;
+         ctx.font = '800 ' + dateLine1Size + 'px "Inter", system-ui, sans-serif';
+       }
+       ctx.fillText(dateLine1, textLeftX, dateLine1Y);
+
+       let dateLine2Size = 22.5;
+       ctx.font = '800 ' + dateLine2Size + 'px "Inter", system-ui, sans-serif';
+       while (ctx.measureText(dateLine2).width > maxTextW && dateLine2Size > 14) {
+         dateLine2Size -= 0.4;
+         ctx.font = '800 ' + dateLine2Size + 'px "Inter", system-ui, sans-serif';
+       }
+       ctx.fillText(dateLine2, textLeftX, dateLine2Y);
+
+       // Ligne 3 exacte : "Université d'Abomey-Calavi"
+       drawPinIcon(ctx, iconCenterX, rowPlaceY, 21, NAVY_PURE);
+       ctx.fillStyle = NAVY_PURE;
+       let placeSize = 21.5;
+       ctx.font = '800 ' + placeSize + 'px "Inter", system-ui, sans-serif';
+       while (ctx.measureText(COPY.placeText).width > maxTextW && placeSize > 13) {
          placeSize -= 0.4;
-         c.font = `900 ${placeSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+         ctx.font = '800 ' + placeSize + 'px "Inter", system-ui, sans-serif';
        }
-       c.fillText(BADGE_COPY.placeText, textLeftX, row2Y);
+       ctx.fillText(COPY.placeText, textLeftX, rowPlaceY);
 
-       drawClockIcon(c, iconCenterX, row3Y, 21, NAVY_PURE);
-       c.fillStyle = NAVY_PURE;
-       let timeSize = 21;
-       c.font = `900 ${timeSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
-       while (c.measureText(BADGE_COPY.timeText).width > maxTextW && timeSize > 13) {
+       // Ligne 4 exacte : "Départ 16h45 • Ensemble pour Christ"
+       drawClockIcon(ctx, iconCenterX, rowTimeY, 20.5, NAVY_PURE);
+       ctx.fillStyle = NAVY_PURE;
+       let timeSize = 19.5;
+       ctx.font = '700 ' + timeSize + 'px "Inter", system-ui, sans-serif';
+       while (ctx.measureText(COPY.timeText).width > maxTextW && timeSize > 13) {
          timeSize -= 0.4;
-         c.font = `900 ${timeSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+         ctx.font = '700 ' + timeSize + 'px "Inter", system-ui, sans-serif';
        }
-       c.fillText(BADGE_COPY.timeText, textLeftX, row3Y);
+       ctx.fillText(COPY.timeText, textLeftX, rowTimeY);
 
-       c.restore();
+       ctx.restore();
      }
 
-     function drawLowerSection(c) {
-       const nameBoxW = 860;
-       const nameBoxH = 64;
+     // 3F. Cartouche nominative blanche, verset Marc 16:15 et mention finale
+     function drawLowerSection(ctx) {
+       const nameBoxW = 870;
+       const nameBoxH = 68;
        const nameBoxX = (LOGICAL_SIZE - nameBoxW) / 2;
        const nameBoxY = 774;
 
-       c.save();
-       c.shadowColor = 'rgba(3, 10, 28, 0.35)';
-       c.shadowBlur = 12;
-       c.shadowOffsetY = 4;
+       ctx.save();
+       ctx.shadowColor = 'rgba(3, 10, 28, 0.36)';
+       ctx.shadowBlur = 12;
+       ctx.shadowOffsetY = 4;
 
-       traceRoundedRect(c, nameBoxX - 3, nameBoxY - 3, nameBoxW + 6, nameBoxH + 6, 18);
-       c.fillStyle = ORANGE_ACCENT;
-       c.fill();
+       drawRoundedRect(ctx, nameBoxX, nameBoxY, nameBoxW, nameBoxH, nameBoxH / 2);
+       ctx.fillStyle = WHITE_PURE;
+       ctx.fill();
 
-       c.shadowColor = 'transparent';
-       traceRoundedRect(c, nameBoxX, nameBoxY, nameBoxW, nameBoxH, 15);
-       c.fillStyle = WHITE_PURE;
-       c.fill();
+       ctx.shadowColor = 'transparent';
+       ctx.strokeStyle = ORANGE_GOLD;
+       ctx.lineWidth = 3;
+       ctx.stroke();
 
        const cleanName = getCleanName();
-       const shownName = cleanName || BADGE_COPY.placeholderName;
-       let nameFontSize = 37;
-       c.font = `900 ${nameFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
-       while (c.measureText(shownName).width > nameBoxW - 44 && nameFontSize > 20) {
+       const shownName = cleanName ? cleanName.toUpperCase() : COPY.placeholderName;
+       let nameFontSize = 35;
+       ctx.font = '900 ' + nameFontSize + 'px "Inter", system-ui, sans-serif';
+       while (ctx.measureText(shownName).width > nameBoxW - 56 && nameFontSize > 19) {
          nameFontSize -= 1;
-         c.font = `900 ${nameFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+         ctx.font = '900 ' + nameFontSize + 'px "Inter", system-ui, sans-serif';
        }
 
-       c.fillStyle = cleanName ? NAVY_PURE : '#64748b';
-       c.textAlign = 'center';
-       c.textBaseline = 'middle';
-       c.fillText(shownName, LOGICAL_SIZE / 2, nameBoxY + nameBoxH / 2 + 1);
-       c.restore();
+       ctx.fillStyle = cleanName ? NAVY_PURE : '#64748B';
+       ctx.textAlign = 'center';
+       ctx.textBaseline = 'middle';
+       ctx.fillText(shownName, LOGICAL_SIZE / 2, nameBoxY + nameBoxH / 2 + 1);
+       ctx.restore();
 
-       c.save();
-       c.textAlign = 'center';
-       c.textBaseline = 'middle';
+       ctx.save();
+       ctx.textAlign = 'center';
+       ctx.textBaseline = 'middle';
 
-       let quoteSize = 31;
-       c.font = `italic bold ${quoteSize}px Georgia, "Times New Roman", serif`;
-       while (c.measureText(BADGE_COPY.verseQuote).width > 980 && quoteSize > 22) {
-         quoteSize -= 1;
-         c.font = `italic bold ${quoteSize}px Georgia, "Times New Roman", serif`;
+       let verseSize = 24.5;
+       ctx.font = 'italic 600 ' + verseSize + 'px Georgia, "Times New Roman", serif';
+       while (ctx.measureText(COPY.verseText).width > 980 && verseSize > 16) {
+         verseSize -= 0.5;
+         ctx.font = 'italic 600 ' + verseSize + 'px Georgia, "Times New Roman", serif';
        }
-       c.fillStyle = WHITE_PURE;
-       c.fillText(BADGE_COPY.verseQuote, LOGICAL_SIZE / 2, 872);
+       ctx.fillStyle = '#F8E3B4';
+       ctx.fillText(COPY.verseText, LOGICAL_SIZE / 2, 892);
 
-       c.fillStyle = ORANGE_ACCENT;
-       c.font = '800 26px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-       c.fillText(BADGE_COPY.verseRef, LOGICAL_SIZE / 2, 916);
-
-       c.fillStyle = ORANGE_ACCENT;
-       let bottomFooterSize = 27;
-       c.font = `900 ${bottomFooterSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
-       while (c.measureText(BADGE_COPY.bottomFooter).width > 940 && bottomFooterSize > 16) {
-         bottomFooterSize -= 1;
-         c.font = `900 ${bottomFooterSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+       ctx.fillStyle = ORANGE_GOLD;
+       let footerSize = 26;
+       ctx.font = '900 ' + footerSize + 'px "Inter", system-ui, sans-serif';
+       while (ctx.measureText(COPY.footerText).width > 940 && footerSize > 16) {
+         footerSize -= 1;
+         ctx.font = '900 ' + footerSize + 'px "Inter", system-ui, sans-serif';
        }
-       c.fillText(BADGE_COPY.bottomFooter, LOGICAL_SIZE / 2, 968);
-       c.restore();
+       ctx.fillText(COPY.footerText, LOGICAL_SIZE / 2, 974);
+       ctx.restore();
      }
 
-     // Dessin de secours minimal garanti afin que le canevas ne reste jamais vide
-     function drawFallbackBadge(ctx) {
-       try {
-         ctx.fillStyle = NAVY_PURE;
-         ctx.fillRect(0, 0, LOGICAL_SIZE, LOGICAL_SIZE);
-         ctx.strokeStyle = ORANGE_ACCENT;
-         ctx.lineWidth = 4;
-         traceRoundedRect(ctx, 28, 28, LOGICAL_SIZE - 56, LOGICAL_SIZE - 56, 36);
-         ctx.stroke();
-
-         ctx.fillStyle = ORANGE_ACCENT;
-         ctx.font = '900 44px sans-serif';
-         ctx.textAlign = 'center';
-         ctx.textBaseline = 'middle';
-         ctx.fillText(BADGE_COPY.pill, LOGICAL_SIZE / 2, 220);
-         ctx.fillText(BADGE_COPY.headline, 780, 360);
-         ctx.fillText(BADGE_COPY.bottomFooter, LOGICAL_SIZE / 2, 968);
-
-         ctx.fillStyle = WHITE_PURE;
-         ctx.font = '800 28px sans-serif';
-         ctx.fillText(BADGE_COPY.sublineLine1, 780, 560);
-         ctx.fillText(BADGE_COPY.sublineLine2, 780, 596);
-         ctx.fillText(BADGE_COPY.verseRef, LOGICAL_SIZE / 2, 916);
-       } catch (_) {
-         // Dernier recours absolu
-       }
-     }
-
-     // Rendu sur tampon 2160 x 2160 px avec ctx.setTransform(2, 0, 0, 2, 0, 0) sur coordonnées 1080 x 1080 px
+     // Rendu sur tampon 2160 x 2160 (2x) mappé via setTransform(2, 0, 0, 2, 0, 0) sur 0..1080
      function renderBadge() {
        if (!canvas) return;
-
        let ctx = null;
        try {
          ctx = canvas.getContext('2d');
@@ -1405,57 +1321,47 @@
        if (!ctx) return;
 
        try {
-         if (canvas.width !== TARGET_INTERNAL_SIZE) {
-           canvas.width = TARGET_INTERNAL_SIZE;
-         }
-         if (canvas.height !== TARGET_INTERNAL_SIZE) {
-           canvas.height = TARGET_INTERNAL_SIZE;
-         }
-       } catch (_) {
-         // Conserver les dimensions existantes si nécessaire
-       }
-
-       const scale = canvas.width === TARGET_INTERNAL_SIZE ? SUPERSAMPLE_SCALE : (canvas.width > 0 ? canvas.width / LOGICAL_SIZE : SUPERSAMPLE_SCALE);
+         if (canvas.width !== INTERNAL_SIZE) canvas.width = INTERNAL_SIZE;
+         if (canvas.height !== INTERNAL_SIZE) canvas.height = INTERNAL_SIZE;
+       } catch (_) {}
 
        try {
-         ctx.setTransform(scale, 0, 0, scale, 0, 0);
+         ctx.setTransform(SUPERSAMPLE, 0, 0, SUPERSAMPLE, 0, 0);
        } catch (_) {
          try {
            ctx.resetTransform();
-           ctx.scale(scale, scale);
-         } catch (__) {
-           // Ignorer
-         }
+           ctx.scale(SUPERSAMPLE, SUPERSAMPLE);
+         } catch (__) {}
        }
 
        try {
          ctx.imageSmoothingEnabled = true;
          ctx.imageSmoothingQuality = 'high';
-       } catch (_) {
-         // Ignorer
-       }
+       } catch (_) {}
 
-       try {
-         drawBackgroundAndFrame(ctx);
-         drawCuaPlaque(ctx, (LOGICAL_SIZE - 420) / 2, 48, 420, 98, 22);
-         drawEventPill(ctx);
-         drawPhotoFrame(ctx);
-         drawRightColumn(ctx);
-         drawLowerSection(ctx);
-       } catch (_) {
-         drawFallbackBadge(ctx);
-       }
+       safeDrawStep(
+         function () { drawBackground(ctx); },
+         function () {
+           ctx.fillStyle = NAVY_PURE;
+           ctx.fillRect(0, 0, LOGICAL_SIZE, LOGICAL_SIZE);
+         }
+       );
+       safeDrawStep(function () { drawCuaPlaque(ctx); });
+       safeDrawStep(function () { drawEventPill(ctx); });
+       safeDrawStep(function () { drawPhotoFrame(ctx); });
+       safeDrawStep(function () { drawRightColumn(ctx); });
+       safeDrawStep(function () { drawLowerSection(ctx); });
      }
 
      function handlePhotoFile(file) {
        if (!file) return;
        if (file.type && !file.type.startsWith('image/')) {
-         state.customStatusError = 'Veuillez sélectionner un fichier image valide (JPG, PNG, WEBP).';
-         syncUiState();
+         if (validationAlert) {
+           validationAlert.textContent = 'Veuillez choisir un fichier image valide (JPG, PNG, WEBP).';
+           validationAlert.classList.add('visible');
+         }
          return;
        }
-
-       state.customStatusError = '';
 
        const applyLoadedImage = function (img) {
          state.photoImg = img;
@@ -1464,12 +1370,8 @@
          state.offsetX = 0;
          state.offsetY = 0;
 
-         if (photoFileName) {
-           photoFileName.textContent = file.name || 'Photo chargée';
-         }
-         if (photoStatusRow) {
-           photoStatusRow.classList.add('visible');
-         }
+         if (photoFileName) photoFileName.textContent = file.name || 'Photo importée';
+         if (photoStatusRow) photoStatusRow.classList.add('visible');
          syncUiState();
          renderBadge();
        };
@@ -1482,39 +1384,32 @@
              applyLoadedImage(img);
            };
            img.onerror = function () {
-             state.customStatusError = 'Impossible de lire cette image.';
-             syncUiState();
+             if (validationAlert) {
+               validationAlert.textContent = 'Impossible de lire cette image.';
+               validationAlert.classList.add('visible');
+             }
            };
            img.src = String(evt && evt.target && evt.target.result ? evt.target.result : '');
          };
          reader.onerror = function () {
-           state.customStatusError = 'Erreur lors du chargement de la photo.';
-           syncUiState();
+           if (validationAlert) {
+             validationAlert.textContent = 'Erreur lors de la lecture de la photo.';
+             validationAlert.classList.add('visible');
+           }
          };
          reader.readAsDataURL(file);
        } catch (_) {
          try {
-           const objectUrl = URL.createObjectURL(file);
+           const url = URL.createObjectURL(file);
            const img = new Image();
            img.onload = function () {
              applyLoadedImage(img);
              setTimeout(function () {
-               try {
-                 URL.revokeObjectURL(objectUrl);
-               } catch (__) {
-                 // Ignorer
-               }
+               try { URL.revokeObjectURL(url); } catch (__) {}
              }, 2000);
            };
-           img.onerror = function () {
-             state.customStatusError = 'Impossible de charger la photo.';
-             syncUiState();
-           };
-           img.src = objectUrl;
-         } catch (__) {
-           state.customStatusError = 'Chargement photo indisponible sur cet appareil.';
-           syncUiState();
-         }
+           img.src = url;
+         } catch (__) {}
        }
      }
 
@@ -1524,7 +1419,6 @@
        state.zoom = 1;
        state.offsetX = 0;
        state.offsetY = 0;
-       state.customStatusError = '';
        if (photoFileInput) photoFileInput.value = '';
        if (photoStatusRow) photoStatusRow.classList.remove('visible');
        syncUiState();
@@ -1532,18 +1426,18 @@
      }
 
      function setZoom(nextZoom) {
-       if (!state.photoLoaded) return;
+       if (!isPhotoValid()) return;
        state.zoom = clamp(Number(nextZoom.toFixed(2)), ZOOM_MIN, ZOOM_MAX);
-       updateZoomReadout();
+       if (zoomReadout) zoomReadout.textContent = Math.round(state.zoom * 100) + '%';
        renderBadge();
      }
 
      function resetCrop() {
-       if (!state.photoLoaded) return;
+       if (!isPhotoValid()) return;
        state.zoom = 1;
        state.offsetX = 0;
        state.offsetY = 0;
-       updateZoomReadout();
+       if (zoomReadout) zoomReadout.textContent = '100%';
        renderBadge();
      }
 
@@ -1572,7 +1466,7 @@
 
      if (canvasFrameBox) {
        canvasFrameBox.addEventListener('mousedown', function (e) {
-         if (!state.photoLoaded || e.button !== 0) return;
+         if (!isPhotoValid() || e.button !== 0) return;
          const pt = clientToBadgeCoords(e.clientX, e.clientY);
          if (!isInsidePhotoBox(pt.x, pt.y)) return;
 
@@ -1583,7 +1477,7 @@
        });
 
        window.addEventListener('mousemove', function (e) {
-         if (!state.dragging || !state.photoLoaded) return;
+         if (!state.dragging || !isPhotoValid()) return;
          const pt = clientToBadgeCoords(e.clientX, e.clientY);
          state.offsetX = clamp(pt.x - state.dragStartX, -550, 550);
          state.offsetY = clamp(pt.y - state.dragStartY, -550, 550);
@@ -1598,7 +1492,7 @@
        });
 
        canvasFrameBox.addEventListener('wheel', function (e) {
-         if (!state.photoLoaded) return;
+         if (!isPhotoValid()) return;
          const pt = clientToBadgeCoords(e.clientX, e.clientY);
          if (!isInsidePhotoBox(pt.x, pt.y)) return;
          e.preventDefault();
@@ -1606,7 +1500,7 @@
        }, { passive: false });
 
        canvasFrameBox.addEventListener('touchstart', function (e) {
-         if (!state.photoLoaded) return;
+         if (!isPhotoValid()) return;
 
          if (e.touches.length === 2) {
            state.dragging = false;
@@ -1629,7 +1523,7 @@
        }, { passive: false });
 
        canvasFrameBox.addEventListener('touchmove', function (e) {
-         if (!state.photoLoaded) return;
+         if (!isPhotoValid()) return;
 
          if (e.touches.length === 2 && state.pinchStartDist > 0) {
            const dist = getTouchDistance(e.touches[0], e.touches[1]);
@@ -1649,9 +1543,7 @@
        }, { passive: false });
 
        canvasFrameBox.addEventListener('touchend', function (e) {
-         if (e.touches.length < 2) {
-           state.pinchStartDist = 0;
-         }
+         if (e.touches.length < 2) state.pinchStartDist = 0;
          if (e.touches.length === 0) {
            state.dragging = false;
            canvasFrameBox.classList.remove('is-dragging');
@@ -1701,139 +1593,132 @@
 
      bindHoldZoom(zoomOutBtn, -ZOOM_STEP);
      bindHoldZoom(zoomInBtn, ZOOM_STEP);
+     if (resetCropBtn) resetCropBtn.addEventListener('click', resetCrop);
 
-     if (resetCropBtn) {
-       resetCropBtn.addEventListener('click', resetCrop);
-     }
-
-     function canvasToBlob() {
+     // Export PNG 1080 x 1080 px depuis le tampon interne 2160 x 2160 px
+     function exportBadge1080Blob() {
        return new Promise(function (resolve, reject) {
          renderBadge();
-         if (!canvas || typeof canvas.toBlob !== 'function') {
-           reject(new Error('Export indisponible'));
-           return;
-         }
-         canvas.toBlob(function (blob) {
-           if (blob) {
-             resolve(blob);
-           } else {
-             reject(new Error('Échec de génération du PNG'));
+         try {
+           const exportCanvas = document.createElement('canvas');
+           exportCanvas.width = LOGICAL_SIZE;
+           exportCanvas.height = LOGICAL_SIZE;
+           const eCtx = exportCanvas.getContext('2d');
+           if (!eCtx) {
+             reject(new Error('Contexte export indisponible'));
+             return;
            }
-         }, 'image/png', 1);
+           eCtx.imageSmoothingEnabled = true;
+           eCtx.imageSmoothingQuality = 'high';
+           eCtx.drawImage(canvas, 0, 0, LOGICAL_SIZE, LOGICAL_SIZE);
+
+           exportCanvas.toBlob(function (blob) {
+             if (blob) {
+               resolve(blob);
+             } else {
+               reject(new Error('Échec de génération du PNG'));
+             }
+           }, 'image/png', 1);
+         } catch (err) {
+           reject(err);
+         }
        });
      }
 
-     function buildFileName() {
-       const slug = getCleanName()
-         .toLowerCase()
-         .normalize('NFD')
-         .replace(/[\u0300-\u036f]/g, '')
-         .replace(/[^a-z0-9]+/g, '-')
-         .replace(/^-+|-+$/g, '');
-       return `badge-cua-${slug || 'membre'}-1080x1080.png`;
+     function saveBlobAsFile(blob, filename) {
+       const url = URL.createObjectURL(blob);
+       const link = document.createElement('a');
+       link.href = url;
+       link.download = filename;
+       document.body.appendChild(link);
+       link.click();
+       document.body.removeChild(link);
+       setTimeout(function () {
+         try { URL.revokeObjectURL(url); } catch (_) {}
+       }, 3000);
      }
 
-     function buildWhatsAppCaption() {
+     function buildShareText() {
        const cleanName = getCleanName();
        return (
-         `J'Y SERAI ! — ${cleanName}\n` +
-         `Pour prêcher et gagner des âmes à Christ\n` +
-         `Semaine de l'Évangile • Centre Universitaire Apostolique (CUA)\n` +
-         `${BADGE_COPY.dateText} • ${BADGE_COPY.placeText}\n` +
-         `${BADGE_COPY.timeText}\n` +
-         `Gagner des âmes • Ensemble pour Christ`
+         "J'Y SERAI ! — " + cleanName + '\n' +
+         'Pour prêcher et gagner des âmes à Christ\n' +
+         "Semaine de l'Évangile • Centre Universitaire Apostolique (CUA)\n" +
+         COPY.dateText + ' • ' + COPY.placeText + '\n' +
+         COPY.timeText + '\n' +
+         'Gagner des âmes • Ensemble pour Christ'
        );
      }
 
-     async function triggerDownload() {
-       if (!validateMandatoryFields()) return;
+     async function handleDownloadPng() {
+       if (!validateAndHighlight()) return;
        try {
-         const blob = await canvasToBlob();
-         const url = URL.createObjectURL(blob);
-         const link = document.createElement('a');
-         link.href = url;
-         link.download = buildFileName();
-         document.body.appendChild(link);
-         link.click();
-         document.body.removeChild(link);
-         setTimeout(function () {
-           URL.revokeObjectURL(url);
-         }, 2500);
-         state.customStatusError = '';
-         syncUiState();
+         const blob = await exportBadge1080Blob();
+         saveBlobAsFile(blob, 'badge-semaine-evangile-cua.png');
+         showToast('Badge PNG 1080×1080 px téléchargé avec succès.');
        } catch (_) {
-         state.customStatusError = 'Impossible de télécharger le badge pour le moment.';
-         syncUiState();
+         if (validationAlert) {
+           validationAlert.textContent = 'Impossible de télécharger le badge pour le moment.';
+           validationAlert.classList.add('visible');
+         }
        }
      }
 
-     function openWhatsAppModal(caption) {
-       if (whatsappCaptionBox) {
-         whatsappCaptionBox.value = caption;
-       }
-       if (whatsappModal) {
-         whatsappModal.classList.add('open');
-       }
-     }
+     // Partage natif multi-applications (WhatsApp Statut, Facebook, etc.) avec repli automatique
+     async function handleSystemShare() {
+       if (!validateAndHighlight()) return;
 
-     async function shareToWhatsAppStatus() {
-       if (!validateMandatoryFields()) return;
-
-       const caption = buildWhatsAppCaption();
-       const fileName = buildFileName();
+       const shareText = buildShareText();
+       const fileName = 'badge-semaine-evangile-cua.png';
 
        try {
-         const blob = await canvasToBlob();
-         const file = new File([blob], fileName, { type: 'image/png' });
+         const blob = await exportBadge1080Blob();
+         const pngFile = new File([blob], fileName, { type: 'image/png' });
+         const sharePayload = {
+           files: [pngFile],
+           title: "Badge Semaine de l'Évangile — CUA",
+           text: shareText
+         };
+         if (window.location && /^https?:$/i.test(window.location.protocol)) {
+           sharePayload.url = window.location.href;
+         }
 
          if (
            typeof navigator !== 'undefined' &&
            typeof navigator.share === 'function' &&
-           (!navigator.canShare || navigator.canShare({ files: [file] }))
+           (!navigator.canShare || navigator.canShare({ files: [pngFile] }))
          ) {
-           await navigator.share({
-             title: "Badge Semaine de l'Évangile — CUA",
-             text: caption,
-             files: [file]
-           });
-           state.customStatusError = '';
-           syncUiState();
+           await navigator.share(sharePayload);
+           showToast('Badge partagé avec succès.');
            return;
          }
 
-         const url = URL.createObjectURL(blob);
-         const link = document.createElement('a');
-         link.href = url;
-         link.download = fileName;
-         document.body.appendChild(link);
-         link.click();
-         document.body.removeChild(link);
-         setTimeout(function () {
-           URL.revokeObjectURL(url);
-         }, 2500);
-
+         // Repli automatique : téléchargement du PNG + ouverture WhatsApp
+         saveBlobAsFile(blob, fileName);
          if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
            try {
-             await navigator.clipboard.writeText(caption);
-           } catch (_) {
-             // Ignorer
-           }
+             await navigator.clipboard.writeText(shareText);
+           } catch (_) {}
          }
-         openWhatsAppModal(caption);
+         showToast('Badge PNG téléchargé ! Ouverture de WhatsApp...');
+         setTimeout(function () {
+           window.open('https://wa.me/?text=' + encodeURIComponent(shareText), '_blank', 'noopener,noreferrer');
+         }, 500);
        } catch (err) {
          if (err && err.name === 'AbortError') {
-           state.customStatusError = '';
-           syncUiState();
            return;
          }
-         openWhatsAppModal(caption);
+         try {
+           const fallbackBlob = await exportBadge1080Blob();
+           saveBlobAsFile(fallbackBlob, fileName);
+           showToast('Badge PNG téléchargé ! Vous pouvez maintenant le publier sur WhatsApp ou Facebook.');
+         } catch (_) {}
        }
      }
 
      if (fullNameInput) {
        fullNameInput.addEventListener('input', function () {
          state.fullName = fullNameInput.value;
-         state.customStatusError = '';
          syncUiState();
          renderBadge();
        });
@@ -1862,86 +1747,47 @@
        });
      }
 
-     if (clearPhotoBtn) {
-       clearPhotoBtn.addEventListener('click', clearPhoto);
-     }
+     if (clearPhotoBtn) clearPhotoBtn.addEventListener('click', clearPhoto);
+     if (shareAppBtn) shareAppBtn.addEventListener('click', handleSystemShare);
+     if (downloadPngBtn) downloadPngBtn.addEventListener('click', handleDownloadPng);
 
-     if (whatsappShareBtn) {
-       whatsappShareBtn.addEventListener('click', shareToWhatsAppStatus);
-     }
-
-     if (downloadPngBtn) {
-       downloadPngBtn.addEventListener('click', triggerDownload);
-     }
-
-     if (copyCaptionBtn) {
-       copyCaptionBtn.addEventListener('click', function () {
-         if (!whatsappCaptionBox) return;
-         whatsappCaptionBox.focus();
-         whatsappCaptionBox.select();
-         try {
-           document.execCommand('copy');
-           copyCaptionBtn.textContent = 'Copié !';
-           setTimeout(function () {
-             copyCaptionBtn.textContent = 'Copier le texte';
-           }, 1800);
-         } catch (_) {
-           // Ignorer
-         }
-       });
-     }
-
-     if (closeModalBtn && whatsappModal) {
-       closeModalBtn.addEventListener('click', function () {
-         whatsappModal.classList.remove('open');
-       });
-       whatsappModal.addEventListener('click', function (e) {
-         if (e.target === whatsappModal) {
-           whatsappModal.classList.remove('open');
-         }
-       });
-     }
-
-     function refreshBadgeAndUi() {
+     function renderAll() {
        syncUiState();
        renderBadge();
      }
 
-     // Déclenchement immédiat, via requestAnimationFrame, DOM prêt, load, polices et ResizeObserver
-     refreshBadgeAndUi();
+     // Déclenchements immédiats et résilients sur tous les événements de cycle de vie
+     renderAll();
 
      if (typeof requestAnimationFrame === 'function') {
-       requestAnimationFrame(refreshBadgeAndUi);
+       requestAnimationFrame(renderAll);
      }
 
      if (document.readyState === 'loading') {
-       document.addEventListener('DOMContentLoaded', refreshBadgeAndUi, { once: true });
+       document.addEventListener('DOMContentLoaded', renderAll, { once: true });
      }
 
-     window.addEventListener('load', refreshBadgeAndUi);
-     window.addEventListener('resize', refreshBadgeAndUi);
+     window.addEventListener('load', renderAll);
+     window.addEventListener('resize', renderAll);
      window.addEventListener('orientationchange', function () {
-       refreshBadgeAndUi();
-       setTimeout(refreshBadgeAndUi, 140);
+       renderAll();
+       setTimeout(renderAll, 150);
      });
 
      if (document.fonts && document.fonts.ready && typeof document.fonts.ready.then === 'function') {
-       document.fonts.ready.then(refreshBadgeAndUi).catch(function () {});
+       document.fonts.ready.then(renderAll).catch(function () {});
      }
 
      if (typeof ResizeObserver === 'function' && canvasFrameBox) {
        try {
-         const ro = new ResizeObserver(function () {
+         const observer = new ResizeObserver(function () {
            renderBadge();
          });
-         ro.observe(canvasFrameBox);
-       } catch (_) {
-         // Ignorer
-       }
+         observer.observe(canvasFrameBox);
+       } catch (_) {}
      }
 
-     setTimeout(refreshBadgeAndUi, 120);
-     setTimeout(refreshBadgeAndUi, 400);
+     setTimeout(renderAll, 120);
    })();
  </script>
 </body>
