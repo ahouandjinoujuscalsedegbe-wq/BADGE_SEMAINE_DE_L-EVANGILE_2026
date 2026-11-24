@@ -6,394 +6,638 @@
   <title>FinTrack AI — Gestion Financière Intelligente</title>
   <style>
     :root {
-      --bg: #f1f5f9;
-      --card: #ffffff;
-      --text: #0f172a;
-      --muted: #64748b;
-      --border: #e2e8f0;
-      --primary: #0f172a;
-      --accent: #2563eb;
-      --green: #15803d;
-      --green-bg: #dcfce7;
-      --red: #dc2626;
-      --red-bg: #fee2e2;
-      --amber: #b45309;
-      --amber-bg: #fef3c7;
-      --radius: 14px;
+      --wa-teal: #008069;
+      --wa-teal-dark: #005c4b;
+      --wa-green: #00a884;
+      --wa-light-green: #d9fdd3;
+      --wa-bg: #efeae2;
+      --wa-pattern: rgba(11, 20, 26, 0.035);
+      --wa-surface: #ffffff;
+      --wa-surface-soft: #f0f2f5;
+      --wa-text: #111b21;
+      --wa-muted: #54656f;
+      --wa-border: #e9edef;
+      --wa-drawer: #ffffff;
+      --wa-nav-bg: rgba(255, 255, 255, 0.96);
+      --danger: #d93025;
+      --danger-bg: #fce8e6;
+      --warn: #9a6700;
+      --warn-bg: #fff8c5;
+      --success: #008069;
+      --success-bg: #d9fdd3;
+      --radius-lg: 14px;
+      --radius-md: 10px;
+      --shadow: 0 1px 3px rgba(11, 20, 26, 0.08);
+    }
+
+    body.wa-dark {
+      --wa-teal: #1f2c34;
+      --wa-teal-dark: #111b21;
+      --wa-green: #00a884;
+      --wa-light-green: #005c4b;
+      --wa-bg: #0b141a;
+      --wa-pattern: rgba(255, 255, 255, 0.025);
+      --wa-surface: #111b21;
+      --wa-surface-soft: #202c33;
+      --wa-text: #e9edef;
+      --wa-muted: #8696a0;
+      --wa-border: #222d34;
+      --wa-drawer: #111b21;
+      --wa-nav-bg: rgba(17, 27, 33, 0.96);
+      --danger-bg: rgba(217, 48, 37, 0.2);
+      --warn-bg: rgba(154, 103, 0, 0.22);
+      --success-bg: rgba(0, 168, 132, 0.18);
     }
 
     * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--wa-bg);
+      background-image:
+        radial-gradient(var(--wa-pattern) 1px, transparent 1px),
+        radial-gradient(var(--wa-pattern) 1px, var(--wa-bg) 1px);
+      background-size: 24px 24px;
+      background-position: 0 0, 12px 12px;
+      color: var(--wa-text);
       padding-bottom: 84px;
+      transition: background-color 0.2s, color 0.2s;
     }
 
-    /* Écran de verrouillage PIN */
+    /* Écran PIN style WhatsApp */
     #pinLockScreen {
       position: fixed;
       inset: 0;
-      background: #0f172a;
-      color: #ffffff;
+      background: var(--wa-teal-dark);
+      color: #fff;
       z-index: 9999;
       display: none;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 20px;
     }
     #pinLockScreen.active { display: flex; }
-    .pin-box {
-      background: #1e293b;
+    .pin-card {
+      background: #111b21;
+      border: 1px solid #222d34;
+      border-radius: 18px;
       padding: 24px;
-      border-radius: 16px;
       width: 100%;
       max-width: 340px;
       text-align: center;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
     }
     .pin-dots {
-      font-size: 1.8rem;
+      font-size: 1.7rem;
       letter-spacing: 10px;
       margin: 14px 0;
-      min-height: 36px;
+      color: var(--wa-green);
     }
-    .pin-keypad {
+    .pin-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 10px;
       margin-top: 12px;
     }
-    .pin-key {
-      padding: 14px;
-      font-size: 1.15rem;
-      font-weight: 600;
+    .pin-btn {
+      padding: 13px;
       border: none;
       border-radius: 10px;
-      background: #334155;
-      color: #fff;
+      background: #202c33;
+      color: #e9edef;
+      font-size: 1.05rem;
+      font-weight: 600;
       cursor: pointer;
     }
-    .pin-key:hover { background: #475569; }
+    .pin-btn:hover { background: #2a3942; }
 
-    /* En-tête & navigation */
-    header {
-      background: var(--card);
-      border-bottom: 1px solid var(--border);
-      padding: 14px 20px;
+    /* En-tête WhatsApp */
+    header.wa-header {
+      background: var(--wa-teal);
+      color: #ffffff;
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: 300;
+      box-shadow: 0 2px 6px rgba(11, 20, 26, 0.14);
     }
-    .header-inner {
-      max-width: 1180px;
+    .wa-header-top {
+      max-width: 1200px;
       margin: 0 auto;
+      padding: 10px 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
+      gap: 10px;
     }
-    .brand { font-size: 1.25rem; font-weight: 800; }
-    .period-bar { display: flex; gap: 6px; flex-wrap: wrap; }
-    .period-btn {
-      padding: 6px 12px;
-      border: 1px solid var(--border);
-      background: var(--card);
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 0.85rem;
-      color: var(--text);
+    .wa-brand-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
-    .period-btn.active {
-      background: var(--primary);
+    .icon-circle-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255, 255, 255, 0.14);
       color: #fff;
-      border-color: var(--primary);
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .icon-circle-btn:hover { background: rgba(255, 255, 255, 0.24); }
+    .wa-title { font-size: 1.12rem; font-weight: 700; line-height: 1.15; }
+    .wa-subtitle { font-size: 0.74rem; opacity: 0.88; }
+
+    .period-strip {
+      background: var(--wa-teal-dark);
+      padding: 6px 14px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    .period-strip-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      gap: 8px;
+    }
+    .period-chip {
+      border: none;
+      background: rgba(255, 255, 255, 0.12);
+      color: rgba(255, 255, 255, 0.9);
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 0.8rem;
       font-weight: 600;
+      cursor: pointer;
+    }
+    .period-chip.active {
+      background: var(--wa-green);
+      color: #fff;
     }
 
-    main {
-      max-width: 1180px;
-      margin: 18px auto;
-      padding: 0 16px;
+    /* Menu latéral gauche rabattable */
+    #drawerBackdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(11, 20, 26, 0.45);
+      z-index: 450;
+      display: none;
     }
+    #drawerBackdrop.open { display: block; }
 
-    .page { display: none; }
-    .page.active { display: block; }
+    aside#sideDrawer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 285px;
+      max-width: 86vw;
+      background: var(--wa-drawer);
+      border-right: 1px solid var(--wa-border);
+      z-index: 500;
+      transform: translateX(-100%);
+      transition: transform 0.24s ease;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 4px 0 18px rgba(11, 20, 26, 0.16);
+    }
+    aside#sideDrawer.open { transform: translateX(0); }
 
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+    .drawer-head {
+      background: var(--wa-teal);
+      color: #fff;
       padding: 16px;
-      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
-    .card h2, .card h3, .card h4 { margin-top: 0; }
+    .drawer-section-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--wa-muted);
+      padding: 12px 16px 6px;
+      letter-spacing: 0.04em;
+    }
+    .drawer-nav-btn {
+      width: 100%;
+      border: none;
+      background: transparent;
+      color: var(--wa-text);
+      padding: 11px 16px;
+      text-align: left;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .drawer-nav-btn:hover { background: var(--wa-surface-soft); }
+    .drawer-nav-btn.active {
+      background: var(--wa-light-green);
+      color: #0b141a;
+      border-left: 4px solid var(--wa-green);
+    }
+    body.wa-dark .drawer-nav-btn.active {
+      background: rgba(0, 168, 132, 0.22);
+      color: #e9edef;
+    }
+    .drawer-foot {
+      margin-top: auto;
+      padding: 12px 16px;
+      border-top: 1px solid var(--wa-border);
+      display: flex;
+      gap: 8px;
+    }
+
+    /* Contenu principal */
+    main.wa-main {
+      max-width: 1140px;
+      margin: 14px auto;
+      padding: 0 14px;
+    }
+    .view-section { display: none; }
+    .view-section.active { display: block; }
+
+    .wa-card {
+      background: var(--wa-surface);
+      border: 1px solid var(--wa-border);
+      border-radius: var(--radius-lg);
+      padding: 15px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow);
+    }
+    .wa-card-bubble-green {
+      background: var(--wa-light-green);
+      color: #111b21;
+      border-color: rgba(0, 128, 105, 0.22);
+    }
+    body.wa-dark .wa-card-bubble-green {
+      color: #e9edef;
+    }
+    .wa-card h3, .wa-card h4 { margin: 0 0 8px 0; font-size: 1rem; }
 
     .kpi-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 12px;
-      margin-bottom: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
     }
-    .kpi {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 14px;
+    .kpi-box {
+      background: var(--wa-surface);
+      border: 1px solid var(--wa-border);
+      border-radius: var(--radius-lg);
+      padding: 13px 14px;
+      box-shadow: var(--shadow);
     }
-    .kpi-label { font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; }
-    .kpi-val { font-size: 1.45rem; font-weight: 800; margin: 6px 0; }
-    .kpi-sub { font-size: 0.82rem; color: var(--muted); }
+    .kpi-title { font-size: 0.74rem; font-weight: 700; color: var(--wa-muted); text-transform: uppercase; }
+    .kpi-num { font-size: 1.38rem; font-weight: 800; margin: 5px 0; }
+    .kpi-note { font-size: 0.8rem; color: var(--wa-muted); }
 
     .grid-2 {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 14px;
     }
-
-    .form-grid {
+    .grid-form {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
       gap: 10px;
     }
 
     label {
       display: block;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 600;
-      color: var(--muted);
+      color: var(--wa-muted);
       margin-bottom: 4px;
     }
     input, select {
       width: 100%;
       padding: 8px 10px;
-      border: 1px solid #cbd5e1;
-      border-radius: 8px;
+      border: 1px solid var(--wa-border);
+      border-radius: var(--radius-md);
+      background: var(--wa-surface-soft);
+      color: var(--wa-text);
       font-size: 0.9rem;
-      background: #fff;
-      color: var(--text);
     }
 
-    .btn {
-      padding: 9px 14px;
+    .wa-btn {
+      padding: 8px 14px;
       border: 1px solid transparent;
-      border-radius: 8px;
-      font-size: 0.88rem;
+      border-radius: 999px;
+      font-size: 0.86rem;
       font-weight: 600;
       cursor: pointer;
-      background: var(--primary);
+      background: var(--wa-teal);
       color: #fff;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
     }
-    .btn-secondary { background: #f8fafc; color: var(--text); border-color: #cbd5e1; }
-    .btn-success { background: var(--green); color: #fff; }
-    .btn-danger { background: var(--red); color: #fff; }
-    .btn-soft-danger { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
-    .btn-sm { padding: 5px 9px; font-size: 0.8rem; }
+    .wa-btn:hover { filter: brightness(1.06); }
+    .wa-btn-green { background: var(--wa-green); color: #fff; }
+    .wa-btn-ghost { background: var(--wa-surface-soft); color: var(--wa-text); border-color: var(--wa-border); }
+    .wa-btn-danger { background: var(--danger); color: #fff; }
+    .wa-btn-soft-danger { background: var(--danger-bg); color: var(--danger); border-color: rgba(217, 48, 37, 0.25); }
+    .wa-btn-sm { padding: 5px 10px; font-size: 0.78rem; }
 
-    .type-toggle { display: flex; gap: 8px; margin-bottom: 12px; }
-    .type-pill {
+    .type-row { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+    .type-chip {
       flex: 1;
-      padding: 9px;
-      border: 1px solid #cbd5e1;
-      border-radius: 8px;
-      background: #f8fafc;
+      min-width: 95px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--wa-border);
+      background: var(--wa-surface-soft);
+      color: var(--wa-text);
       font-weight: 700;
       cursor: pointer;
     }
-    .type-pill.active-expense { background: var(--red-bg); color: var(--red); border-color: #fca5a5; }
-    .type-pill.active-income { background: var(--green-bg); color: var(--green); border-color: #86efac; }
-    .type-pill.active-transfer { background: #dbeafe; color: #1d4ed8; border-color: #93c5fd; }
+    .type-chip.active-expense { background: var(--danger-bg); color: var(--danger); border-color: rgba(217, 48, 37, 0.35); }
+    .type-chip.active-income { background: var(--success-bg); color: var(--success); border-color: rgba(0, 168, 132, 0.4); }
+    .type-chip.active-transfer { background: #dbeafe; color: #1d4ed8; border-color: #93c5fd; }
 
-    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
-    th, td { padding: 8px 10px; border-bottom: 1px solid var(--border); text-align: left; }
-
-    .progress-track {
-      height: 10px;
-      background: #e2e8f0;
-      border-radius: 999px;
-      overflow: hidden;
-      margin-top: 6px;
+    .guard-banner {
+      display: none;
+      margin-top: 10px;
+      padding: 9px 12px;
+      border-radius: var(--radius-md);
+      font-size: 0.86rem;
+      font-weight: 600;
     }
-    .progress-fill { height: 100%; background: var(--accent); transition: width 0.25s; }
+    .guard-banner.err { display: block; background: var(--danger-bg); color: var(--danger); }
+    .guard-banner.warn { display: block; background: var(--warn-bg); color: var(--warn); }
 
-    .heatmap-grid {
+    .meter-track {
+      height: 8px;
+      border-radius: 999px;
+      background: var(--wa-surface-soft);
+      overflow: hidden;
+      margin-top: 5px;
+    }
+    .meter-fill { height: 100%; background: var(--wa-green); transition: width 0.25s; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+    th, td { padding: 8px 10px; border-bottom: 1px solid var(--wa-border); text-align: left; }
+
+    .heat-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       gap: 6px;
       margin-top: 10px;
     }
-    .heat-cell {
-      padding: 8px 4px;
+    .heat-day {
+      padding: 7px 4px;
       border-radius: 8px;
       text-align: center;
-      font-size: 0.78rem;
-      border: 1px solid var(--border);
+      border: 1px solid var(--wa-border);
+      font-size: 0.76rem;
     }
 
-    .guard-box {
-      display: none;
-      padding: 10px 12px;
-      border-radius: 8px;
-      margin-top: 10px;
-      font-size: 0.88rem;
-      font-weight: 600;
-    }
-    .guard-error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; display: block; }
-    .guard-warn { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; display: block; }
-
-    /* Barre de navigation inférieure */
-    nav.bottom-nav {
+    /* Barre de tâches horizontale fluide au pied de la page */
+    footer.wa-bottom-bar {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      background: var(--card);
-      border-top: 1px solid var(--border);
-      display: flex;
-      justify-content: space-around;
-      padding: 8px 10px;
-      z-index: 200;
+      background: var(--wa-nav-bg);
+      backdrop-filter: blur(8px);
+      border-top: 1px solid var(--wa-border);
+      z-index: 350;
+      padding: 6px 10px;
     }
-    .nav-item {
+    .bottom-bar-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+    }
+    .dock-btn {
+      flex: 1;
       border: none;
       background: transparent;
-      color: var(--muted);
-      font-weight: 600;
-      font-size: 0.85rem;
-      padding: 6px 14px;
-      border-radius: 8px;
+      color: var(--wa-muted);
+      padding: 6px 4px;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      font-weight: 700;
       cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
     }
-    .nav-item.active { background: #eff6ff; color: var(--accent); }
+    .dock-btn.active {
+      color: var(--wa-green);
+      background: var(--wa-surface-soft);
+    }
+    .dock-fab {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      border: none;
+      background: var(--wa-green);
+      color: #fff;
+      font-size: 1.25rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 3px 10px rgba(0, 168, 132, 0.35);
+      flex-shrink: 0;
+    }
   </style>
 </head>
 <body>
 
-  <!-- ÉCRAN DE VERROUILLAGE PIN -->
+  <!-- VERROUILLAGE PIN -->
   <div id="pinLockScreen" aria-modal="true">
-    <div class="pin-box">
-      <h2>FinTrack Sécurisé</h2>
-      <p style="font-size:0.88rem; color:#cbd5e1;">Entrez votre code PIN à 4 chiffres</p>
+    <div class="pin-card">
+      <h3 style="margin:0 0 6px 0;">FinTrack Sécurisé</h3>
+      <div style="font-size:0.84rem; color:#8696a0;">Code PIN à 4 chiffres</div>
       <div class="pin-dots" id="pinDots">• • • •</div>
-      <div id="pinErrorMsg" style="color:#f87171; font-size:0.84rem; min-height:20px;"></div>
-      <div class="pin-keypad">
-        <button type="button" class="pin-key" onclick="pressPin('1')">1</button>
-        <button type="button" class="pin-key" onclick="pressPin('2')">2</button>
-        <button type="button" class="pin-key" onclick="pressPin('3')">3</button>
-        <button type="button" class="pin-key" onclick="pressPin('4')">4</button>
-        <button type="button" class="pin-key" onclick="pressPin('5')">5</button>
-        <button type="button" class="pin-key" onclick="pressPin('6')">6</button>
-        <button type="button" class="pin-key" onclick="pressPin('7')">7</button>
-        <button type="button" class="pin-key" onclick="pressPin('8')">8</button>
-        <button type="button" class="pin-key" onclick="pressPin('9')">9</button>
-        <button type="button" class="pin-key" onclick="clearPinEntry()">Effacer</button>
-        <button type="button" class="pin-key" onclick="pressPin('0')">0</button>
-        <button type="button" class="pin-key" onclick="unlockWithPin()">OK</button>
+      <div id="pinError" style="color:#f87171; font-size:0.82rem; min-height:18px;"></div>
+      <div class="pin-grid">
+        <button type="button" class="pin-btn" onclick="pinPress('1')">1</button>
+        <button type="button" class="pin-btn" onclick="pinPress('2')">2</button>
+        <button type="button" class="pin-btn" onclick="pinPress('3')">3</button>
+        <button type="button" class="pin-btn" onclick="pinPress('4')">4</button>
+        <button type="button" class="pin-btn" onclick="pinPress('5')">5</button>
+        <button type="button" class="pin-btn" onclick="pinPress('6')">6</button>
+        <button type="button" class="pin-btn" onclick="pinPress('7')">7</button>
+        <button type="button" class="pin-btn" onclick="pinPress('8')">8</button>
+        <button type="button" class="pin-btn" onclick="pinPress('9')">9</button>
+        <button type="button" class="pin-btn" onclick="pinReset()">Effacer</button>
+        <button type="button" class="pin-btn" onclick="pinPress('0')">0</button>
+        <button type="button" class="pin-btn" onclick="pinSubmit()">OK</button>
       </div>
     </div>
   </div>
 
-  <!-- EN-TÊTE ET SÉLECTEUR DE PÉRIODE -->
-  <header>
-    <div class="header-inner">
-      <div class="brand">FinTrack AI</div>
-      <div class="period-bar" id="periodBar">
-        <button type="button" class="period-btn" data-period="today">Aujourd'hui</button>
-        <button type="button" class="period-btn" data-period="week">Cette semaine</button>
-        <button type="button" class="period-btn active" data-period="month">Ce mois</button>
-        <button type="button" class="period-btn" data-period="year">Cette année</button>
-        <button type="button" class="period-btn" data-period="all">Tout l'historique</button>
+  <!-- BACKDROP & MENU LATÉRAL GAUCHE RABATTABLE -->
+  <div id="drawerBackdrop" onclick="closeDrawer()"></div>
+  <aside id="sideDrawer" aria-label="Menu latéral rabattable">
+    <div class="drawer-head">
+      <div>
+        <div style="font-weight:800; font-size:1rem;">FinTrack AI</div>
+        <div style="font-size:0.76rem; opacity:0.88;">Navigation &amp; onglets rapides</div>
+      </div>
+      <button type="button" class="icon-circle-btn" onclick="closeDrawer()" title="Rabattre le menu">✕</button>
+    </div>
+
+    <div class="drawer-section-label">Onglets principaux</div>
+    <button type="button" class="drawer-nav-btn active" data-drawer-page="home">
+      <span>🏠 Accueil &amp; Saisie</span><span>›</span>
+    </button>
+    <button type="button" class="drawer-nav-btn" data-drawer-page="history">
+      <span>📋 Historique &amp; Justificatifs</span><span>›</span>
+    </button>
+    <button type="button" class="drawer-nav-btn" data-drawer-page="compare">
+      <span>📊 Comparateur &amp; Thermique</span><span>›</span>
+    </button>
+    <button type="button" class="drawer-nav-btn" data-drawer-page="tools">
+      <span>🧰 Outils, PIN &amp; JSON</span><span>›</span>
+    </button>
+
+    <div class="drawer-section-label">Accès direct</div>
+    <button type="button" class="drawer-nav-btn" onclick="jumpToSection('home', 'envelopesCard')">
+      <span>💼 Enveloppes physiques</span><span>+</span>
+    </button>
+    <button type="button" class="drawer-nav-btn" onclick="jumpToSection('home', 'operationComposerCard')">
+      <span>🎤 Brouillon &amp; Saisie vocale</span><span>•</span>
+    </button>
+    <button type="button" class="drawer-nav-btn" onclick="jumpToSection('tools', 'backupCard')">
+      <span>💾 Export / Import .json</span><span>↓↑</span>
+    </button>
+
+    <div class="drawer-foot">
+      <button type="button" class="wa-btn wa-btn-ghost wa-btn-sm" style="flex:1; justify-content:center;" id="btnToggleTheme">
+        🌓 Thème WhatsApp
+      </button>
+    </div>
+  </aside>
+
+  <!-- EN-TÊTE -->
+  <header class="wa-header">
+    <div class="wa-header-top">
+      <div class="wa-brand-group">
+        <button type="button" class="icon-circle-btn" id="btnOpenDrawer" title="Ouvrir le menu latéral">☰</button>
+        <div>
+          <div class="wa-title">FinTrack AI</div>
+          <div class="wa-subtitle" id="headerWalletSummary">Gestion financière • Enveloppes &amp; brouillon</div>
+        </div>
+      </div>
+      <div style="display:flex; gap:6px;">
+        <button type="button" class="icon-circle-btn" id="btnHeaderVoice" title="Saisie vocale rapide">🎤</button>
+        <button type="button" class="icon-circle-btn" id="btnHeaderTheme" title="Basculer thème clair/sombre">🌓</button>
+      </div>
+    </div>
+
+    <div class="period-strip">
+      <div class="period-strip-inner" id="periodStrip">
+        <button type="button" class="period-chip" data-period="today">Aujourd'hui</button>
+        <button type="button" class="period-chip" data-period="week">Cette semaine</button>
+        <button type="button" class="period-chip active" data-period="month">Ce mois</button>
+        <button type="button" class="period-chip" data-period="year">Cette année</button>
+        <button type="button" class="period-chip" data-period="all">Tout l'historique</button>
       </div>
     </div>
   </header>
 
-  <main>
-    <!-- ================= PAGE 1 : ACCUEIL ================= -->
-    <section id="page-home" class="page active">
-      <div class="card">
+  <!-- CONTENU PRINCIPAL -->
+  <main class="wa-main">
+    <!-- ONGLET 1 : ACCUEIL -->
+    <section id="view-home" class="view-section active">
+      <div class="wa-card wa-card-bubble-green">
         <h3>Analyse intelligente en direct</h3>
-        <p id="liveInsightText" style="margin:0; color:var(--muted);">Chargement de l'analyse...</p>
+        <p id="liveAnalysisText" style="margin:0; font-size:0.9rem;">Calcul des indicateurs...</p>
       </div>
 
       <div class="kpi-grid">
-        <div class="kpi">
-          <div class="kpi-label">Trésorerie totale</div>
-          <div class="kpi-val" id="kpiTotalTreasury">0 F</div>
-          <div class="kpi-sub" id="kpiAutonomy">Autonomie : calcul...</div>
+        <div class="kpi-box">
+          <div class="kpi-title">Trésorerie totale</div>
+          <div class="kpi-num" id="kpiTreasury">0 F</div>
+          <div class="kpi-note" id="kpiAutonomy">Autonomie : calcul...</div>
         </div>
-        <div class="kpi">
-          <div class="kpi-label">Flux de la période</div>
-          <div class="kpi-val" style="color:var(--green);" id="kpiPeriodIncome">0 F</div>
-          <div class="kpi-sub">Dépenses : <strong style="color:var(--red);" id="kpiPeriodExpense">0 F</strong> • Épargne : <strong id="kpiSavingsRate">0 %</strong></div>
+        <div class="kpi-box">
+          <div class="kpi-title">Flux de la période</div>
+          <div class="kpi-num" style="color:var(--success);" id="kpiIncome">0 F</div>
+          <div class="kpi-note">Dépenses : <strong style="color:var(--danger);" id="kpiExpense">0 F</strong> • Épargne : <strong id="kpiSavings">0 %</strong></div>
         </div>
-        <div class="kpi">
-          <div class="kpi-label">Reste à vivre / jour</div>
-          <div class="kpi-val" id="kpiDailyAllowance">0 F</div>
-          <div class="kpi-sub" id="kpiAvgSpent">Moyenne dépensée : 0 F/jour</div>
+        <div class="kpi-box">
+          <div class="kpi-title">Reste à vivre / jour</div>
+          <div class="kpi-num" id="kpiDaily">0 F</div>
+          <div class="kpi-note" id="kpiAvgDay">Moyenne dépensée : 0 F/jour</div>
         </div>
-        <div class="kpi">
-          <div class="kpi-label">Score de santé</div>
-          <div class="kpi-val" id="kpiHealthScore">-- / 100</div>
-          <div class="kpi-sub">Évaluation de votre équilibre</div>
+        <div class="kpi-box">
+          <div class="kpi-title">Score de santé</div>
+          <div class="kpi-num" id="kpiScore">-- / 100</div>
+          <div class="kpi-note">Évaluation de votre équilibre</div>
         </div>
       </div>
 
-      <!-- ENVELOPPES PHYSIQUES (+ REVENU / - DÉPENSE / CRÉATION / SUPPRESSION SÉCURISÉE) -->
-      <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+      <!-- ENVELOPPES PHYSIQUES -->
+      <div class="wa-card" id="envelopesCard">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
           <div>
             <h3>Enveloppes physiques</h3>
-            <small style="color:var(--muted);">Chaque revenu alimente (+) l'enveloppe choisie ; chaque dépense en est déduite (-).</small>
+            <small style="color:var(--wa-muted);">Revenu = + sur l'enveloppe • Dépense = - sur l'enveloppe.</small>
           </div>
-          <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-            <input type="text" id="envNewName" placeholder="Ex: Poche, Coffre..." style="width:170px;" />
-            <input type="number" id="envNewInitial" step="any" value="0" placeholder="Solde initial" style="width:120px;" />
-            <button type="button" class="btn" id="btnCreateEnvelope">+ Enveloppe</button>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <input type="text" id="newEnvName" placeholder="Ex: Poche, Coffre..." style="width:165px;" />
+            <input type="number" id="newEnvInit" step="any" value="0" placeholder="Solde initial" style="width:110px;" />
+            <button type="button" class="wa-btn wa-btn-green" id="btnAddEnvelope">+ Enveloppe</button>
           </div>
         </div>
-        <div id="envelopesCardsGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(175px, 1fr)); gap:10px;"></div>
+        <div id="envelopesGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(170px, 1fr)); gap:10px;"></div>
       </div>
 
-      <!-- FORMULAIRE NOUVELLE OPÉRATION (VOIX EN BROUILLON + JUSTIFICATIF + GARDE-FOUS) -->
-      <div class="card" id="newOperationCard">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
-          <h3 style="margin:0;" id="opFormTitle">Nouvelle opération</h3>
+      <!-- FORMULAIRE NOUVELLE OPÉRATION + BROUILLON VOCAL + JUSTIFICATIF + GARDE-FOUS -->
+      <div class="wa-card" id="operationComposerCard">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+          <h3 style="margin:0;" id="composerTitle">Nouvelle opération</h3>
           <div style="display:flex; gap:6px; flex-wrap:wrap;">
-            <button type="button" class="btn btn-danger btn-sm" id="btnVoiceDictate">🎤 Saisie vocale</button>
-            <button type="button" class="btn btn-secondary btn-sm" id="btnVoiceRetry">↻ Réessayer</button>
-            <button type="button" class="btn btn-secondary btn-sm" id="btnDraftClear">✕ Effacer</button>
+            <button type="button" class="wa-btn wa-btn-danger wa-btn-sm" id="btnVoiceStart">🎤 Dicter</button>
+            <button type="button" class="wa-btn wa-btn-ghost wa-btn-sm" id="btnVoiceRetry">↻ Réessayer</button>
+            <button type="button" class="wa-btn wa-btn-ghost wa-btn-sm" id="btnClearDraft">✕ Effacer</button>
           </div>
         </div>
 
-        <div id="voiceDraftStatus" style="font-size:0.85rem; color:var(--muted); background:#f8fafc; border:1px solid var(--border); padding:8px 12px; border-radius:8px; margin-bottom:12px;">
-          Brouillon prêt — aucune donnée n'est enregistrée tant que vous ne validez pas.
+        <div id="draftBanner" style="font-size:0.84rem; color:var(--wa-muted); background:var(--wa-surface-soft); padding:8px 12px; border-radius:var(--radius-md); margin-bottom:12px;">
+          Zone de brouillon : rien n'est enregistré avant de cliquer sur « Enregistrer l'opération ».
         </div>
 
-        <div class="type-toggle">
-          <button type="button" class="type-pill active-expense" data-optype="expense">Dépense</button>
-          <button type="button" class="type-pill" data-optype="income">Revenu</button>
-          <button type="button" class="type-pill" data-optype="transfer">Virement</button>
+        <div class="type-row">
+          <button type="button" class="type-chip active-expense" data-type="expense">Dépense (-)</button>
+          <button type="button" class="type-chip" data-type="income">Revenu (+)</button>
+          <button type="button" class="type-chip" data-type="transfer">Virement</button>
         </div>
 
-        <div class="form-grid">
+        <div class="grid-form">
           <div>
-            <label for="opAmountExpr">Montant (calculatrice : ex. 2500 + 1500)</label>
-            <input type="text" id="opAmountExpr" placeholder="Ex: 5000 ou 2500 + 1500" />
+            <label for="opAmount">Montant (ex: 2500 + 1500)</label>
+            <input type="text" id="opAmount" placeholder="Ex: 5000 ou 2500 + 1500" />
           </div>
           <div>
             <label for="opLabel">Libellé / Description</label>
-            <input type="text" id="opLabel" placeholder="Ex: Carburant, Salaire, Loyer..." />
+            <input type="text" id="opLabel" placeholder="Ex: Carburant, Salaire..." />
           </div>
           <div>
             <label for="opCategory">Catégorie</label>
             <select id="opCategory"></select>
           </div>
           <div>
-            <label for="opSubcategory">Sous-catégorie</label>
-            <input type="text" id="opSubcategory" placeholder="Optionnel" />
+            <label for="opSubcat">Sous-catégorie</label>
+            <input type="text" id="opSubcat" placeholder="Optionnel" />
           </div>
           <div>
             <label for="opWallet">Compte / Portefeuille</label>
@@ -407,7 +651,7 @@
             <label for="opEnvelope">Enveloppe physique</label>
             <select id="opEnvelope"></select>
           </div>
-          <div id="transferTargetWrap" style="display:none;">
+          <div id="opToWalletWrap" style="display:none;">
             <label for="opToWallet">Vers le compte</label>
             <select id="opToWallet">
               <option value="Mobile Money">Mobile Money</option>
@@ -421,63 +665,61 @@
           </div>
         </div>
 
-        <!-- Justificatif optionnel (Photo compressée via Canvas ou PDF ≤ 1,5 Mo) -->
-        <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; background:#f8fafc; padding:10px 12px; border-radius:8px; border:1px dashed #cbd5e1;">
+        <!-- Justificatif optionnel -->
+        <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; background:var(--wa-surface-soft); padding:10px 12px; border-radius:var(--radius-md); border:1px dashed var(--wa-border);">
           <div>
-            <label for="opReceiptInput" style="margin-bottom:4px;">Justificatif optionnel (Photo compressée ou PDF ≤ 1,5 Mo)</label>
-            <input type="file" id="opReceiptInput" accept="image/*,application/pdf" capture="environment" style="font-size:0.84rem;" />
+            <label for="opReceiptFile" style="margin-bottom:4px;">Justificatif optionnel (Photo compressée ou PDF ≤ 1,5 Mo)</label>
+            <input type="file" id="opReceiptFile" accept="image/*,application/pdf" capture="environment" style="font-size:0.84rem;" />
           </div>
           <div id="opReceiptPreview" style="font-size:0.84rem;"></div>
         </div>
 
-        <div id="formGuardBox" class="guard-box"></div>
+        <div id="composerGuard" class="guard-banner"></div>
 
         <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:14px;">
-          <button type="button" class="btn btn-success" id="btnSaveOperation">Enregistrer l'opération</button>
-          <button type="button" class="btn btn-secondary" id="btnCancelEditOp" style="display:none;">Annuler la modification</button>
-          <button type="button" class="btn btn-soft-danger" id="btnUndoLastOp" style="display:none;">↶ Annuler la dernière opération</button>
+          <button type="button" class="wa-btn wa-btn-green" id="btnSaveOp">Enregistrer l'opération</button>
+          <button type="button" class="wa-btn wa-btn-ghost" id="btnCancelEdit" style="display:none;">Annuler la modification</button>
+          <button type="button" class="wa-btn wa-btn-soft-danger" id="btnUndoLast" style="display:none;">↶ Annuler la dernière opération</button>
         </div>
       </div>
 
       <div class="grid-2">
-        <div class="card">
+        <div class="wa-card">
           <h3>Évolution Revenus vs Dépenses</h3>
-          <div id="incomeVsExpenseChart" style="font-size:0.9rem;"></div>
+          <div id="chartIncExp"></div>
         </div>
-        <div class="card">
+        <div class="wa-card">
           <h3>Répartition par Catégorie</h3>
-          <div id="categoryBreakdownChart" style="font-size:0.9rem;"></div>
+          <div id="chartCats"></div>
         </div>
       </div>
 
       <div class="grid-2">
-        <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h3>Suivi des Plafonds Mensuels</h3>
-            <button type="button" class="btn btn-secondary btn-sm" onclick="switchPage('tools')">Gérer</button>
+        <div class="wa-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <h3 style="margin:0;">Suivi des Plafonds Mensuels</h3>
+            <button type="button" class="wa-btn wa-btn-ghost wa-btn-sm" onclick="switchView('tools')">Gérer</button>
           </div>
-          <div id="homeCapsPreview"></div>
+          <div id="homeCapsBox"></div>
         </div>
-        <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h3>Dernières opérations</h3>
-            <button type="button" class="btn btn-secondary btn-sm" onclick="switchPage('history')">Voir tout</button>
+        <div class="wa-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <h3 style="margin:0;">Dernières opérations</h3>
+            <button type="button" class="wa-btn wa-btn-ghost wa-btn-sm" onclick="switchView('history')">Voir tout</button>
           </div>
-          <div id="homeRecentOps"></div>
+          <div id="homeRecentBox"></div>
         </div>
       </div>
     </section>
 
-    <!-- ================= PAGE 2 : HISTORIQUE ================= -->
-    <section id="page-history" class="page">
-      <div class="card">
+    <!-- ONGLET 2 : HISTORIQUE -->
+    <section id="view-history" class="view-section">
+      <div class="wa-card">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
           <h3 style="margin:0;">Historique des opérations</h3>
           <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <input type="text" id="historySearch" placeholder="Rechercher un libellé..." style="width:190px;" />
-            <select id="historyCategoryFilter" style="width:180px;">
-              <option value="ALL">Toutes catégories</option>
-            </select>
+            <input type="text" id="histSearch" placeholder="Rechercher..." style="width:185px;" />
+            <select id="histCatFilter" style="width:175px;"></select>
           </div>
         </div>
         <div style="overflow-x:auto;">
@@ -493,18 +735,18 @@
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody id="historyTableBody"></tbody>
+            <tbody id="histTableBody"></tbody>
           </table>
         </div>
       </div>
     </section>
 
-    <!-- ================= PAGE 3 : COMPARER ================= -->
-    <section id="page-compare" class="page">
-      <div class="card">
+    <!-- ONGLET 3 : COMPARER -->
+    <section id="view-compare" class="view-section">
+      <div class="wa-card">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
           <h3 style="margin:0;">Comparateur Période vs Précédente</h3>
-          <select id="compareMode" style="width:240px;">
+          <select id="compareSelect" style="width:230px;">
             <option value="month">Ce mois vs Mois dernier</option>
             <option value="week">Cette semaine vs Semaine dernière</option>
             <option value="year">Cette année vs Année dernière</option>
@@ -520,144 +762,146 @@
                 <th>Évolution</th>
               </tr>
             </thead>
-            <tbody id="compareTableBody"></tbody>
+            <tbody id="compareBody"></tbody>
           </table>
         </div>
       </div>
 
-      <div class="card">
+      <div class="wa-card">
         <h3>Calendrier Thermique (Intensité du mois)</h3>
-        <p style="color:var(--muted); font-size:0.88rem;">Repérez visuellement les jours où vos dépenses sont les plus élevées.</p>
-        <div class="heatmap-grid" id="heatmapGrid"></div>
+        <div class="heat-grid" id="heatGrid"></div>
       </div>
     </section>
 
-    <!-- ================= PAGE 4 : OUTILS ================= -->
-    <section id="page-tools" class="page">
-      <!-- Simulateur d'épargne -->
-      <div class="card">
+    <!-- ONGLET 4 : OUTILS -->
+    <section id="view-tools" class="view-section">
+      <div class="wa-card">
         <h3>Simulateur d'Épargne « Et si ? »</h3>
-        <p style="color:var(--muted); font-size:0.88rem;">Testez l'impact d'une réduction de vos dépenses variables sur votre trésorerie future.</p>
-        <label for="simReductionRange">Réduire mes dépenses de : <strong id="simReductionLabel">15 %</strong></label>
-        <input type="range" id="simReductionRange" min="0" max="60" step="5" value="15" />
+        <label for="simSlider">Réduire mes dépenses de : <strong id="simPctText">15 %</strong></label>
+        <input type="range" id="simSlider" min="0" max="60" step="5" value="15" />
         <div class="kpi-grid" style="margin-top:12px; margin-bottom:0;">
-          <div class="kpi">
-            <div class="kpi-label">Gain dans 3 mois</div>
-            <div class="kpi-val" style="color:var(--green);" id="simGain3m">0 F</div>
+          <div class="kpi-box">
+            <div class="kpi-title">Gain dans 3 mois</div>
+            <div class="kpi-num" style="color:var(--success);" id="sim3m">0 F</div>
           </div>
-          <div class="kpi">
-            <div class="kpi-label">Gain dans 1 an</div>
-            <div class="kpi-val" style="color:var(--green);" id="simGain1y">0 F</div>
+          <div class="kpi-box">
+            <div class="kpi-title">Gain dans 1 an</div>
+            <div class="kpi-num" style="color:var(--success);" id="sim1y">0 F</div>
           </div>
         </div>
       </div>
 
       <div class="grid-2">
-        <!-- Charges fixes -->
-        <div class="card">
+        <div class="wa-card">
           <h3>Charges Fixes &amp; Échéances</h3>
           <div style="display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap;">
-            <input type="text" id="billName" placeholder="Ex: Loyer, Internet" style="flex:1; min-width:130px;" />
-            <input type="number" id="billAmount" placeholder="Montant" style="width:120px;" />
-            <button type="button" class="btn btn-sm" id="btnAddBill">Ajouter</button>
+            <input type="text" id="billTitle" placeholder="Ex: Loyer, Internet" style="flex:1; min-width:130px;" />
+            <input type="number" id="billAmt" placeholder="Montant" style="width:115px;" />
+            <button type="button" class="wa-btn wa-btn-sm" id="btnAddBill">Ajouter</button>
           </div>
-          <div id="billsList"></div>
+          <div id="billsContainer"></div>
         </div>
 
-        <!-- Objectifs d'épargne -->
-        <div class="card">
+        <div class="wa-card">
           <h3>Objectifs d'Épargne (Tirelires)</h3>
           <div style="display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap;">
-            <input type="text" id="goalName" placeholder="Nom du projet" style="flex:1; min-width:120px;" />
-            <input type="number" id="goalTarget" placeholder="Cible" style="width:105px;" />
-            <input type="number" id="goalSaved" placeholder="Épargné" style="width:105px;" />
-            <button type="button" class="btn btn-sm" id="btnAddGoal">Nouveau projet</button>
+            <input type="text" id="goalTitle" placeholder="Projet" style="flex:1; min-width:110px;" />
+            <input type="number" id="goalTarget" placeholder="Cible" style="width:100px;" />
+            <input type="number" id="goalSaved" placeholder="Épargné" style="width:100px;" />
+            <button type="button" class="wa-btn wa-btn-sm" id="btnAddGoal">Nouveau projet</button>
           </div>
-          <div id="goalsList"></div>
+          <div id="goalsContainer"></div>
         </div>
       </div>
 
-      <!-- Plafonds mensuels par catégorie -->
-      <div class="card">
+      <div class="wa-card">
         <h3>Plafonds Mensuels par Catégorie</h3>
-        <div id="capsEditorList" class="form-grid"></div>
+        <div id="capsGrid" class="grid-form"></div>
       </div>
 
-      <!-- Sécurité, devise et sauvegarde JSON unifiée -->
-      <div class="card">
+      <div class="wa-card" id="backupCard">
         <h3>Sécurité &amp; Sauvegarde des Données</h3>
 
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding:10px 0; border-bottom:1px solid var(--border);">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding:10px 0; border-bottom:1px solid var(--wa-border);">
           <div>
             <strong>Verrouillage par Code PIN</strong>
-            <div style="font-size:0.84rem; color:var(--muted);">Protège l'ouverture de l'application (4 chiffres)</div>
+            <div style="font-size:0.82rem; color:var(--wa-muted);">Protège l'ouverture de l'application</div>
           </div>
           <div style="display:flex; gap:8px; align-items:center;">
-            <input type="password" id="pinSetupInput" maxlength="4" placeholder="PIN 4 chiffres" style="width:130px;" />
-            <button type="button" class="btn btn-sm" id="btnSetPin">Activer PIN</button>
-            <button type="button" class="btn btn-secondary btn-sm" id="btnDisablePin">Désactiver</button>
+            <input type="password" id="pinInputSet" maxlength="4" placeholder="PIN 4 chiffres" style="width:125px;" />
+            <button type="button" class="wa-btn wa-btn-sm" id="btnActivatePin">Activer PIN</button>
+            <button type="button" class="wa-btn wa-btn-ghost wa-btn-sm" id="btnDeactivatePin">Désactiver</button>
           </div>
         </div>
 
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding:12px 0; border-bottom:1px solid var(--border);">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding:12px 0; border-bottom:1px solid var(--wa-border);">
           <div>
             <strong>Devise d'affichage</strong>
-            <div style="font-size:0.84rem; color:var(--muted);">Symbole monétaire utilisé</div>
+            <div style="font-size:0.82rem; color:var(--wa-muted);">Symbole monétaire utilisé</div>
           </div>
           <div style="display:flex; gap:8px;">
-            <button type="button" class="btn btn-secondary btn-sm currency-btn" data-curr="FCFA">FCFA</button>
-            <button type="button" class="btn btn-secondary btn-sm currency-btn" data-curr="EUR">Euro (€)</button>
-            <button type="button" class="btn btn-secondary btn-sm currency-btn" data-curr="USD">Dollar ($)</button>
+            <button type="button" class="wa-btn wa-btn-ghost wa-btn-sm curr-btn" data-curr="FCFA">FCFA</button>
+            <button type="button" class="wa-btn wa-btn-ghost wa-btn-sm curr-btn" data-curr="EUR">Euro (€)</button>
+            <button type="button" class="wa-btn wa-btn-ghost wa-btn-sm curr-btn" data-curr="USD">Dollar ($)</button>
           </div>
         </div>
 
         <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;">
-          <button type="button" class="btn btn-success" id="btnExportJson">Sauvegarder (.json)</button>
-          <label class="btn btn-secondary" style="margin:0;">
+          <button type="button" class="wa-btn wa-btn-green" id="btnSaveJson">Sauvegarder (.json)</button>
+          <label class="wa-btn wa-btn-ghost" style="margin:0;">
             Restaurer (.json)
-            <input type="file" id="importJsonInput" accept="application/json,.json" style="display:none;" />
+            <input type="file" id="fileRestoreJson" accept="application/json,.json" style="display:none;" />
           </label>
-          <button type="button" class="btn btn-secondary" id="btnLoadDemo">Charger des données de démonstration</button>
+          <button type="button" class="wa-btn wa-btn-ghost" id="btnDemoData">Charger des données de démonstration</button>
         </div>
       </div>
     </section>
   </main>
 
-  <!-- NAVIGATION BASSE -->
-  <nav class="bottom-nav">
-    <button type="button" class="nav-item active" data-page="home">Accueil</button>
-    <button type="button" class="nav-item" data-page="history">Historique</button>
-    <button type="button" class="nav-item" data-page="compare">Comparer</button>
-    <button type="button" class="nav-item" data-page="tools">Outils</button>
-  </nav>
+  <!-- BARRE DE TÂCHES HORIZONTALE FLUIDE AU PIED DE LA PAGE -->
+  <footer class="wa-bottom-bar" aria-label="Barre de navigation rapide">
+    <div class="bottom-bar-inner">
+      <button type="button" class="dock-btn active" data-dock="home">
+        <span>🏠</span><span>Accueil</span>
+      </button>
+      <button type="button" class="dock-btn" data-dock="history">
+        <span>📋</span><span>Historique</span>
+      </button>
+      <button type="button" class="dock-fab" id="btnQuickComposer" title="Nouvelle opération / Brouillon">+</button>
+      <button type="button" class="dock-btn" data-dock="compare">
+        <span>📊</span><span>Comparer</span>
+      </button>
+      <button type="button" class="dock-btn" data-dock="tools">
+        <span>🧰</span><span>Outils</span>
+      </button>
+    </div>
+  </footer>
 
   <script>
   (function () {
     'use strict';
 
-    const STATE_KEY = 'fintrack_ai_full_state_v1';
+    const STORAGE_KEY = 'fintrack_wa_suite_v1';
     const CATEGORIES = [
       'Alimentation', 'Transport', 'Logement', 'Santé', 'Éducation',
       'Factures & Énergie', 'Loisirs', 'Salaire / Revenus', 'Commerce', 'Autres'
     ];
-    const AUTO_CAT_RULES = [
+    const RULES = [
       { kw: ['riz', 'pain', 'repas', 'nourriture', 'marché', 'marche', 'eau'], cat: 'Alimentation' },
-      { kw: ['essence', 'carburant', 'taxi', 'moto', 'bus', 'transport', 'péage'], cat: 'Transport' },
+      { kw: ['essence', 'carburant', 'taxi', 'moto', 'bus', 'transport'], cat: 'Transport' },
       { kw: ['loyer', 'maison', 'caution'], cat: 'Logement' },
       { kw: ['pharmacie', 'hôpital', 'hopital', 'médecin', 'santé', 'sante'], cat: 'Santé' },
       { kw: ['sbee', 'courant', 'électricité', 'electricite', 'internet', 'forfait', 'facture'], cat: 'Factures & Énergie' },
       { kw: ['salaire', 'paie', 'prime', 'vente', 'revenu', 'entrée', 'entree'], cat: 'Salaire / Revenus' }
     ];
 
-    function defaultState() {
+    function initialState() {
       return {
+        themeDark: false,
         currency: 'FCFA',
         period: 'month',
         pin: null,
-        initialTreasury: 0,
-        envelopes: [
-          { id: 'env-portefeuille', name: 'Portefeuille', balance: 0 }
-        ],
+        envelopes: [{ id: 'env-portefeuille', name: 'Portefeuille', balance: 0 }],
         operations: [],
         fixedBills: [],
         savingsGoals: [],
@@ -672,18 +916,19 @@
       };
     }
 
-    let state = loadState();
-    let draftAttachment = null;
-    let editingOpId = null;
-    let awaitingNegativeConfirm = false;
-    let pinEntry = '';
+    let state = loadAppState();
+    let opType = 'expense';
+    let draftReceipt = null;
+    let editingId = null;
+    let confirmNegative = false;
+    let pinBuffer = '';
 
-    function loadState() {
+    function loadAppState() {
       try {
-        const raw = localStorage.getItem(STATE_KEY);
-        if (!raw) return defaultState();
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return initialState();
         const parsed = JSON.parse(raw);
-        const base = defaultState();
+        const base = initialState();
         return Object.assign(base, parsed, {
           envelopes: Array.isArray(parsed.envelopes) && parsed.envelopes.length ? parsed.envelopes : base.envelopes,
           operations: Array.isArray(parsed.operations) ? parsed.operations : [],
@@ -692,12 +937,12 @@
           monthlyCaps: Object.assign(base.monthlyCaps, parsed.monthlyCaps || {})
         });
       } catch (_) {
-        return defaultState();
+        return initialState();
       }
     }
 
-    function saveState() {
-      localStorage.setItem(STATE_KEY, JSON.stringify(state));
+    function saveAppState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       if (typeof window.onFinTrackSmartUpdate === 'function') {
         window.onFinTrackSmartUpdate({
           envelopes: state.envelopes.slice(),
@@ -706,156 +951,205 @@
       }
     }
 
-    function formatMoney(val) {
-      const n = Number(val) || 0;
-      const formatted = n.toLocaleString('fr-FR', { maximumFractionDigits: 2 });
-      if (state.currency === 'EUR') return formatted + ' €';
-      if (state.currency === 'USD') return '$' + formatted;
-      return formatted + ' F';
+    function fmt(amount) {
+      const n = Number(amount) || 0;
+      const str = n.toLocaleString('fr-FR', { maximumFractionDigits: 2 });
+      if (state.currency === 'EUR') return str + ' €';
+      if (state.currency === 'USD') return '$' + str;
+      return str + ' F';
     }
 
-    function escapeHtml(str) {
-      return String(str ?? '').replace(/[&<>"']/g, function (c) {
+    function esc(s) {
+      return String(s ?? '').replace(/[&<>"']/g, function (c) {
         return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] || c;
       });
     }
 
-    // --- Calculatrice sécurisée pour le champ Montant ---
-    function evalAmountExpression(expr) {
-      const cleaned = String(expr || '').replace(/\s+/g, '').replace(',', '.');
-      if (!cleaned) return NaN;
-      if (!/^[0-9+\-*/().]+$/.test(cleaned)) return NaN;
+    // --- Thème WhatsApp ---
+    function applyTheme() {
+      document.body.classList.toggle('wa-dark', !!state.themeDark);
+    }
+
+    function toggleTheme() {
+      state.themeDark = !state.themeDark;
+      applyTheme();
+      saveAppState();
+    }
+
+    document.getElementById('btnHeaderTheme').addEventListener('click', toggleTheme);
+    document.getElementById('btnToggleTheme').addEventListener('click', toggleTheme);
+
+    // --- Menu latéral gauche rabattable ---
+    function openDrawer() {
+      document.getElementById('sideDrawer').classList.add('open');
+      document.getElementById('drawerBackdrop').classList.add('open');
+    }
+    function closeDrawer() {
+      document.getElementById('sideDrawer').classList.remove('open');
+      document.getElementById('drawerBackdrop').classList.remove('open');
+    }
+    window.closeDrawer = closeDrawer;
+
+    document.getElementById('btnOpenDrawer').addEventListener('click', openDrawer);
+
+    document.querySelectorAll('[data-drawer-page]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        switchView(btn.dataset.drawerPage);
+        closeDrawer();
+      });
+    });
+
+    window.jumpToSection = function (page, elementId) {
+      switchView(page);
+      closeDrawer();
+      setTimeout(function () {
+        const el = document.getElementById(elementId);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 60);
+    };
+
+    // --- Navigation principale & barre basse ---
+    function switchView(viewName) {
+      document.querySelectorAll('.view-section').forEach(function (sec) {
+        sec.classList.toggle('active', sec.id === 'view-' + viewName);
+      });
+      document.querySelectorAll('.dock-btn').forEach(function (btn) {
+        btn.classList.toggle('active', btn.dataset.dock === viewName);
+      });
+      document.querySelectorAll('.drawer-nav-btn').forEach(function (btn) {
+        btn.classList.toggle('active', btn.dataset.drawerPage === viewName);
+      });
+      renderAll();
+    }
+    window.switchView = switchView;
+
+    document.querySelectorAll('.dock-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () { switchView(btn.dataset.dock); });
+    });
+
+    document.getElementById('btnQuickComposer').addEventListener('click', function () {
+      switchView('home');
+      const card = document.getElementById('operationComposerCard');
+      if (card) card.scrollIntoView({ behavior: 'smooth' });
+      document.getElementById('opAmount').focus();
+    });
+
+    // --- Périodes ---
+    document.querySelectorAll('.period-chip').forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        state.period = chip.dataset.period;
+        document.querySelectorAll('.period-chip').forEach(function (c) {
+          c.classList.toggle('active', c.dataset.period === state.period);
+        });
+        saveAppState();
+        renderAll();
+      });
+    });
+
+    // --- Garde-fous ---
+    function showGuard(msg, isError) {
+      const box = document.getElementById('composerGuard');
+      box.className = 'guard-banner ' + (isError ? 'err' : 'warn');
+      box.textContent = msg;
+    }
+    function clearGuard() {
+      const box = document.getElementById('composerGuard');
+      box.className = 'guard-banner';
+      box.textContent = '';
+    }
+
+    function evalExpr(raw) {
+      const clean = String(raw || '').replace(/\s+/g, '').replace(',', '.');
+      if (!clean || !/^[0-9+\-*/().]+$/.test(clean)) return NaN;
       try {
-        const result = Function('"use strict"; return (' + cleaned + ')')();
-        return typeof result === 'number' && Number.isFinite(result) ? Number(result.toFixed(2)) : NaN;
+        const res = Function('"use strict"; return (' + clean + ')')();
+        return typeof res === 'number' && Number.isFinite(res) ? Number(res.toFixed(2)) : NaN;
       } catch (_) {
         return NaN;
       }
     }
 
-    // --- Auto-catégorisation selon le libellé ---
-    function suggestCategoryFromLabel(label) {
+    function autoCat(label) {
       const lower = String(label || '').toLowerCase();
-      for (const rule of AUTO_CAT_RULES) {
-        if (rule.kw.some(function (k) { return lower.includes(k); })) {
-          return rule.cat;
-        }
+      for (const r of RULES) {
+        if (r.kw.some(function (k) { return lower.includes(k); })) return r.cat;
       }
       return null;
     }
 
-    // --- Filtrage par période ---
-    function isInPeriod(dateStr, period) {
-      if (period === 'all') return true;
-      const d = new Date(dateStr);
-      if (Number.isNaN(d.getTime())) return true;
-      const now = new Date();
-      if (period === 'today') {
-        return d.toDateString() === now.toDateString();
-      }
-      if (period === 'week') {
-        const weekAgo = new Date(now.getTime() - 7 * 86400000);
-        return d >= weekAgo && d <= now;
-      }
-      if (period === 'month') {
-        return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
-      }
-      if (period === 'year') {
-        return d.getFullYear() === now.getFullYear();
-      }
-      return true;
-    }
-
-    // --- Messages de garde-fou ---
-    function showGuard(msg, isError) {
-      const box = document.getElementById('formGuardBox');
-      box.className = 'guard-box ' + (isError ? 'guard-error' : 'guard-warn');
-      box.textContent = msg;
-    }
-    function hideGuard() {
-      const box = document.getElementById('formGuardBox');
-      box.className = 'guard-box';
-      box.textContent = '';
-    }
-
-    // --- Enveloppes physiques (+ revenu / - dépense / création / suppression sécurisée) ---
-    function adjustEnvelopeBalance(envId, delta) {
+    // --- Enveloppes physiques ---
+    function applyEnvDelta(envId, delta) {
       const env = state.envelopes.find(function (e) { return e.id === envId; });
       if (!env) return;
       env.balance = Number(((Number(env.balance) || 0) + (Number(delta) || 0)).toFixed(2));
     }
 
-    document.getElementById('btnCreateEnvelope').addEventListener('click', function () {
-      const nameInput = document.getElementById('envNewName');
-      const initInput = document.getElementById('envNewInitial');
-      const name = String(nameInput.value || '').trim();
+    document.getElementById('btnAddEnvelope').addEventListener('click', function () {
+      const nameInp = document.getElementById('newEnvName');
+      const initInp = document.getElementById('newEnvInit');
+      const name = String(nameInp.value || '').trim();
       if (!name) {
-        showGuard('Indiquez un nom pour créer une enveloppe.', true);
+        showGuard('Veuillez saisir un nom d\'enveloppe.', true);
         return;
       }
-      const initVal = parseFloat(initInput.value);
-      const newEnv = {
+      const initVal = parseFloat(initInp.value);
+      const created = {
         id: 'env-' + Date.now() + '-' + Math.random().toString(36).slice(2, 5),
         name: name,
         balance: Number.isFinite(initVal) ? Number(initVal.toFixed(2)) : 0
       };
-      state.envelopes.push(newEnv);
-      nameInput.value = '';
-      initInput.value = '0';
-      hideGuard();
-      saveState();
+      state.envelopes.push(created);
+      nameInp.value = '';
+      initInp.value = '0';
+      clearGuard();
+      saveAppState();
       renderAll();
-      document.getElementById('opEnvelope').value = newEnv.id;
+      document.getElementById('opEnvelope').value = created.id;
     });
 
-    window.deleteEnvelopeSafe = function (envId) {
-      hideGuard();
+    window.removeEnvelopeSafe = function (envId) {
+      clearGuard();
       if (state.envelopes.length <= 1) {
-        showGuard('Impossible de supprimer la dernière enveloppe.', true);
+        showGuard('Suppression impossible : au moins une enveloppe doit rester active.', true);
         return;
       }
-      const used = state.operations.some(function (op) { return op.envelopeId === envId; });
-      if (used) {
-        showGuard('Cette enveloppe contient déjà des opérations : supprimez ou modifiez d\'abord ses opérations.', true);
+      if (state.operations.some(function (o) { return o.envelopeId === envId; })) {
+        showGuard('Suppression impossible : cette enveloppe contient déjà des opérations.', true);
         return;
       }
       state.envelopes = state.envelopes.filter(function (e) { return e.id !== envId; });
-      saveState();
+      saveAppState();
       renderAll();
     };
 
-    // --- Type d'opération (Dépense / Revenu / Virement) ---
-    let currentOpType = 'expense';
-    document.querySelectorAll('.type-pill').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        currentOpType = btn.dataset.optype;
-        document.querySelectorAll('.type-pill').forEach(function (b) {
-          b.className = 'type-pill';
-        });
-        btn.classList.add('active-' + currentOpType);
-        document.getElementById('transferTargetWrap').style.display = currentOpType === 'transfer' ? 'block' : 'none';
-        awaitingNegativeConfirm = false;
-        hideGuard();
+    // --- Type & auto-catégorie ---
+    document.querySelectorAll('.type-chip').forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        opType = chip.dataset.type;
+        document.querySelectorAll('.type-chip').forEach(function (c) { c.className = 'type-chip'; });
+        chip.classList.add('active-' + opType);
+        document.getElementById('opToWalletWrap').style.display = opType === 'transfer' ? 'block' : 'none';
+        confirmNegative = false;
+        clearGuard();
       });
     });
 
     document.getElementById('opLabel').addEventListener('input', function (e) {
-      const suggested = suggestCategoryFromLabel(e.target.value);
-      if (suggested) document.getElementById('opCategory').value = suggested;
+      const c = autoCat(e.target.value);
+      if (c) document.getElementById('opCategory').value = c;
     });
 
-    // --- Justificatif (Photo compressée via Canvas ou PDF ≤ 1,5 Mo) ---
-    function compressImage(file, maxWidth, quality) {
+    // --- Justificatif ---
+    function compressImg(file, maxW, quality) {
       return new Promise(function (resolve, reject) {
         const reader = new FileReader();
         reader.onload = function (ev) {
           const img = new Image();
           img.onload = function () {
             let w = img.width, h = img.height;
-            if (w > maxWidth) { h = Math.round((h * maxWidth) / w); w = maxWidth; }
+            if (w > maxW) { h = Math.round((h * maxW) / w); w = maxW; }
             const canvas = document.createElement('canvas');
-            canvas.width = w;
-            canvas.height = h;
+            canvas.width = w; canvas.height = h;
             canvas.getContext('2d').drawImage(img, 0, 0, w, h);
             resolve(canvas.toDataURL('image/jpeg', quality));
           };
@@ -869,293 +1163,285 @@
 
     function renderReceiptPreview(att) {
       const box = document.getElementById('opReceiptPreview');
-      if (!att || !att.data) {
-        box.innerHTML = '';
-        return;
-      }
-      const removeBtn = '<button type="button" class="btn btn-secondary btn-sm" style="margin-left:8px;" onclick="removeDraftReceipt()">Retirer</button>';
+      if (!att || !att.data) { box.innerHTML = ''; return; }
+      const delBtn = '<button type="button" class="wa-btn wa-btn-ghost wa-btn-sm" style="margin-left:8px;" onclick="clearReceiptOnly()">Retirer</button>';
       if (att.type === 'pdf') {
-        box.innerHTML = '📄 PDF : <strong>' + escapeHtml(att.name) + '</strong>' + removeBtn;
+        box.innerHTML = '📄 PDF : <strong>' + esc(att.name) + '</strong>' + delBtn;
       } else {
-        box.innerHTML = '<span style="display:inline-flex;align-items:center;gap:6px;"><img src="' + att.data + '" style="height:40px;border-radius:4px;" />Photo prête' + removeBtn + '</span>';
+        box.innerHTML = '<span style="display:inline-flex;align-items:center;gap:6px;"><img src="' + att.data + '" style="height:38px;border-radius:5px;" />Photo compressée' + delBtn + '</span>';
       }
     }
 
-    window.removeDraftReceipt = function () {
-      draftAttachment = null;
-      document.getElementById('opReceiptInput').value = '';
+    window.clearReceiptOnly = function () {
+      draftReceipt = null;
+      document.getElementById('opReceiptFile').value = '';
       renderReceiptPreview(null);
-      hideGuard();
+      clearGuard();
     };
 
-    document.getElementById('opReceiptInput').addEventListener('change', async function (e) {
+    document.getElementById('opReceiptFile').addEventListener('change', async function (e) {
       const file = e.target.files && e.target.files[0];
-      if (!file) {
-        draftAttachment = null;
-        renderReceiptPreview(null);
-        return;
-      }
-      hideGuard();
+      if (!file) { draftReceipt = null; renderReceiptPreview(null); return; }
+      clearGuard();
       if (file.type === 'application/pdf') {
         if (file.size > 1.5 * 1024 * 1024) {
-          showGuard('Le PDF dépasse 1,5 Mo. Choisissez un fichier plus léger.', true);
+          showGuard('PDF > 1,5 Mo : choisissez un fichier plus léger.', true);
           e.target.value = '';
           return;
         }
-        const reader = new FileReader();
-        reader.onload = function () {
-          draftAttachment = { name: file.name, type: 'pdf', data: reader.result };
-          renderReceiptPreview(draftAttachment);
-        };
-        reader.readAsDataURL(file);
+        const r = new FileReader();
+        r.onload = function () { draftReceipt = { name: file.name, type: 'pdf', data: r.result }; renderReceiptPreview(draftReceipt); };
+        r.readAsDataURL(file);
       } else if (file.type && file.type.startsWith('image/')) {
         try {
-          const compressed = await compressImage(file, 1000, 0.72);
-          draftAttachment = { name: file.name, type: 'image', data: compressed };
-          renderReceiptPreview(draftAttachment);
+          const dataUrl = await compressImg(file, 1000, 0.72);
+          draftReceipt = { name: file.name, type: 'image', data: dataUrl };
+          renderReceiptPreview(draftReceipt);
         } catch (_) {
-          showGuard('Erreur lors de la compression de la photo.', true);
+          showGuard('Erreur de compression image.', true);
         }
       } else {
-        showGuard('Format accepté : photo ou PDF.', true);
+        showGuard('Format non pris en charge (photo ou PDF uniquement).', true);
         e.target.value = '';
       }
     });
 
     // --- Saisie vocale en brouillon ---
-    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-    let recognition = null;
-    if (SpeechRec) {
-      recognition = new SpeechRec();
-      recognition.lang = 'fr-FR';
-      recognition.interimResults = false;
-      recognition.onstart = function () {
-        document.getElementById('voiceDraftStatus').textContent = 'Écoute active... ex. : « Dépense 4500 carburant mobile money ».';
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let rec = null;
+    if (SR) {
+      rec = new SR();
+      rec.lang = 'fr-FR';
+      rec.interimResults = false;
+      rec.onstart = function () {
+        document.getElementById('draftBanner').textContent = '🎤 Écoute en cours... ex. : « Dépense 3500 carburant mobile money ».';
       };
-      recognition.onresult = function (e) {
-        const transcript = e.results[0][0].transcript;
-        document.getElementById('voiceDraftStatus').textContent = 'Entendu (brouillon non enregistré) : « ' + transcript + ' ».';
-        const lower = transcript.toLowerCase();
+      rec.onresult = function (ev) {
+        const spoken = ev.results[0][0].transcript;
+        document.getElementById('draftBanner').textContent = 'Entendu (brouillon non enregistré) : « ' + spoken + ' ».';
+        const lower = spoken.toLowerCase();
 
-        const isIncome = /(revenu|entrée|entree|salaire|reçu|recu|vente|gain)/i.test(lower);
-        currentOpType = isIncome ? 'income' : 'expense';
-        document.querySelectorAll('.type-pill').forEach(function (b) {
-          b.className = 'type-pill' + (b.dataset.optype === currentOpType ? ' active-' + currentOpType : '');
+        const isInc = /(revenu|entrée|entree|salaire|reçu|recu|vente|gain)/i.test(lower);
+        opType = isInc ? 'income' : 'expense';
+        document.querySelectorAll('.type-chip').forEach(function (c) {
+          c.className = 'type-chip' + (c.dataset.type === opType ? ' active-' + opType : '');
         });
-        document.getElementById('transferTargetWrap').style.display = 'none';
+        document.getElementById('opToWalletWrap').style.display = 'none';
 
-        const numMatch = lower.replace(/\s+(?=\d{3})/g, '').match(/\d+([.,]\d+)?/);
-        if (numMatch) document.getElementById('opAmountExpr').value = numMatch[0].replace(',', '.');
+        const amtMatch = lower.replace(/\s+(?=\d{3})/g, '').match(/\d+([.,]\d+)?/);
+        if (amtMatch) document.getElementById('opAmount').value = amtMatch[0].replace(',', '.');
 
         let wallet = 'Espèces';
         if (/(mobile money|momo|mtn|moov|celtiis|flooz)/i.test(lower)) wallet = 'Mobile Money';
         else if (/(banque|carte|virement|chèque|cheque)/i.test(lower)) wallet = 'Banque';
         document.getElementById('opWallet').value = wallet;
 
-        const cleaned = lower
+        const cleanLabel = lower
           .replace(/(dépense|depense|revenu|entrée|entree|de|pour|par|en|francs|fcfa|euros|dollars)/gi, ' ')
           .replace(/(mobile money|momo|mtn|moov|celtiis|flooz|banque|carte|virement|chèque|cheque|espèces|especes|cash|liquide)/gi, ' ')
           .replace(/\d+([.,]\d+)?/g, ' ')
           .replace(/\s+/g, ' ')
           .trim();
-        if (cleaned) {
-          const cap = cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+
+        if (cleanLabel) {
+          const cap = cleanLabel.charAt(0).toUpperCase() + cleanLabel.slice(1);
           document.getElementById('opLabel').value = cap;
-          const cat = suggestCategoryFromLabel(cap);
+          const cat = autoCat(cap);
           if (cat) document.getElementById('opCategory').value = cat;
         }
-        awaitingNegativeConfirm = false;
-        hideGuard();
+        confirmNegative = false;
+        clearGuard();
       };
-      recognition.onerror = function (e) {
-        showGuard('Micro : ' + e.error, true);
-      };
+      rec.onerror = function (ev) { showGuard('Micro : ' + ev.error, true); };
     } else {
-      document.getElementById('btnVoiceDictate').disabled = true;
+      document.getElementById('btnVoiceStart').disabled = true;
       document.getElementById('btnVoiceRetry').disabled = true;
+      document.getElementById('btnHeaderVoice').disabled = true;
     }
 
-    function clearDraft(keepMsg) {
-      editingOpId = null;
-      awaitingNegativeConfirm = false;
-      currentOpType = 'expense';
-      document.querySelectorAll('.type-pill').forEach(function (b) {
-        b.className = 'type-pill' + (b.dataset.optype === 'expense' ? ' active-expense' : '');
+    function triggerVoice() {
+      if (!rec) return;
+      switchView('home');
+      clearGuard();
+      rec.start();
+    }
+
+    document.getElementById('btnVoiceStart').addEventListener('click', triggerVoice);
+    document.getElementById('btnHeaderVoice').addEventListener('click', triggerVoice);
+    document.getElementById('btnVoiceRetry').addEventListener('click', function () {
+      resetDraft(true);
+      if (rec) rec.start();
+    });
+
+    function resetDraft(keepMsg) {
+      editingId = null;
+      confirmNegative = false;
+      opType = 'expense';
+      document.querySelectorAll('.type-chip').forEach(function (c) {
+        c.className = 'type-chip' + (c.dataset.type === 'expense' ? ' active-expense' : '');
       });
-      document.getElementById('transferTargetWrap').style.display = 'none';
-      document.getElementById('opFormTitle').textContent = 'Nouvelle opération';
-      document.getElementById('btnCancelEditOp').style.display = 'none';
-      document.getElementById('opAmountExpr').value = '';
+      document.getElementById('opToWalletWrap').style.display = 'none';
+      document.getElementById('composerTitle').textContent = 'Nouvelle opération';
+      document.getElementById('btnCancelEdit').style.display = 'none';
+      document.getElementById('opAmount').value = '';
       document.getElementById('opLabel').value = '';
-      document.getElementById('opSubcategory').value = '';
+      document.getElementById('opSubcat').value = '';
       document.getElementById('opWallet').value = 'Espèces';
       document.getElementById('opDate').value = new Date().toISOString().slice(0, 10);
-      draftAttachment = null;
-      document.getElementById('opReceiptInput').value = '';
+      draftReceipt = null;
+      document.getElementById('opReceiptFile').value = '';
       renderReceiptPreview(null);
-      hideGuard();
+      clearGuard();
       if (!keepMsg) {
-        document.getElementById('voiceDraftStatus').textContent = 'Brouillon effacé — aucune donnée n\'a été enregistrée.';
+        document.getElementById('draftBanner').textContent = 'Brouillon effacé — aucune donnée n\'a été enregistrée.';
       }
     }
 
-    document.getElementById('btnVoiceDictate').addEventListener('click', function () {
-      if (recognition) { hideGuard(); recognition.start(); }
-    });
-    document.getElementById('btnVoiceRetry').addEventListener('click', function () {
-      clearDraft(true);
-      if (recognition) recognition.start();
-    });
-    document.getElementById('btnDraftClear').addEventListener('click', function () {
-      clearDraft(false);
-    });
-    document.getElementById('btnCancelEditOp').addEventListener('click', function () {
-      clearDraft(false);
-    });
+    document.getElementById('btnClearDraft').addEventListener('click', function () { resetDraft(false); });
+    document.getElementById('btnCancelEdit').addEventListener('click', function () { resetDraft(false); });
 
-    // --- Enregistrement d'une opération (création ou modification) ---
-    document.getElementById('btnSaveOperation').addEventListener('click', function () {
-      hideGuard();
-      const amount = evalAmountExpression(document.getElementById('opAmountExpr').value);
+    // --- Enregistrement / Édition / Suppression / Annulation ---
+    document.getElementById('btnSaveOp').addEventListener('click', function () {
+      clearGuard();
+      const amount = evalExpr(document.getElementById('opAmount').value);
       if (!Number.isFinite(amount) || amount <= 0) {
         showGuard('Montant invalide : saisissez un montant strictement supérieur à 0.', true);
         return;
       }
 
-      const envelopeId = document.getElementById('opEnvelope').value;
-      const env = state.envelopes.find(function (e) { return e.id === envelopeId; });
+      const envId = document.getElementById('opEnvelope').value;
+      const env = state.envelopes.find(function (e) { return e.id === envId; });
       if (!env) {
-        showGuard('Veuillez sélectionner ou créer une enveloppe.', true);
+        showGuard('Veuillez sélectionner une enveloppe.', true);
         return;
       }
 
       const label = String(document.getElementById('opLabel').value || '').trim() ||
-        (currentOpType === 'income' ? 'Revenu' : currentOpType === 'transfer' ? 'Virement' : 'Dépense');
+        (opType === 'income' ? 'Revenu' : opType === 'transfer' ? 'Virement' : 'Dépense');
       const category = document.getElementById('opCategory').value || 'Autres';
-      const subcategory = String(document.getElementById('opSubcategory').value || '').trim();
+      const subcat = String(document.getElementById('opSubcat').value || '').trim();
       const wallet = document.getElementById('opWallet').value || 'Espèces';
       const toWallet = document.getElementById('opToWallet').value || 'Banque';
-      const dateVal = document.getElementById('opDate').value || new Date().toISOString().slice(0, 10);
+      const dateStr = document.getElementById('opDate').value || new Date().toISOString().slice(0, 10);
 
-      const existingOp = editingOpId ? state.operations.find(function (o) { return o.id === editingOpId; }) : null;
-      const newDelta = currentOpType === 'income' ? amount : (currentOpType === 'expense' ? -amount : 0);
+      const existing = editingId ? state.operations.find(function (o) { return o.id === editingId; }) : null;
+      const newDelta = opType === 'income' ? amount : (opType === 'expense' ? -amount : 0);
 
-      let projectedEnvBalance = (Number(env.balance) || 0) + newDelta;
-      if (existingOp && existingOp.envelopeId === envelopeId) {
-        const oldDelta = existingOp.type === 'income' ? existingOp.amount : (existingOp.type === 'expense' ? -existingOp.amount : 0);
-        projectedEnvBalance = (Number(env.balance) || 0) - oldDelta + newDelta;
+      let nextEnvBal = (Number(env.balance) || 0) + newDelta;
+      if (existing && existing.envelopeId === envId) {
+        const oldDelta = existing.type === 'income' ? existing.amount : (existing.type === 'expense' ? -existing.amount : 0);
+        nextEnvBal = (Number(env.balance) || 0) - oldDelta + newDelta;
       }
 
-      if (currentOpType === 'expense' && projectedEnvBalance < 0 && !awaitingNegativeConfirm) {
-        awaitingNegativeConfirm = true;
+      if (opType === 'expense' && nextEnvBal < 0 && !confirmNegative) {
+        confirmNegative = true;
         showGuard(
-          'Attention : cette dépense fera passer l\'enveloppe « ' + env.name + ' » à ' + formatMoney(projectedEnvBalance) +
-          '. Cliquez à nouveau sur « Enregistrer l\'opération » pour confirmer.',
+          'Alerte : cette dépense fera passer « ' + env.name + ' » à ' + fmt(nextEnvBal) +
+          '. Cliquez encore sur « Enregistrer l\'opération » pour confirmer.',
           false
         );
         return;
       }
 
-      awaitingNegativeConfirm = false;
+      confirmNegative = false;
 
-      if (existingOp) {
-        const oldDelta = existingOp.type === 'income' ? existingOp.amount : (existingOp.type === 'expense' ? -existingOp.amount : 0);
-        adjustEnvelopeBalance(existingOp.envelopeId, -oldDelta);
-        adjustEnvelopeBalance(envelopeId, newDelta);
+      if (existing) {
+        const oldDelta = existing.type === 'income' ? existing.amount : (existing.type === 'expense' ? -existing.amount : 0);
+        applyEnvDelta(existing.envelopeId, -oldDelta);
+        applyEnvDelta(envId, newDelta);
 
-        existingOp.type = currentOpType;
-        existingOp.amount = amount;
-        existingOp.label = label;
-        existingOp.category = category;
-        existingOp.subcategory = subcategory;
-        existingOp.wallet = wallet;
-        existingOp.toWallet = currentOpType === 'transfer' ? toWallet : null;
-        existingOp.envelopeId = envelopeId;
-        existingOp.date = dateVal;
-        existingOp.attachment = draftAttachment;
+        existing.type = opType;
+        existing.amount = amount;
+        existing.label = label;
+        existing.category = category;
+        existing.subcategory = subcat;
+        existing.wallet = wallet;
+        existing.toWallet = opType === 'transfer' ? toWallet : null;
+        existing.envelopeId = envId;
+        existing.date = dateStr;
+        existing.attachment = draftReceipt;
         state.lastCreatedOpId = null;
       } else {
-        adjustEnvelopeBalance(envelopeId, newDelta);
-        const opId = 'op-' + Date.now() + '-' + Math.random().toString(36).slice(2, 5);
+        applyEnvDelta(envId, newDelta);
+        const id = 'op-' + Date.now() + '-' + Math.random().toString(36).slice(2, 5);
         state.operations.unshift({
-          id: opId,
-          type: currentOpType,
+          id: id,
+          type: opType,
           amount: amount,
           label: label,
           category: category,
-          subcategory: subcategory,
+          subcategory: subcat,
           wallet: wallet,
-          toWallet: currentOpType === 'transfer' ? toWallet : null,
-          envelopeId: envelopeId,
-          date: dateVal,
-          attachment: draftAttachment
+          toWallet: opType === 'transfer' ? toWallet : null,
+          envelopeId: envId,
+          date: dateStr,
+          attachment: draftReceipt
         });
-        state.lastCreatedOpId = opId;
+        state.lastCreatedOpId = id;
       }
 
-      saveState();
-      clearDraft(true);
+      saveAppState();
+      resetDraft(true);
       renderAll();
     });
 
-    // --- Annulation rapide / Édition / Suppression avec recalcul ---
-    document.getElementById('btnUndoLastOp').addEventListener('click', function () {
+    document.getElementById('btnUndoLast').addEventListener('click', function () {
       if (!state.lastCreatedOpId) return;
       const idx = state.operations.findIndex(function (o) { return o.id === state.lastCreatedOpId; });
       if (idx !== -1) {
         const op = state.operations[idx];
         const delta = op.type === 'income' ? op.amount : (op.type === 'expense' ? -op.amount : 0);
-        adjustEnvelopeBalance(op.envelopeId, -delta);
+        applyEnvDelta(op.envelopeId, -delta);
         state.operations.splice(idx, 1);
       }
       state.lastCreatedOpId = null;
-      saveState();
+      saveAppState();
       renderAll();
-      document.getElementById('voiceDraftStatus').textContent = 'Dernière opération annulée et solde restauré.';
+      document.getElementById('draftBanner').textContent = 'Dernière opération annulée ; solde de l\'enveloppe restauré.';
     });
 
-    window.editOperationById = function (opId) {
+    window.editOp = function (opId) {
       const op = state.operations.find(function (o) { return o.id === opId; });
       if (!op) return;
-      switchPage('home');
-      editingOpId = op.id;
-      awaitingNegativeConfirm = false;
-      currentOpType = op.type || 'expense';
-      document.querySelectorAll('.type-pill').forEach(function (b) {
-        b.className = 'type-pill' + (b.dataset.optype === currentOpType ? ' active-' + currentOpType : '');
+      switchView('home');
+      editingId = op.id;
+      confirmNegative = false;
+      opType = op.type || 'expense';
+      document.querySelectorAll('.type-chip').forEach(function (c) {
+        c.className = 'type-chip' + (c.dataset.type === opType ? ' active-' + opType : '');
       });
-      document.getElementById('transferTargetWrap').style.display = currentOpType === 'transfer' ? 'block' : 'none';
-      document.getElementById('opFormTitle').textContent = 'Modifier l\'opération';
-      document.getElementById('btnCancelEditOp').style.display = 'inline-block';
-      document.getElementById('opAmountExpr').value = op.amount;
+      document.getElementById('opToWalletWrap').style.display = opType === 'transfer' ? 'block' : 'none';
+      document.getElementById('composerTitle').textContent = 'Modifier l\'opération';
+      document.getElementById('btnCancelEdit').style.display = 'inline-block';
+      document.getElementById('opAmount').value = op.amount;
       document.getElementById('opLabel').value = op.label;
       document.getElementById('opCategory').value = op.category || 'Autres';
-      document.getElementById('opSubcategory').value = op.subcategory || '';
+      document.getElementById('opSubcat').value = op.subcategory || '';
       document.getElementById('opWallet').value = op.wallet || 'Espèces';
       if (op.toWallet) document.getElementById('opToWallet').value = op.toWallet;
       if (state.envelopes.some(function (e) { return e.id === op.envelopeId; })) {
         document.getElementById('opEnvelope').value = op.envelopeId;
       }
       document.getElementById('opDate').value = (op.date || '').slice(0, 10) || new Date().toISOString().slice(0, 10);
-      draftAttachment = op.attachment || null;
-      renderReceiptPreview(draftAttachment);
-      document.getElementById('newOperationCard').scrollIntoView({ behavior: 'smooth' });
+      draftReceipt = op.attachment || null;
+      renderReceiptPreview(draftReceipt);
+      document.getElementById('operationComposerCard').scrollIntoView({ behavior: 'smooth' });
     };
 
-    window.deleteOperationById = function (opId) {
+    window.deleteOp = function (opId) {
       const idx = state.operations.findIndex(function (o) { return o.id === opId; });
       if (idx === -1) return;
       const op = state.operations[idx];
       const delta = op.type === 'income' ? op.amount : (op.type === 'expense' ? -op.amount : 0);
-      adjustEnvelopeBalance(op.envelopeId, -delta);
+      applyEnvDelta(op.envelopeId, -delta);
       state.operations.splice(idx, 1);
       if (state.lastCreatedOpId === opId) state.lastCreatedOpId = null;
-      if (editingOpId === opId) clearDraft(true);
-      saveState();
+      if (editingId === opId) resetDraft(true);
+      saveAppState();
       renderAll();
     };
 
-    window.viewOperationReceipt = function (opId) {
+    window.openReceipt = function (opId) {
       const op = state.operations.find(function (o) { return o.id === opId; });
       if (!op || !op.attachment || !op.attachment.data) return;
       const win = window.open('', '_blank');
@@ -1167,455 +1453,402 @@
       }
     };
 
-    // --- Navigation & Périodes ---
-    function switchPage(pageName) {
-      document.querySelectorAll('.page').forEach(function (p) { p.classList.remove('active'); });
-      const target = document.getElementById('page-' + pageName);
-      if (target) target.classList.add('active');
-      document.querySelectorAll('.nav-item').forEach(function (b) {
-        b.classList.toggle('active', b.dataset.page === pageName);
-      });
-      renderAll();
+    // --- Filtrage période & Rendu ---
+    function matchPeriod(dateStr) {
+      if (state.period === 'all') return true;
+      const d = new Date(dateStr);
+      if (Number.isNaN(d.getTime())) return true;
+      const now = new Date();
+      if (state.period === 'today') return d.toDateString() === now.toDateString();
+      if (state.period === 'week') return (now - d) / 86400000 <= 7;
+      if (state.period === 'month') return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+      if (state.period === 'year') return d.getFullYear() === now.getFullYear();
+      return true;
     }
 
-    document.querySelectorAll('.nav-item').forEach(function (btn) {
-      btn.addEventListener('click', function () { switchPage(btn.dataset.page); });
-    });
-
-    document.querySelectorAll('.period-btn').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        state.period = btn.dataset.period;
-        document.querySelectorAll('.period-btn').forEach(function (b) {
-          b.classList.toggle('active', b.dataset.period === state.period);
-        });
-        saveState();
-        renderAll();
-      });
-    });
-
-    // --- Rendu global ---
     function renderAll() {
-      // Catégories et enveloppes dans les sélecteurs
-      const catSelect = document.getElementById('opCategory');
-      const prevCat = catSelect.value;
-      catSelect.innerHTML = CATEGORIES.map(function (c) {
-        return '<option value="' + escapeHtml(c) + '">' + escapeHtml(c) + '</option>';
+      const catSel = document.getElementById('opCategory');
+      const prevC = catSel.value;
+      catSel.innerHTML = CATEGORIES.map(function (c) {
+        return '<option value="' + esc(c) + '">' + esc(c) + '</option>';
       }).join('');
-      if (prevCat) catSelect.value = prevCat;
+      if (prevC) catSel.value = prevC;
 
-      const histCat = document.getElementById('historyCategoryFilter');
-      const prevHistCat = histCat.value;
-      histCat.innerHTML = '<option value="ALL">Toutes catégories</option>' + CATEGORIES.map(function (c) {
-        return '<option value="' + escapeHtml(c) + '">' + escapeHtml(c) + '</option>';
+      const histCatSel = document.getElementById('histCatFilter');
+      const prevHC = histCatSel.value;
+      histCatSel.innerHTML = '<option value="ALL">Toutes catégories</option>' + CATEGORIES.map(function (c) {
+        return '<option value="' + esc(c) + '">' + esc(c) + '</option>';
       }).join('');
-      if (prevHistCat) histCat.value = prevHistCat;
+      if (prevHC) histCatSel.value = prevHC;
 
-      const envSelect = document.getElementById('opEnvelope');
-      const prevEnv = envSelect.value;
-      envSelect.innerHTML = state.envelopes.map(function (e) {
-        return '<option value="' + escapeHtml(e.id) + '">' + escapeHtml(e.name) + ' (' + formatMoney(e.balance) + ')</option>';
+      const envSel = document.getElementById('opEnvelope');
+      const prevE = envSel.value;
+      envSel.innerHTML = state.envelopes.map(function (e) {
+        return '<option value="' + esc(e.id) + '">' + esc(e.name) + ' (' + fmt(e.balance) + ')</option>';
       }).join('');
-      if (prevEnv && state.envelopes.some(function (e) { return e.id === prevEnv; })) envSelect.value = prevEnv;
+      if (prevE && state.envelopes.some(function (e) { return e.id === prevE; })) envSel.value = prevE;
 
-      // Cartes d'enveloppes
-      const canDelete = state.envelopes.length > 1;
-      document.getElementById('envelopesCardsGrid').innerHTML = state.envelopes.map(function (env) {
+      // Enveloppes
+      const canDel = state.envelopes.length > 1;
+      document.getElementById('envelopesGrid').innerHTML = state.envelopes.map(function (env) {
         const bal = Number(env.balance) || 0;
-        const used = state.operations.some(function (o) { return o.envelopeId === env.id; });
-        const disabled = !canDelete || used;
+        const inUse = state.operations.some(function (o) { return o.envelopeId === env.id; });
+        const dis = !canDel || inUse;
         return (
-          '<div style="border:1px solid var(--border);border-radius:10px;padding:10px 12px;background:#f8fafc;">' +
+          '<div style="border:1px solid var(--wa-border);border-radius:var(--radius-md);padding:10px 12px;background:var(--wa-surface-soft);">' +
             '<div style="display:flex;justify-content:space-between;align-items:center;gap:6px;">' +
-              '<strong style="font-size:0.86rem;">' + escapeHtml(env.name) + '</strong>' +
-              '<button type="button" ' + (disabled ? 'disabled ' : '') +
-                'onclick="deleteEnvelopeSafe(\'' + escapeHtml(env.id) + '\')" ' +
-                'style="border:1px solid #fecaca;background:#fef2f2;color:#b91c1c;border-radius:6px;padding:2px 6px;font-size:0.75rem;cursor:' + (disabled ? 'not-allowed' : 'pointer') + ';">✕</button>' +
+              '<strong style="font-size:0.86rem;">' + esc(env.name) + '</strong>' +
+              '<button type="button" ' + (dis ? 'disabled ' : '') + 'onclick="removeEnvelopeSafe(\'' + esc(env.id) + '\')" ' +
+                'style="border:1px solid rgba(217,48,37,0.3);background:var(--danger-bg);color:var(--danger);border-radius:6px;padding:2px 6px;font-size:0.74rem;cursor:' + (dis ? 'not-allowed' : 'pointer') + ';">✕</button>' +
             '</div>' +
-            '<div style="font-size:1.1rem;font-weight:800;margin-top:4px;color:' + (bal < 0 ? 'var(--red)' : 'var(--green)') + ';">' +
-              formatMoney(bal) +
-            '</div>' +
+            '<div style="font-size:1.06rem;font-weight:800;margin-top:4px;color:' + (bal < 0 ? 'var(--danger)' : 'var(--success)') + ';">' + fmt(bal) + '</div>' +
           '</div>'
         );
       }).join('');
 
-      // Calcul des KPIs
-      const envelopesSum = state.envelopes.reduce(function (s, e) { return s + (Number(e.balance) || 0); }, 0);
-      const filteredOps = state.operations.filter(function (o) { return isInPeriod(o.date, state.period); });
-      const periodIncome = filteredOps.filter(function (o) { return o.type === 'income'; }).reduce(function (s, o) { return s + o.amount; }, 0);
-      const periodExpense = filteredOps.filter(function (o) { return o.type === 'expense'; }).reduce(function (s, o) { return s + o.amount; }, 0);
+      // KPIs
+      const envTotal = state.envelopes.reduce(function (s, e) { return s + (Number(e.balance) || 0); }, 0);
+      const pOps = state.operations.filter(function (o) { return matchPeriod(o.date); });
+      const inc = pOps.filter(function (o) { return o.type === 'income'; }).reduce(function (s, o) { return s + o.amount; }, 0);
+      const exp = pOps.filter(function (o) { return o.type === 'expense'; }).reduce(function (s, o) { return s + o.amount; }, 0);
+      const savRate = inc > 0 ? Math.round(((inc - exp) / inc) * 100) : 0;
 
-      const totalIncomeAll = state.operations.filter(function (o) { return o.type === 'income'; }).reduce(function (s, o) { return s + o.amount; }, 0);
-      const totalExpenseAll = state.operations.filter(function (o) { return o.type === 'expense'; }).reduce(function (s, o) { return s + o.amount; }, 0);
-      const totalTreasury = (Number(state.initialTreasury) || 0) + envelopesSum + (totalIncomeAll - totalExpenseAll) - envelopesSum;
-      // Note : les enveloppes reflètent directement les flux +revenu / -dépense + soldes initiaux
-      const displayTreasury = (Number(state.initialTreasury) || 0) + envelopesSum;
-
-      const savingsRate = periodIncome > 0 ? Math.round(((periodIncome - periodExpense) / periodIncome) * 100) : 0;
       const now = new Date();
-      const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-      const remainingDays = Math.max(1, daysInMonth - now.getDate() + 1);
-      const avgSpent = periodExpense / Math.max(1, now.getDate());
-      const dailyAllowance = displayTreasury > 0 ? displayTreasury / remainingDays : 0;
-      const healthScore = Math.max(0, Math.min(100, 50 + savingsRate + (displayTreasury >= 0 ? 15 : -25)));
+      const daysMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+      const remDays = Math.max(1, daysMonth - now.getDate() + 1);
+      const avgDay = exp / Math.max(1, now.getDate());
+      const dailyAllowance = envTotal > 0 ? envTotal / remDays : 0;
+      const score = Math.max(0, Math.min(100, 50 + savRate + (envTotal >= 0 ? 15 : -25)));
 
-      document.getElementById('kpiTotalTreasury').textContent = formatMoney(displayTreasury);
-      document.getElementById('kpiAutonomy').textContent = 'Autonomie : ' + (avgSpent > 0 ? Math.floor(displayTreasury / avgSpent) + ' jours' : 'stable');
-      document.getElementById('kpiPeriodIncome').textContent = formatMoney(periodIncome);
-      document.getElementById('kpiPeriodExpense').textContent = formatMoney(periodExpense);
-      document.getElementById('kpiSavingsRate').textContent = savingsRate + ' %';
-      document.getElementById('kpiDailyAllowance').textContent = formatMoney(dailyAllowance);
-      document.getElementById('kpiAvgSpent').textContent = 'Moyenne dépensée : ' + formatMoney(avgSpent) + '/jour';
-      document.getElementById('kpiHealthScore').textContent = healthScore + ' / 100';
+      document.getElementById('kpiTreasury').textContent = fmt(envTotal);
+      document.getElementById('kpiAutonomy').textContent = 'Autonomie : ' + (avgDay > 0 ? Math.floor(envTotal / avgDay) + ' jours' : 'stable');
+      document.getElementById('kpiIncome').textContent = fmt(inc);
+      document.getElementById('kpiExpense').textContent = fmt(exp);
+      document.getElementById('kpiSavings').textContent = savRate + ' %';
+      document.getElementById('kpiDaily').textContent = fmt(dailyAllowance);
+      document.getElementById('kpiAvgDay').textContent = 'Moyenne dépensée : ' + fmt(avgDay) + '/jour';
+      document.getElementById('kpiScore').textContent = score + ' / 100';
+      document.getElementById('headerWalletSummary').textContent = state.envelopes.length + ' enveloppe(s) • Trésorerie : ' + fmt(envTotal);
+      document.getElementById('liveAnalysisText').textContent =
+        'Enveloppes : ' + fmt(envTotal) + ' • Revenus : ' + fmt(inc) + ' • Dépenses : ' + fmt(exp) + ' • Taux d\'épargne : ' + savRate + ' %.';
 
-      document.getElementById('liveInsightText').textContent =
-        'Solde enveloppes : ' + formatMoney(envelopesSum) + ' • Revenus période : ' + formatMoney(periodIncome) + ' • Dépenses période : ' + formatMoney(periodExpense) + '.';
+      document.getElementById('btnUndoLast').style.display = state.lastCreatedOpId ? 'inline-flex' : 'none';
 
-      document.getElementById('btnUndoLastOp').style.display = state.lastCreatedOpId ? 'inline-block' : 'none';
+      // Graphiques & aperçus Accueil
+      document.getElementById('chartIncExp').innerHTML =
+        '<div style="display:flex;justify-content:space-between;font-size:0.86rem;"><span>Revenus</span><strong style="color:var(--success);">' + fmt(inc) + '</strong></div>' +
+        '<div class="meter-track"><div class="meter-fill" style="width:' + (inc > 0 ? 100 : 0) + '%;"></div></div>' +
+        '<div style="display:flex;justify-content:space-between;font-size:0.86rem;margin-top:10px;"><span>Dépenses</span><strong style="color:var(--danger);">' + fmt(exp) + '</strong></div>' +
+        '<div class="meter-track"><div class="meter-fill" style="background:var(--danger);width:' + Math.min(100, inc > 0 ? (exp / inc) * 100 : (exp > 0 ? 100 : 0)) + '%;"></div></div>';
 
-      // Graphiques synthétiques
-      document.getElementById('incomeVsExpenseChart').innerHTML =
-        '<p>Revenus : <strong style="color:var(--green);">' + formatMoney(periodIncome) + '</strong></p>' +
-        '<div class="progress-track"><div class="progress-fill" style="background:var(--green);width:' + Math.min(100, periodIncome > 0 ? 100 : 0) + '%;"></div></div>' +
-        '<p style="margin-top:10px;">Dépenses : <strong style="color:var(--red);">' + formatMoney(periodExpense) + '</strong></p>' +
-        '<div class="progress-track"><div class="progress-fill" style="background:var(--red);width:' + Math.min(100, periodIncome > 0 ? (periodExpense / periodIncome) * 100 : (periodExpense > 0 ? 100 : 0)) + '%;"></div></div>';
-
-      const byCat = {};
-      filteredOps.filter(function (o) { return o.type === 'expense'; }).forEach(function (o) {
-        byCat[o.category] = (byCat[o.category] || 0) + o.amount;
+      const catMap = {};
+      pOps.filter(function (o) { return o.type === 'expense'; }).forEach(function (o) {
+        catMap[o.category] = (catMap[o.category] || 0) + o.amount;
       });
-      const catEntries = Object.entries(byCat);
-      document.getElementById('categoryBreakdownChart').innerHTML = catEntries.length
-        ? catEntries.map(function (pair) {
-            return '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);"><span>' + escapeHtml(pair[0]) + '</span><strong>' + formatMoney(pair[1]) + '</strong></div>';
+      const catArr = Object.entries(catMap);
+      document.getElementById('chartCats').innerHTML = catArr.length
+        ? catArr.map(function (item) {
+            return '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--wa-border);font-size:0.86rem;"><span>' + esc(item[0]) + '</span><strong>' + fmt(item[1]) + '</strong></div>';
           }).join('')
-        : '<p style="color:var(--muted);">Aucune dépense sur cette période.</p>';
+        : '<div style="color:var(--wa-muted);font-size:0.86rem;">Aucune dépense sur cette période.</div>';
 
-      // Aperçu plafonds et dernières opérations sur Accueil
-      document.getElementById('homeCapsPreview').innerHTML = Object.entries(state.monthlyCaps).map(function (entry) {
+      document.getElementById('homeCapsBox').innerHTML = Object.entries(state.monthlyCaps).map(function (entry) {
         const cap = Number(entry[1]) || 0;
-        const spent = byCat[entry[0]] || 0;
+        const spent = catMap[entry[0]] || 0;
         const pct = cap > 0 ? Math.min(100, Math.round((spent / cap) * 100)) : 0;
-        return '<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;font-size:0.84rem;"><span>' + escapeHtml(entry[0]) + '</span><span>' + formatMoney(spent) + ' / ' + formatMoney(cap) + '</span></div><div class="progress-track"><div class="progress-fill" style="width:' + pct + '%;background:' + (pct >= 100 ? 'var(--red)' : 'var(--accent)') + ';"></div></div></div>';
+        return '<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;font-size:0.82rem;"><span>' + esc(entry[0]) + '</span><span>' + fmt(spent) + ' / ' + fmt(cap) + '</span></div><div class="meter-track"><div class="meter-fill" style="width:' + pct + '%;background:' + (pct >= 100 ? 'var(--danger)' : 'var(--wa-green)') + ';"></div></div></div>';
       }).join('');
 
-      document.getElementById('homeRecentOps').innerHTML = state.operations.slice(0, 5).map(function (op) {
+      document.getElementById('homeRecentBox').innerHTML = state.operations.slice(0, 5).map(function (op) {
         const env = state.envelopes.find(function (e) { return e.id === op.envelopeId; });
-        return '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.86rem;"><span><strong>' + escapeHtml(op.label) + '</strong> <small style="color:var(--muted);">(' + escapeHtml(env ? env.name : '') + ')</small></span><strong style="color:' + (op.type === 'income' ? 'var(--green)' : 'var(--red)') + ';">' + (op.type === 'income' ? '+' : '-') + formatMoney(op.amount) + '</strong></div>';
-      }).join('') || '<p style="color:var(--muted);">Aucune opération récente.</p>';
+        return '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--wa-border);font-size:0.85rem;"><span><strong>' + esc(op.label) + '</strong> <small style="color:var(--wa-muted);">• ' + esc(env ? env.name : '') + '</small></span><strong style="color:' + (op.type === 'income' ? 'var(--success)' : 'var(--danger)') + ';">' + (op.type === 'income' ? '+' : '-') + fmt(op.amount) + '</strong></div>';
+      }).join('') || '<div style="color:var(--wa-muted);font-size:0.85rem;">Aucune opération récente.</div>';
 
-      renderHistory();
-      renderCompareAndHeatmap();
-      renderTools();
+      renderHistoryTable();
+      renderCompareSection();
+      renderToolsSection();
     }
 
-    function renderHistory() {
-      const search = String(document.getElementById('historySearch').value || '').toLowerCase().trim();
-      const catFilter = document.getElementById('historyCategoryFilter').value;
-      const rows = state.operations.filter(function (op) {
-        const matchText = !search || String(op.label).toLowerCase().includes(search);
-        const matchCat = catFilter === 'ALL' || op.category === catFilter;
-        return matchText && matchCat;
+    function renderHistoryTable() {
+      const q = String(document.getElementById('histSearch').value || '').toLowerCase().trim();
+      const catF = document.getElementById('histCatFilter').value;
+      const list = state.operations.filter(function (o) {
+        return (!q || String(o.label).toLowerCase().includes(q)) && (catF === 'ALL' || o.category === catF);
       });
 
-      document.getElementById('historyTableBody').innerHTML = rows.map(function (op) {
+      document.getElementById('histTableBody').innerHTML = list.map(function (op) {
         const env = state.envelopes.find(function (e) { return e.id === op.envelopeId; });
-        const envLabel = (env ? env.name : 'Enveloppe') + ' • ' + (op.wallet || 'Espèces');
-        const receiptHtml = op.attachment
-          ? '<button type="button" class="btn btn-secondary btn-sm" onclick="viewOperationReceipt(\'' + escapeHtml(op.id) + '\')">📎 Voir</button>'
+        const envInfo = (env ? env.name : 'Enveloppe') + ' • ' + (op.wallet || 'Espèces');
+        const attBtn = op.attachment
+          ? '<button type="button" class="wa-btn wa-btn-ghost wa-btn-sm" onclick="openReceipt(\'' + esc(op.id) + '\')">📎 Voir</button>'
           : '—';
         return (
           '<tr>' +
-            '<td>' + escapeHtml((op.date || '').slice(0, 10)) + '</td>' +
-            '<td><strong>' + escapeHtml(op.label) + '</strong></td>' +
-            '<td>' + escapeHtml(op.category || 'Autres') + '</td>' +
-            '<td>' + escapeHtml(envLabel) + '</td>' +
-            '<td>' + receiptHtml + '</td>' +
-            '<td style="font-weight:700;color:' + (op.type === 'income' ? 'var(--green)' : 'var(--red)') + ';">' +
-              (op.type === 'income' ? '+' : '-') + formatMoney(op.amount) +
+            '<td>' + esc((op.date || '').slice(0, 10)) + '</td>' +
+            '<td><strong>' + esc(op.label) + '</strong></td>' +
+            '<td>' + esc(op.category || 'Autres') + '</td>' +
+            '<td>' + esc(envInfo) + '</td>' +
+            '<td>' + attBtn + '</td>' +
+            '<td style="font-weight:700;color:' + (op.type === 'income' ? 'var(--success)' : 'var(--danger)') + ';">' +
+              (op.type === 'income' ? '+' : '-') + fmt(op.amount) +
             '</td>' +
             '<td>' +
-              '<button type="button" class="btn btn-secondary btn-sm" onclick="editOperationById(\'' + escapeHtml(op.id) + '\')">Éditer</button> ' +
-              '<button type="button" class="btn btn-soft-danger btn-sm" onclick="deleteOperationById(\'' + escapeHtml(op.id) + '\')">Supprimer</button>' +
+              '<button type="button" class="wa-btn wa-btn-ghost wa-btn-sm" onclick="editOp(\'' + esc(op.id) + '\')">Éditer</button> ' +
+              '<button type="button" class="wa-btn wa-btn-soft-danger wa-btn-sm" onclick="deleteOp(\'' + esc(op.id) + '\')">Supprimer</button>' +
             '</td>' +
           '</tr>'
         );
-      }).join('') || '<tr><td colspan="7" style="color:var(--muted);">Aucune opération correspondante.</td></tr>';
+      }).join('') || '<tr><td colspan="7" style="color:var(--wa-muted);">Aucune opération trouvée.</td></tr>';
     }
 
-    document.getElementById('historySearch').addEventListener('input', renderHistory);
-    document.getElementById('historyCategoryFilter').addEventListener('change', renderHistory);
+    document.getElementById('histSearch').addEventListener('input', renderHistoryTable);
+    document.getElementById('histCatFilter').addEventListener('change', renderHistoryTable);
 
-    function renderCompareAndHeatmap() {
-      const mode = document.getElementById('compareMode').value;
+    function renderCompareSection() {
+      const mode = document.getElementById('compareSelect').value;
       const now = new Date();
-      const curTotals = {};
-      const prevTotals = {};
-
-      state.operations.filter(function (o) { return o.type === 'expense'; }).forEach(function (op) {
-        const d = new Date(op.date);
-        const cat = op.category || 'Autres';
+      const cur = {}, prev = {};
+      state.operations.filter(function (o) { return o.type === 'expense'; }).forEach(function (o) {
+        const d = new Date(o.date);
+        const c = o.category || 'Autres';
         if (mode === 'month') {
-          if (d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth()) curTotals[cat] = (curTotals[cat] || 0) + op.amount;
-          const prevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-          if (d.getFullYear() === prevMonth.getFullYear() && d.getMonth() === prevMonth.getMonth()) prevTotals[cat] = (prevTotals[cat] || 0) + op.amount;
+          if (d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth()) cur[c] = (cur[c] || 0) + o.amount;
+          const pm = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+          if (d.getFullYear() === pm.getFullYear() && d.getMonth() === pm.getMonth()) prev[c] = (prev[c] || 0) + o.amount;
         } else if (mode === 'year') {
-          if (d.getFullYear() === now.getFullYear()) curTotals[cat] = (curTotals[cat] || 0) + op.amount;
-          if (d.getFullYear() === now.getFullYear() - 1) prevTotals[cat] = (prevTotals[cat] || 0) + op.amount;
+          if (d.getFullYear() === now.getFullYear()) cur[c] = (cur[c] || 0) + o.amount;
+          if (d.getFullYear() === now.getFullYear() - 1) prev[c] = (prev[c] || 0) + o.amount;
         } else {
-          const diffDays = (now - d) / 86400000;
-          if (diffDays >= 0 && diffDays <= 7) curTotals[cat] = (curTotals[cat] || 0) + op.amount;
-          else if (diffDays > 7 && diffDays <= 14) prevTotals[cat] = (prevTotals[cat] || 0) + op.amount;
+          const days = (now - d) / 86400000;
+          if (days >= 0 && days <= 7) cur[c] = (cur[c] || 0) + o.amount;
+          else if (days > 7 && days <= 14) prev[c] = (prev[c] || 0) + o.amount;
         }
       });
 
-      const allCats = Array.from(new Set(Object.keys(curTotals).concat(Object.keys(prevTotals))));
-      document.getElementById('compareTableBody').innerHTML = allCats.map(function (cat) {
-        const cur = curTotals[cat] || 0;
-        const prev = prevTotals[cat] || 0;
-        const diff = prev > 0 ? Math.round(((cur - prev) / prev) * 100) : (cur > 0 ? 100 : 0);
-        return '<tr><td>' + escapeHtml(cat) + '</td><td>' + formatMoney(cur) + '</td><td>' + formatMoney(prev) + '</td><td>' + (diff >= 0 ? '+' : '') + diff + ' %</td></tr>';
-      }).join('') || '<tr><td colspan="4" style="color:var(--muted);">Pas encore assez de données pour comparer.</td></tr>';
+      const keys = Array.from(new Set(Object.keys(cur).concat(Object.keys(prev))));
+      document.getElementById('compareBody').innerHTML = keys.map(function (k) {
+        const a = cur[k] || 0, b = prev[k] || 0;
+        const pct = b > 0 ? Math.round(((a - b) / b) * 100) : (a > 0 ? 100 : 0);
+        return '<tr><td>' + esc(k) + '</td><td>' + fmt(a) + '</td><td>' + fmt(b) + '</td><td>' + (pct >= 0 ? '+' : '') + pct + ' %</td></tr>';
+      }).join('') || '<tr><td colspan="4" style="color:var(--wa-muted);">Aucune donnée comparative.</td></tr>';
 
-      const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-      const daySpend = {};
+      const daysInM = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+      const dayMap = {};
       state.operations.filter(function (o) {
         if (o.type !== 'expense') return false;
         const d = new Date(o.date);
         return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
       }).forEach(function (o) {
         const day = new Date(o.date).getDate();
-        daySpend[day] = (daySpend[day] || 0) + o.amount;
+        dayMap[day] = (dayMap[day] || 0) + o.amount;
       });
-      const maxDay = Math.max(1, ...Object.values(daySpend));
-      let heatHtml = '';
-      for (let day = 1; day <= daysInMonth; day++) {
-        const amt = daySpend[day] || 0;
-        const ratio = amt / maxDay;
-        const bg = amt === 0 ? '#f8fafc' : (ratio > 0.6 ? '#fecaca' : '#fef08a');
-        heatHtml += '<div class="heat-cell" style="background:' + bg + ';"><strong>' + day + '</strong><div style="font-size:0.7rem;">' + (amt > 0 ? formatMoney(amt) : '-') + '</div></div>';
+      const maxVal = Math.max(1, ...Object.values(dayMap));
+      let cells = '';
+      for (let i = 1; i <= daysInM; i++) {
+        const val = dayMap[i] || 0;
+        const bg = val === 0 ? 'var(--wa-surface-soft)' : (val / maxVal > 0.6 ? 'var(--danger-bg)' : 'var(--warn-bg)');
+        cells += '<div class="heat-day" style="background:' + bg + ';"><strong>' + i + '</strong><div>' + (val > 0 ? fmt(val) : '—') + '</div></div>';
       }
-      document.getElementById('heatmapGrid').innerHTML = heatHtml;
+      document.getElementById('heatGrid').innerHTML = cells;
     }
 
-    document.getElementById('compareMode').addEventListener('change', renderCompareAndHeatmap);
+    document.getElementById('compareSelect').addEventListener('change', renderCompareSection);
 
-    // --- Outils : Simulateur, Charges fixes, Objectifs, Plafonds, PIN, Devise, JSON ---
-    function renderTools() {
-      const pct = Number(document.getElementById('simReductionRange').value) || 0;
-      document.getElementById('simReductionLabel').textContent = pct + ' %';
+    function renderToolsSection() {
+      const pct = Number(document.getElementById('simSlider').value) || 0;
+      document.getElementById('simPctText').textContent = pct + ' %';
       const now = new Date();
-      const monthExpense = state.operations.filter(function (o) {
+      const mExp = state.operations.filter(function (o) {
         if (o.type !== 'expense') return false;
         const d = new Date(o.date);
         return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
       }).reduce(function (s, o) { return s + o.amount; }, 0);
-      const monthlyGain = monthExpense * (pct / 100);
-      document.getElementById('simGain3m').textContent = formatMoney(monthlyGain * 3);
-      document.getElementById('simGain1y').textContent = formatMoney(monthlyGain * 12);
+      const gainM = mExp * (pct / 100);
+      document.getElementById('sim3m').textContent = fmt(gainM * 3);
+      document.getElementById('sim1y').textContent = fmt(gainM * 12);
 
-      document.getElementById('billsList').innerHTML = state.fixedBills.map(function (b, idx) {
-        return '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.86rem;"><span>' + escapeHtml(b.name) + ' — <strong>' + formatMoney(b.amount) + '</strong></span><button type="button" class="btn btn-soft-danger btn-sm" onclick="removeBill(' + idx + ')">✕</button></div>';
-      }).join('') || '<p style="color:var(--muted);font-size:0.85rem;">Aucune charge fixe.</p>';
+      document.getElementById('billsContainer').innerHTML = state.fixedBills.map(function (b, i) {
+        return '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--wa-border);font-size:0.86rem;"><span>' + esc(b.name) + ' — <strong>' + fmt(b.amount) + '</strong></span><button type="button" class="wa-btn wa-btn-soft-danger wa-btn-sm" onclick="delBill(' + i + ')">✕</button></div>';
+      }).join('') || '<div style="color:var(--wa-muted);font-size:0.84rem;">Aucune charge fixe.</div>';
 
-      document.getElementById('goalsList').innerHTML = state.savingsGoals.map(function (g, idx) {
+      document.getElementById('goalsContainer').innerHTML = state.savingsGoals.map(function (g, i) {
         const p = g.target > 0 ? Math.min(100, Math.round((g.saved / g.target) * 100)) : 0;
-        return '<div style="margin-bottom:10px;font-size:0.86rem;"><div style="display:flex;justify-content:space-between;"><strong>' + escapeHtml(g.name) + '</strong><span>' + formatMoney(g.saved) + ' / ' + formatMoney(g.target) + ' (' + p + ' %) <button type="button" class="btn btn-soft-danger btn-sm" onclick="removeGoal(' + idx + ')">✕</button></span></div><div class="progress-track"><div class="progress-fill" style="width:' + p + '%;background:var(--green);"></div></div></div>';
-      }).join('') || '<p style="color:var(--muted);font-size:0.85rem;">Aucun objectif d\'épargne.</p>';
+        return '<div style="margin-bottom:10px;font-size:0.86rem;"><div style="display:flex;justify-content:space-between;"><strong>' + esc(g.name) + '</strong><span>' + fmt(g.saved) + ' / ' + fmt(g.target) + ' (' + p + ' %) <button type="button" class="wa-btn wa-btn-soft-danger wa-btn-sm" onclick="delGoal(' + i + ')">✕</button></span></div><div class="meter-track"><div class="meter-fill" style="width:' + p + '%;"></div></div></div>';
+      }).join('') || '<div style="color:var(--wa-muted);font-size:0.84rem;">Aucun objectif enregistré.</div>';
 
-      document.getElementById('capsEditorList').innerHTML = Object.keys(state.monthlyCaps).map(function (cat) {
-        return '<div><label>' + escapeHtml(cat) + '</label><input type="number" value="' + (state.monthlyCaps[cat] || 0) + '" onchange="updateCap(\'' + escapeHtml(cat) + '\', this.value)" /></div>';
+      document.getElementById('capsGrid').innerHTML = Object.keys(state.monthlyCaps).map(function (c) {
+        return '<div><label>' + esc(c) + '</label><input type="number" value="' + (state.monthlyCaps[c] || 0) + '" onchange="setCap(\'' + esc(c) + '\', this.value)" /></div>';
       }).join('');
     }
 
-    document.getElementById('simReductionRange').addEventListener('input', renderTools);
+    document.getElementById('simSlider').addEventListener('input', renderToolsSection);
 
     document.getElementById('btnAddBill').addEventListener('click', function () {
-      const name = String(document.getElementById('billName').value || '').trim();
-      const amount = parseFloat(document.getElementById('billAmount').value);
-      if (!name || !Number.isFinite(amount) || amount <= 0) return;
-      state.fixedBills.push({ name: name, amount: amount });
-      document.getElementById('billName').value = '';
-      document.getElementById('billAmount').value = '';
-      saveState();
-      renderTools();
+      const name = String(document.getElementById('billTitle').value || '').trim();
+      const amt = parseFloat(document.getElementById('billAmt').value);
+      if (!name || !Number.isFinite(amt) || amt <= 0) return;
+      state.fixedBills.push({ name: name, amount: amt });
+      document.getElementById('billTitle').value = '';
+      document.getElementById('billAmt').value = '';
+      saveAppState();
+      renderToolsSection();
     });
 
-    window.removeBill = function (idx) {
-      state.fixedBills.splice(idx, 1);
-      saveState();
-      renderTools();
-    };
+    window.delBill = function (i) { state.fixedBills.splice(i, 1); saveAppState(); renderToolsSection(); };
 
     document.getElementById('btnAddGoal').addEventListener('click', function () {
-      const name = String(document.getElementById('goalName').value || '').trim();
+      const name = String(document.getElementById('goalTitle').value || '').trim();
       const target = parseFloat(document.getElementById('goalTarget').value);
       const saved = parseFloat(document.getElementById('goalSaved').value) || 0;
       if (!name || !Number.isFinite(target) || target <= 0) return;
       state.savingsGoals.push({ name: name, target: target, saved: saved });
-      document.getElementById('goalName').value = '';
+      document.getElementById('goalTitle').value = '';
       document.getElementById('goalTarget').value = '';
       document.getElementById('goalSaved').value = '';
-      saveState();
-      renderTools();
+      saveAppState();
+      renderToolsSection();
     });
 
-    window.removeGoal = function (idx) {
-      state.savingsGoals.splice(idx, 1);
-      saveState();
-      renderTools();
-    };
+    window.delGoal = function (i) { state.savingsGoals.splice(i, 1); saveAppState(); renderToolsSection(); };
 
-    window.updateCap = function (cat, val) {
-      state.monthlyCaps[cat] = Math.max(0, parseFloat(val) || 0);
-      saveState();
+    window.setCap = function (c, v) {
+      state.monthlyCaps[c] = Math.max(0, parseFloat(v) || 0);
+      saveAppState();
       renderAll();
     };
 
-    // --- Verrouillage PIN ---
-    function checkPinScreen() {
-      const screen = document.getElementById('pinLockScreen');
-      if (state.pin) {
-        screen.classList.add('active');
-        clearPinEntry();
-      } else {
-        screen.classList.remove('active');
-      }
+    // --- PIN & Devise ---
+    function updatePinScreen() {
+      const scr = document.getElementById('pinLockScreen');
+      if (state.pin) { scr.classList.add('active'); pinReset(); }
+      else { scr.classList.remove('active'); }
     }
 
-    window.pressPin = function (digit) {
-      if (pinEntry.length < 4) {
-        pinEntry += digit;
-        document.getElementById('pinDots').textContent = '● '.repeat(pinEntry.length) + '• '.repeat(4 - pinEntry.length);
+    window.pinPress = function (d) {
+      if (pinBuffer.length < 4) {
+        pinBuffer += d;
+        document.getElementById('pinDots').textContent = '● '.repeat(pinBuffer.length) + '• '.repeat(4 - pinBuffer.length);
       }
     };
-
-    window.clearPinEntry = function () {
-      pinEntry = '';
+    window.pinReset = function () {
+      pinBuffer = '';
       document.getElementById('pinDots').textContent = '• • • •';
-      document.getElementById('pinErrorMsg').textContent = '';
+      document.getElementById('pinError').textContent = '';
     };
-
-    window.unlockWithPin = function () {
-      if (pinEntry === state.pin) {
+    window.pinSubmit = function () {
+      if (pinBuffer === state.pin) {
         document.getElementById('pinLockScreen').classList.remove('active');
-        clearPinEntry();
+        pinReset();
       } else {
-        document.getElementById('pinErrorMsg').textContent = 'Code PIN incorrect.';
-        clearPinEntry();
+        document.getElementById('pinError').textContent = 'PIN incorrect.';
+        pinReset();
       }
     };
 
-    document.getElementById('btnSetPin').addEventListener('click', function () {
-      const val = String(document.getElementById('pinSetupInput').value || '').trim();
-      if (!/^\d{4}$/.test(val)) {
-        alert('Entrez exactement 4 chiffres.');
-        return;
-      }
-      state.pin = val;
-      document.getElementById('pinSetupInput').value = '';
-      saveState();
+    document.getElementById('btnActivatePin').addEventListener('click', function () {
+      const p = String(document.getElementById('pinInputSet').value || '').trim();
+      if (!/^\d{4}$/.test(p)) { alert('Entrez un code PIN à 4 chiffres.'); return; }
+      state.pin = p;
+      document.getElementById('pinInputSet').value = '';
+      saveAppState();
       alert('Code PIN activé.');
     });
 
-    document.getElementById('btnDisablePin').addEventListener('click', function () {
+    document.getElementById('btnDeactivatePin').addEventListener('click', function () {
       state.pin = null;
-      saveState();
+      saveAppState();
       alert('Code PIN désactivé.');
     });
 
-    // --- Devise ---
-    document.querySelectorAll('.currency-btn').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        state.currency = btn.dataset.curr;
-        saveState();
+    document.querySelectorAll('.curr-btn').forEach(function (b) {
+      b.addEventListener('click', function () {
+        state.currency = b.dataset.curr;
+        saveAppState();
         renderAll();
       });
     });
 
-    // --- Sauvegarde & Restauration JSON unifiée ---
-    function exportFullJson() {
-      const payload = Object.assign({}, state, {
+    // --- Export / Import JSON complet ---
+    function exportJson() {
+      const bundle = Object.assign({}, state, {
         smartModule: {
           envelopes: state.envelopes,
           smartOperations: state.operations
         },
         exportedAt: new Date().toISOString()
       });
-      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'fintrack-ai-complet-' + new Date().toISOString().slice(0, 10) + '.json';
+      a.download = 'fintrack-whatsapp-' + new Date().toISOString().slice(0, 10) + '.json';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
     }
 
-    function importFullJsonFile(file) {
+    function importJsonFile(file) {
       if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function (ev) {
+      const r = new FileReader();
+      r.onload = function (ev) {
         try {
           const parsed = JSON.parse(ev.target.result);
-          const smartPart = parsed.smartModule || {};
-          const next = Object.assign(defaultState(), parsed, {
-            envelopes: Array.isArray(parsed.envelopes) ? parsed.envelopes : (Array.isArray(smartPart.envelopes) ? smartPart.envelopes : defaultState().envelopes),
-            operations: Array.isArray(parsed.operations) ? parsed.operations : (Array.isArray(smartPart.smartOperations) ? smartPart.smartOperations : [])
+          const sm = parsed.smartModule || {};
+          state = Object.assign(initialState(), parsed, {
+            envelopes: Array.isArray(parsed.envelopes) ? parsed.envelopes : (Array.isArray(sm.envelopes) ? sm.envelopes : initialState().envelopes),
+            operations: Array.isArray(parsed.operations) ? parsed.operations : (Array.isArray(sm.smartOperations) ? sm.smartOperations : [])
           });
-          state = next;
-          saveState();
+          applyTheme();
+          saveAppState();
           renderAll();
-          checkPinScreen();
-          alert('Sauvegarde JSON restaurée avec succès.');
+          updatePinScreen();
+          alert('Données restaurées.');
         } catch (_) {
           alert('Fichier JSON invalide.');
         }
       };
-      reader.readAsText(file);
+      r.readAsText(file);
     }
 
-    document.getElementById('btnExportJson').addEventListener('click', exportFullJson);
-    document.getElementById('importJsonInput').addEventListener('change', function (e) {
-      importFullJsonFile(e.target.files && e.target.files[0]);
+    document.getElementById('btnSaveJson').addEventListener('click', exportJson);
+    document.getElementById('fileRestoreJson').addEventListener('change', function (e) {
+      importJsonFile(e.target.files && e.target.files[0]);
       e.target.value = '';
     });
 
-    // --- Données de démonstration ---
-    document.getElementById('btnLoadDemo').addEventListener('click', function () {
+    document.getElementById('btnDemoData').addEventListener('click', function () {
       const today = new Date().toISOString().slice(0, 10);
       state.envelopes = [
-        { id: 'env-poche', name: 'Portefeuille', balance: 42000 },
-        { id: 'env-coffre', name: 'Coffre', balance: 150000 }
+        { id: 'env-poche', name: 'Portefeuille', balance: 35000 },
+        { id: 'env-coffre', name: 'Coffre', balance: 120000 }
       ];
       state.operations = [
-        { id: 'op-demo-1', type: 'income', amount: 200000, label: 'Salaire mensuel', category: 'Salaire / Revenus', subcategory: '', wallet: 'Banque', envelopeId: 'env-coffre', date: today, attachment: null },
-        { id: 'op-demo-2', type: 'expense', amount: 8000, label: 'Carburant & courses', category: 'Transport', subcategory: '', wallet: 'Mobile Money', envelopeId: 'env-poche', date: today, attachment: null }
+        { id: 'demo-1', type: 'income', amount: 150000, label: 'Salaire', category: 'Salaire / Revenus', subcategory: '', wallet: 'Banque', envelopeId: 'env-coffre', date: today, attachment: null },
+        { id: 'demo-2', type: 'expense', amount: 6500, label: 'Transport & repas', category: 'Transport', subcategory: '', wallet: 'Mobile Money', envelopeId: 'env-poche', date: today, attachment: null }
       ];
       state.lastCreatedOpId = null;
-      saveState();
+      saveAppState();
       renderAll();
     });
 
-    // API globale exposée pour compatibilité externe
     window.FinTrackSmartBackup = {
-      getPayload: function () {
-        return { envelopes: state.envelopes.slice(), smartOperations: state.operations.slice() };
-      },
-      restorePayload: function (payload) {
-        if (!payload || typeof payload !== 'object') return;
-        if (Array.isArray(payload.envelopes) && payload.envelopes.length) state.envelopes = payload.envelopes;
-        if (Array.isArray(payload.smartOperations)) state.operations = payload.smartOperations;
-        saveState();
+      getPayload: function () { return { envelopes: state.envelopes.slice(), smartOperations: state.operations.slice() }; },
+      restorePayload: function (p) {
+        if (!p || typeof p !== 'object') return;
+        if (Array.isArray(p.envelopes) && p.envelopes.length) state.envelopes = p.envelopes;
+        if (Array.isArray(p.smartOperations)) state.operations = p.smartOperations;
+        saveAppState();
         renderAll();
       },
-      downloadJson: exportFullJson,
-      handleFileImport: function (file) { importFullJsonFile(file); }
+      downloadJson: exportJson,
+      handleFileImport: importJsonFile
     };
 
-    // Initialisation
-    clearDraft(true);
-    checkPinScreen();
+    // Démarrage
+    applyTheme();
+    resetDraft(true);
+    updatePinScreen();
     renderAll();
   })();
   </script>
