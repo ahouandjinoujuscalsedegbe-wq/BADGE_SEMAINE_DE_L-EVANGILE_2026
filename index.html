@@ -3,50 +3,46 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FinTrack AI — Gestion Financière Intelligente</title>
+  <title>FinTrack AI — WhatsApp Finance</title>
   <style>
     :root {
       --wa-teal: #008069;
       --wa-teal-dark: #005c4b;
-      --wa-green: #00a884;
-      --wa-light-green: #d9fdd3;
-      --wa-bg: #efeae2;
-      --wa-pattern: rgba(11, 20, 26, 0.035);
+      --wa-accent: #00a884;
+      --wa-bubble-out: #d9fdd3;
+      --wa-paper: #efeae2;
+      --wa-dots: rgba(11, 20, 26, 0.04);
       --wa-surface: #ffffff;
-      --wa-surface-soft: #f0f2f5;
+      --wa-soft: #f0f2f5;
       --wa-text: #111b21;
-      --wa-muted: #54656f;
-      --wa-border: #e9edef;
-      --wa-drawer: #ffffff;
-      --wa-nav-bg: rgba(255, 255, 255, 0.96);
+      --wa-subtext: #54656f;
+      --wa-line: #e9edef;
+      --wa-input-bg: #ffffff;
       --danger: #d93025;
-      --danger-bg: #fce8e6;
+      --danger-soft: #fce8e6;
       --warn: #9a6700;
-      --warn-bg: #fff8c5;
-      --success: #008069;
-      --success-bg: #d9fdd3;
-      --radius-lg: 14px;
-      --radius-md: 10px;
-      --shadow: 0 1px 3px rgba(11, 20, 26, 0.08);
+      --warn-soft: #fff8c5;
+      --ok: #008069;
+      --ok-soft: #d9fdd3;
+      --shadow: 0 1px 2px rgba(11, 20, 26, 0.08);
     }
 
     body.wa-dark {
       --wa-teal: #1f2c34;
       --wa-teal-dark: #111b21;
-      --wa-green: #00a884;
-      --wa-light-green: #005c4b;
-      --wa-bg: #0b141a;
-      --wa-pattern: rgba(255, 255, 255, 0.025);
+      --wa-accent: #00a884;
+      --wa-bubble-out: #005c4b;
+      --wa-paper: #0b141a;
+      --wa-dots: rgba(255, 255, 255, 0.025);
       --wa-surface: #111b21;
-      --wa-surface-soft: #202c33;
+      --wa-soft: #202c33;
       --wa-text: #e9edef;
-      --wa-muted: #8696a0;
-      --wa-border: #222d34;
-      --wa-drawer: #111b21;
-      --wa-nav-bg: rgba(17, 27, 33, 0.96);
-      --danger-bg: rgba(217, 48, 37, 0.2);
-      --warn-bg: rgba(154, 103, 0, 0.22);
-      --success-bg: rgba(0, 168, 132, 0.18);
+      --wa-subtext: #8696a0;
+      --wa-line: #222d34;
+      --wa-input-bg: #2a3942;
+      --danger-soft: rgba(217, 48, 37, 0.22);
+      --warn-soft: rgba(154, 103, 0, 0.25);
+      --ok-soft: rgba(0, 168, 132, 0.2);
     }
 
     * { box-sizing: border-box; }
@@ -54,19 +50,18 @@
     body {
       margin: 0;
       font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: var(--wa-bg);
+      background-color: var(--wa-paper);
       background-image:
-        radial-gradient(var(--wa-pattern) 1px, transparent 1px),
-        radial-gradient(var(--wa-pattern) 1px, var(--wa-bg) 1px);
-      background-size: 24px 24px;
-      background-position: 0 0, 12px 12px;
+        radial-gradient(var(--wa-dots) 1px, transparent 1px),
+        radial-gradient(var(--wa-dots) 1px, var(--wa-paper) 1px);
+      background-size: 22px 22px;
+      background-position: 0 0, 11px 11px;
       color: var(--wa-text);
-      padding-bottom: 84px;
-      transition: background-color 0.2s, color 0.2s;
+      padding-bottom: 132px;
     }
 
-    /* Écran PIN style WhatsApp */
-    #pinLockScreen {
+    /* Écran PIN */
+    #pinModal {
       position: fixed;
       inset: 0;
       background: var(--wa-teal-dark);
@@ -75,651 +70,562 @@
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: 18px;
     }
-    #pinLockScreen.active { display: flex; }
-    .pin-card {
+    #pinModal.show { display: flex; }
+    .pin-box {
+      width: 100%;
+      max-width: 330px;
       background: #111b21;
       border: 1px solid #222d34;
-      border-radius: 18px;
-      padding: 24px;
-      width: 100%;
-      max-width: 340px;
+      border-radius: 16px;
+      padding: 22px;
       text-align: center;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
     }
-    .pin-dots {
-      font-size: 1.7rem;
-      letter-spacing: 10px;
-      margin: 14px 0;
-      color: var(--wa-green);
-    }
-    .pin-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-top: 12px;
-    }
-    .pin-btn {
-      padding: 13px;
+    .pin-dots { font-size: 1.7rem; letter-spacing: 10px; margin: 12px 0; color: var(--wa-accent); }
+    .pin-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+    .pin-key {
+      padding: 12px;
       border: none;
       border-radius: 10px;
       background: #202c33;
       color: #e9edef;
-      font-size: 1.05rem;
-      font-weight: 600;
+      font-weight: 700;
+      font-size: 1rem;
       cursor: pointer;
     }
-    .pin-btn:hover { background: #2a3942; }
 
-    /* En-tête WhatsApp */
-    header.wa-header {
+    /* Barre supérieure & onglets façon WhatsApp */
+    .wa-top {
       background: var(--wa-teal);
       color: #ffffff;
       position: sticky;
       top: 0;
       z-index: 300;
-      box-shadow: 0 2px 6px rgba(11, 20, 26, 0.14);
+      box-shadow: 0 2px 5px rgba(11, 20, 26, 0.15);
     }
-    .wa-header-top {
-      max-width: 1200px;
+    .wa-top-row {
+      max-width: 1120px;
       margin: 0 auto;
-      padding: 10px 14px;
+      padding: 10px 12px;
       display: flex;
+      align-items: center;
       justify-content: space-between;
-      align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
-    .wa-brand-group {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .icon-circle-btn {
-      width: 38px;
-      height: 38px;
+    .wa-left { display: flex; align-items: center; gap: 10px; }
+    .wa-icon-btn {
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       border: none;
       background: rgba(255, 255, 255, 0.14);
       color: #fff;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
     }
-    .icon-circle-btn:hover { background: rgba(255, 255, 255, 0.24); }
-    .wa-title { font-size: 1.12rem; font-weight: 700; line-height: 1.15; }
-    .wa-subtitle { font-size: 0.74rem; opacity: 0.88; }
+    .wa-app-title { font-size: 1.08rem; font-weight: 700; }
+    .wa-app-sub { font-size: 0.74rem; opacity: 0.88; }
 
-    .period-strip {
-      background: var(--wa-teal-dark);
-      padding: 6px 14px;
-      overflow-x: auto;
-      white-space: nowrap;
-    }
-    .period-strip-inner {
-      max-width: 1200px;
-      margin: 0 auto;
+    .wa-tabs {
       display: flex;
-      gap: 8px;
+      max-width: 1120px;
+      margin: 0 auto;
     }
-    .period-chip {
+    .wa-tab {
+      flex: 1;
       border: none;
-      background: rgba(255, 255, 255, 0.12);
-      color: rgba(255, 255, 255, 0.9);
-      padding: 5px 12px;
-      border-radius: 999px;
-      font-size: 0.8rem;
-      font-weight: 600;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.78);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 10px 6px;
       cursor: pointer;
+      border-bottom: 3px solid transparent;
     }
-    .period-chip.active {
-      background: var(--wa-green);
-      color: #fff;
+    .wa-tab.active {
+      color: #ffffff;
+      border-bottom-color: #ffffff;
     }
 
     /* Menu latéral gauche rabattable */
-    #drawerBackdrop {
+    #waBackdrop {
       position: fixed;
       inset: 0;
       background: rgba(11, 20, 26, 0.45);
       z-index: 450;
       display: none;
     }
-    #drawerBackdrop.open { display: block; }
+    #waBackdrop.open { display: block; }
 
-    aside#sideDrawer {
+    #waLeftDrawer {
       position: fixed;
       top: 0;
       left: 0;
       bottom: 0;
-      width: 285px;
-      max-width: 86vw;
-      background: var(--wa-drawer);
-      border-right: 1px solid var(--wa-border);
+      width: 280px;
+      max-width: 85vw;
+      background: var(--wa-surface);
+      border-right: 1px solid var(--wa-line);
       z-index: 500;
       transform: translateX(-100%);
-      transition: transform 0.24s ease;
+      transition: transform 0.22s ease;
       display: flex;
       flex-direction: column;
-      box-shadow: 4px 0 18px rgba(11, 20, 26, 0.16);
+      overflow-y: auto;
     }
-    aside#sideDrawer.open { transform: translateX(0); }
+    #waLeftDrawer.open { transform: translateX(0); }
 
-    .drawer-head {
+    .drawer-header {
       background: var(--wa-teal);
       color: #fff;
-      padding: 16px;
+      padding: 14px 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-    .drawer-section-label {
+    .drawer-group {
       font-size: 0.72rem;
       font-weight: 700;
+      color: var(--wa-subtext);
       text-transform: uppercase;
-      color: var(--wa-muted);
-      padding: 12px 16px 6px;
-      letter-spacing: 0.04em;
+      padding: 12px 16px 4px;
     }
-    .drawer-nav-btn {
+    .drawer-item {
       width: 100%;
       border: none;
       background: transparent;
       color: var(--wa-text);
-      padding: 11px 16px;
+      padding: 10px 16px;
       text-align: left;
-      font-size: 0.92rem;
+      font-size: 0.9rem;
       font-weight: 600;
       cursor: pointer;
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
     }
-    .drawer-nav-btn:hover { background: var(--wa-surface-soft); }
-    .drawer-nav-btn.active {
-      background: var(--wa-light-green);
-      color: #0b141a;
-      border-left: 4px solid var(--wa-green);
+    .drawer-item:hover { background: var(--wa-soft); }
+
+    /* Conteneur principal */
+    .wa-main {
+      max-width: 1120px;
+      margin: 12px auto;
+      padding: 0 12px;
     }
-    body.wa-dark .drawer-nav-btn.active {
-      background: rgba(0, 168, 132, 0.22);
-      color: #e9edef;
+    .wa-pane { display: none; }
+    .wa-pane.active { display: block; }
+
+    .wa-panel {
+      background: var(--wa-surface);
+      border: 1px solid var(--wa-line);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow);
     }
-    .drawer-foot {
-      margin-top: auto;
-      padding: 12px 16px;
-      border-top: 1px solid var(--wa-border);
+    .wa-panel-out {
+      background: var(--wa-bubble-out);
+      border-color: rgba(0, 128, 105, 0.25);
+    }
+    .wa-panel h3, .wa-panel h4 { margin: 0 0 8px 0; font-size: 0.98rem; }
+
+    .period-pills {
       display: flex;
-      gap: 8px;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      margin-bottom: 12px;
     }
-
-    /* Contenu principal */
-    main.wa-main {
-      max-width: 1140px;
-      margin: 14px auto;
-      padding: 0 14px;
-    }
-    .view-section { display: none; }
-    .view-section.active { display: block; }
-
-    .wa-card {
+    .p-pill {
+      border: 1px solid var(--wa-line);
       background: var(--wa-surface);
-      border: 1px solid var(--wa-border);
-      border-radius: var(--radius-lg);
-      padding: 15px;
-      margin-bottom: 14px;
-      box-shadow: var(--shadow);
-    }
-    .wa-card-bubble-green {
-      background: var(--wa-light-green);
-      color: #111b21;
-      border-color: rgba(0, 128, 105, 0.22);
-    }
-    body.wa-dark .wa-card-bubble-green {
-      color: #e9edef;
-    }
-    .wa-card h3, .wa-card h4 { margin: 0 0 8px 0; font-size: 1rem; }
-
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-    .kpi-box {
-      background: var(--wa-surface);
-      border: 1px solid var(--wa-border);
-      border-radius: var(--radius-lg);
-      padding: 13px 14px;
-      box-shadow: var(--shadow);
-    }
-    .kpi-title { font-size: 0.74rem; font-weight: 700; color: var(--wa-muted); text-transform: uppercase; }
-    .kpi-num { font-size: 1.38rem; font-weight: 800; margin: 5px 0; }
-    .kpi-note { font-size: 0.8rem; color: var(--wa-muted); }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 14px;
-    }
-    .grid-form {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
-      gap: 10px;
-    }
-
-    label {
-      display: block;
+      color: var(--wa-text);
+      border-radius: 999px;
+      padding: 5px 11px;
       font-size: 0.78rem;
       font-weight: 600;
-      color: var(--wa-muted);
-      margin-bottom: 4px;
+      cursor: pointer;
+      white-space: nowrap;
     }
+    .p-pill.active {
+      background: var(--wa-teal);
+      color: #fff;
+      border-color: var(--wa-teal);
+    }
+
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .metric-card {
+      background: var(--wa-surface);
+      border: 1px solid var(--wa-line);
+      border-radius: 12px;
+      padding: 12px;
+      box-shadow: var(--shadow);
+    }
+    .metric-lbl { font-size: 0.72rem; font-weight: 700; color: var(--wa-subtext); text-transform: uppercase; }
+    .metric-val { font-size: 1.3rem; font-weight: 800; margin: 4px 0; }
+    .metric-sub { font-size: 0.78rem; color: var(--wa-subtext); }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 12px; }
+    .grid-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(155px, 1fr)); gap: 10px; }
+
+    label { display: block; font-size: 0.76rem; font-weight: 600; color: var(--wa-subtext); margin-bottom: 4px; }
     input, select {
       width: 100%;
       padding: 8px 10px;
-      border: 1px solid var(--wa-border);
-      border-radius: var(--radius-md);
-      background: var(--wa-surface-soft);
+      border: 1px solid var(--wa-line);
+      border-radius: 10px;
+      background: var(--wa-soft);
       color: var(--wa-text);
-      font-size: 0.9rem;
+      font-size: 0.88rem;
     }
 
-    .wa-btn {
-      padding: 8px 14px;
+    .btn {
       border: 1px solid transparent;
       border-radius: 999px;
-      font-size: 0.86rem;
-      font-weight: 600;
+      padding: 8px 13px;
+      font-size: 0.84rem;
+      font-weight: 700;
       cursor: pointer;
-      background: var(--wa-teal);
-      color: #fff;
       display: inline-flex;
       align-items: center;
       gap: 5px;
     }
-    .wa-btn:hover { filter: brightness(1.06); }
-    .wa-btn-green { background: var(--wa-green); color: #fff; }
-    .wa-btn-ghost { background: var(--wa-surface-soft); color: var(--wa-text); border-color: var(--wa-border); }
-    .wa-btn-danger { background: var(--danger); color: #fff; }
-    .wa-btn-soft-danger { background: var(--danger-bg); color: var(--danger); border-color: rgba(217, 48, 37, 0.25); }
-    .wa-btn-sm { padding: 5px 10px; font-size: 0.78rem; }
+    .btn-teal { background: var(--wa-teal); color: #fff; }
+    .btn-green { background: var(--wa-accent); color: #fff; }
+    .btn-red { background: var(--danger); color: #fff; }
+    .btn-soft { background: var(--wa-soft); color: var(--wa-text); border-color: var(--wa-line); }
+    .btn-soft-red { background: var(--danger-soft); color: var(--danger); }
+    .btn-sm { padding: 5px 10px; font-size: 0.78rem; }
 
-    .type-row { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
-    .type-chip {
-      flex: 1;
-      min-width: 95px;
-      padding: 8px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--wa-border);
-      background: var(--wa-surface-soft);
-      color: var(--wa-text);
-      font-weight: 700;
-      cursor: pointer;
-    }
-    .type-chip.active-expense { background: var(--danger-bg); color: var(--danger); border-color: rgba(217, 48, 37, 0.35); }
-    .type-chip.active-income { background: var(--success-bg); color: var(--success); border-color: rgba(0, 168, 132, 0.4); }
-    .type-chip.active-transfer { background: #dbeafe; color: #1d4ed8; border-color: #93c5fd; }
-
-    .guard-banner {
+    .alert-msg {
       display: none;
       margin-top: 10px;
       padding: 9px 12px;
-      border-radius: var(--radius-md);
-      font-size: 0.86rem;
+      border-radius: 10px;
+      font-size: 0.85rem;
       font-weight: 600;
     }
-    .guard-banner.err { display: block; background: var(--danger-bg); color: var(--danger); }
-    .guard-banner.warn { display: block; background: var(--warn-bg); color: var(--warn); }
+    .alert-msg.err { display: block; background: var(--danger-soft); color: var(--danger); }
+    .alert-msg.warn { display: block; background: var(--warn-soft); color: var(--warn); }
 
-    .meter-track {
-      height: 8px;
-      border-radius: 999px;
-      background: var(--wa-surface-soft);
-      overflow: hidden;
-      margin-top: 5px;
-    }
-    .meter-fill { height: 100%; background: var(--wa-green); transition: width 0.25s; }
+    .bar-bg { height: 8px; border-radius: 999px; background: var(--wa-soft); overflow: hidden; margin-top: 5px; }
+    .bar-fill { height: 100%; background: var(--wa-accent); }
 
-    table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
-    th, td { padding: 8px 10px; border-bottom: 1px solid var(--wa-border); text-align: left; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    th, td { padding: 8px; border-bottom: 1px solid var(--wa-line); text-align: left; }
 
-    .heat-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 6px;
-      margin-top: 10px;
-    }
-    .heat-day {
-      padding: 7px 4px;
-      border-radius: 8px;
-      text-align: center;
-      border: 1px solid var(--wa-border);
-      font-size: 0.76rem;
-    }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 8px; }
+    .cal-cell { border: 1px solid var(--wa-line); border-radius: 8px; padding: 6px 4px; text-align: center; font-size: 0.75rem; }
 
-    /* Barre de tâches horizontale fluide au pied de la page */
-    footer.wa-bottom-bar {
+    /* BARRE D'ACTION DIRECTE TYPE WHATSAPP EN BAS (TOUJOURS ACCESSIBLE) */
+    .wa-composer-dock {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      background: var(--wa-nav-bg);
-      backdrop-filter: blur(8px);
-      border-top: 1px solid var(--wa-border);
+      background: var(--wa-soft);
+      border-top: 1px solid var(--wa-line);
+      padding: 8px 10px;
       z-index: 350;
-      padding: 6px 10px;
     }
-    .bottom-bar-inner {
-      max-width: 900px;
+    .dock-container {
+      max-width: 1120px;
       margin: 0 auto;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 4px;
+      gap: 6px;
+      flex-wrap: wrap;
     }
-    .dock-btn {
+    .dock-quick-input {
       flex: 1;
-      border: none;
-      background: transparent;
-      color: var(--wa-muted);
-      padding: 6px 4px;
-      border-radius: 10px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
+      min-width: 165px;
+      background: var(--wa-input-bg);
+      border-radius: 999px;
+      padding: 9px 14px;
+      border: 1px solid var(--wa-line);
+      font-size: 0.9rem;
     }
-    .dock-btn.active {
-      color: var(--wa-green);
-      background: var(--wa-surface-soft);
-    }
-    .dock-fab {
-      width: 46px;
-      height: 46px;
+    .dock-round {
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       border: none;
-      background: var(--wa-green);
-      color: #fff;
-      font-size: 1.25rem;
+      font-size: 1rem;
       font-weight: 700;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 3px 10px rgba(0, 168, 132, 0.35);
       flex-shrink: 0;
     }
   </style>
 </head>
 <body>
 
-  <!-- VERROUILLAGE PIN -->
-  <div id="pinLockScreen" aria-modal="true">
-    <div class="pin-card">
-      <h3 style="margin:0 0 6px 0;">FinTrack Sécurisé</h3>
-      <div style="font-size:0.84rem; color:#8696a0;">Code PIN à 4 chiffres</div>
+  <!-- ÉCRAN DE DÉVERROUILLAGE PIN -->
+  <div id="pinModal" aria-modal="true">
+    <div class="pin-box">
+      <h3 style="margin:0;">FinTrack Sécurisé</h3>
+      <div style="font-size:0.82rem; color:#8696a0; margin-top:4px;">Code PIN à 4 chiffres</div>
       <div class="pin-dots" id="pinDots">• • • •</div>
-      <div id="pinError" style="color:#f87171; font-size:0.82rem; min-height:18px;"></div>
-      <div class="pin-grid">
-        <button type="button" class="pin-btn" onclick="pinPress('1')">1</button>
-        <button type="button" class="pin-btn" onclick="pinPress('2')">2</button>
-        <button type="button" class="pin-btn" onclick="pinPress('3')">3</button>
-        <button type="button" class="pin-btn" onclick="pinPress('4')">4</button>
-        <button type="button" class="pin-btn" onclick="pinPress('5')">5</button>
-        <button type="button" class="pin-btn" onclick="pinPress('6')">6</button>
-        <button type="button" class="pin-btn" onclick="pinPress('7')">7</button>
-        <button type="button" class="pin-btn" onclick="pinPress('8')">8</button>
-        <button type="button" class="pin-btn" onclick="pinPress('9')">9</button>
-        <button type="button" class="pin-btn" onclick="pinReset()">Effacer</button>
-        <button type="button" class="pin-btn" onclick="pinPress('0')">0</button>
-        <button type="button" class="pin-btn" onclick="pinSubmit()">OK</button>
+      <div id="pinErr" style="color:#f87171; font-size:0.82rem; min-height:18px;"></div>
+      <div class="pin-pad">
+        <button type="button" class="pin-key" onclick="pinTap('1')">1</button>
+        <button type="button" class="pin-key" onclick="pinTap('2')">2</button>
+        <button type="button" class="pin-key" onclick="pinTap('3')">3</button>
+        <button type="button" class="pin-key" onclick="pinTap('4')">4</button>
+        <button type="button" class="pin-key" onclick="pinTap('5')">5</button>
+        <button type="button" class="pin-key" onclick="pinTap('6')">6</button>
+        <button type="button" class="pin-key" onclick="pinTap('7')">7</button>
+        <button type="button" class="pin-key" onclick="pinTap('8')">8</button>
+        <button type="button" class="pin-key" onclick="pinTap('9')">9</button>
+        <button type="button" class="pin-key" onclick="pinClear()">Effacer</button>
+        <button type="button" class="pin-key" onclick="pinTap('0')">0</button>
+        <button type="button" class="pin-key" onclick="pinCheck()">OK</button>
       </div>
     </div>
   </div>
 
   <!-- BACKDROP & MENU LATÉRAL GAUCHE RABATTABLE -->
-  <div id="drawerBackdrop" onclick="closeDrawer()"></div>
-  <aside id="sideDrawer" aria-label="Menu latéral rabattable">
-    <div class="drawer-head">
+  <div id="waBackdrop" onclick="toggleLeftDrawer(false)"></div>
+  <aside id="waLeftDrawer" aria-label="Menu latéral WhatsApp">
+    <div class="drawer-header">
       <div>
-        <div style="font-weight:800; font-size:1rem;">FinTrack AI</div>
-        <div style="font-size:0.76rem; opacity:0.88;">Navigation &amp; onglets rapides</div>
+        <div style="font-weight:800;">FinTrack AI</div>
+        <div style="font-size:0.74rem; opacity:0.88;">Réglages &amp; options avancées</div>
       </div>
-      <button type="button" class="icon-circle-btn" onclick="closeDrawer()" title="Rabattre le menu">✕</button>
+      <button type="button" class="wa-icon-btn" onclick="toggleLeftDrawer(false)">✕</button>
     </div>
 
-    <div class="drawer-section-label">Onglets principaux</div>
-    <button type="button" class="drawer-nav-btn active" data-drawer-page="home">
-      <span>🏠 Accueil &amp; Saisie</span><span>›</span>
+    <div class="drawer-group">Vues principales</div>
+    <button type="button" class="drawer-item" onclick="selectTab('operations'); toggleLeftDrawer(false);">
+      <span>💬 Opérations &amp; Brouillon</span><span>›</span>
     </button>
-    <button type="button" class="drawer-nav-btn" data-drawer-page="history">
+    <button type="button" class="drawer-item" onclick="selectTab('envelopes'); toggleLeftDrawer(false);">
+      <span>💼 Enveloppes physiques</span><span>›</span>
+    </button>
+    <button type="button" class="drawer-item" onclick="selectTab('history'); toggleLeftDrawer(false);">
       <span>📋 Historique &amp; Justificatifs</span><span>›</span>
     </button>
-    <button type="button" class="drawer-nav-btn" data-drawer-page="compare">
+    <button type="button" class="drawer-item" onclick="selectTab('compare'); toggleLeftDrawer(false);">
       <span>📊 Comparateur &amp; Thermique</span><span>›</span>
     </button>
-    <button type="button" class="drawer-nav-btn" data-drawer-page="tools">
-      <span>🧰 Outils, PIN &amp; JSON</span><span>›</span>
-    </button>
 
-    <div class="drawer-section-label">Accès direct</div>
-    <button type="button" class="drawer-nav-btn" onclick="jumpToSection('home', 'envelopesCard')">
-      <span>💼 Enveloppes physiques</span><span>+</span>
+    <div class="drawer-group">Réglages &amp; outils (dans le menu)</div>
+    <button type="button" class="drawer-item" onclick="selectTab('settings'); toggleLeftDrawer(false); scrollToId('secSimulator');">
+      <span>📈 Simulateur « Et si ? »</span><span>›</span>
     </button>
-    <button type="button" class="drawer-nav-btn" onclick="jumpToSection('home', 'operationComposerCard')">
-      <span>🎤 Brouillon &amp; Saisie vocale</span><span>•</span>
+    <button type="button" class="drawer-item" onclick="selectTab('settings'); toggleLeftDrawer(false); scrollToId('secBillsGoals');">
+      <span>📌 Charges fixes &amp; Objectifs</span><span>›</span>
     </button>
-    <button type="button" class="drawer-nav-btn" onclick="jumpToSection('tools', 'backupCard')">
-      <span>💾 Export / Import .json</span><span>↓↑</span>
+    <button type="button" class="drawer-item" onclick="selectTab('settings'); toggleLeftDrawer(false); scrollToId('secCaps');">
+      <span>🎯 Plafonds mensuels</span><span>›</span>
     </button>
-
-    <div class="drawer-foot">
-      <button type="button" class="wa-btn wa-btn-ghost wa-btn-sm" style="flex:1; justify-content:center;" id="btnToggleTheme">
-        🌓 Thème WhatsApp
-      </button>
-    </div>
+    <button type="button" class="drawer-item" onclick="selectTab('settings'); toggleLeftDrawer(false); scrollToId('secSecurityBackup');">
+      <span>🔐 PIN, Devise &amp; Sauvegarde .json</span><span>›</span>
+    </button>
+    <button type="button" class="drawer-item" onclick="switchThemeMode(); toggleLeftDrawer(false);">
+      <span>🌓 Thème clair / sombre WhatsApp</span><span>⇄</span>
+    </button>
   </aside>
 
-  <!-- EN-TÊTE -->
-  <header class="wa-header">
-    <div class="wa-header-top">
-      <div class="wa-brand-group">
-        <button type="button" class="icon-circle-btn" id="btnOpenDrawer" title="Ouvrir le menu latéral">☰</button>
+  <!-- EN-TÊTE WHATSAPP AVEC MENU LATÉRAL & ONGLETS -->
+  <header class="wa-top">
+    <div class="wa-top-row">
+      <div class="wa-left">
+        <button type="button" class="wa-icon-btn" id="btnOpenLeftDrawer" title="Menu">☰</button>
         <div>
-          <div class="wa-title">FinTrack AI</div>
-          <div class="wa-subtitle" id="headerWalletSummary">Gestion financière • Enveloppes &amp; brouillon</div>
+          <div class="wa-app-title">FinTrack AI</div>
+          <div class="wa-app-sub" id="topStatusLine">Enveloppes &amp; saisie rapide</div>
         </div>
       </div>
       <div style="display:flex; gap:6px;">
-        <button type="button" class="icon-circle-btn" id="btnHeaderVoice" title="Saisie vocale rapide">🎤</button>
-        <button type="button" class="icon-circle-btn" id="btnHeaderTheme" title="Basculer thème clair/sombre">🌓</button>
+        <button type="button" class="wa-icon-btn" id="btnTopVoice" title="Saisie vocale">🎤</button>
+        <button type="button" class="wa-icon-btn" id="btnTopTheme" title="Thème WhatsApp">🌓</button>
       </div>
     </div>
 
-    <div class="period-strip">
-      <div class="period-strip-inner" id="periodStrip">
-        <button type="button" class="period-chip" data-period="today">Aujourd'hui</button>
-        <button type="button" class="period-chip" data-period="week">Cette semaine</button>
-        <button type="button" class="period-chip active" data-period="month">Ce mois</button>
-        <button type="button" class="period-chip" data-period="year">Cette année</button>
-        <button type="button" class="period-chip" data-period="all">Tout l'historique</button>
-      </div>
+    <div class="wa-tabs" role="tablist">
+      <button type="button" class="wa-tab active" data-tab="operations">Opérations</button>
+      <button type="button" class="wa-tab" data-tab="envelopes">Enveloppes</button>
+      <button type="button" class="wa-tab" data-tab="history">Historique</button>
+      <button type="button" class="wa-tab" data-tab="compare">Comparer</button>
     </div>
   </header>
 
   <!-- CONTENU PRINCIPAL -->
   <main class="wa-main">
-    <!-- ONGLET 1 : ACCUEIL -->
-    <section id="view-home" class="view-section active">
-      <div class="wa-card wa-card-bubble-green">
+    <div class="period-pills" id="periodPills">
+      <button type="button" class="p-pill" data-p="today">Aujourd'hui</button>
+      <button type="button" class="p-pill" data-p="week">Cette semaine</button>
+      <button type="button" class="p-pill active" data-p="month">Ce mois</button>
+      <button type="button" class="p-pill" data-p="year">Cette année</button>
+      <button type="button" class="p-pill" data-p="all">Tout l'historique</button>
+    </div>
+
+    <!-- ONGLET 1 : OPÉRATIONS (BROUILLON + INDICATEURS + APERÇUS) -->
+    <section id="pane-operations" class="wa-pane active">
+      <div class="wa-panel wa-panel-out">
         <h3>Analyse intelligente en direct</h3>
-        <p id="liveAnalysisText" style="margin:0; font-size:0.9rem;">Calcul des indicateurs...</p>
+        <div id="liveSummaryLine" style="font-size:0.88rem;">Chargement...</div>
       </div>
 
-      <div class="kpi-grid">
-        <div class="kpi-box">
-          <div class="kpi-title">Trésorerie totale</div>
-          <div class="kpi-num" id="kpiTreasury">0 F</div>
-          <div class="kpi-note" id="kpiAutonomy">Autonomie : calcul...</div>
+      <div class="metrics-row">
+        <div class="metric-card">
+          <div class="metric-lbl">Trésorerie totale</div>
+          <div class="metric-val" id="mTreasury">0 F</div>
+          <div class="metric-sub" id="mAutonomy">Autonomie : calcul...</div>
         </div>
-        <div class="kpi-box">
-          <div class="kpi-title">Flux de la période</div>
-          <div class="kpi-num" style="color:var(--success);" id="kpiIncome">0 F</div>
-          <div class="kpi-note">Dépenses : <strong style="color:var(--danger);" id="kpiExpense">0 F</strong> • Épargne : <strong id="kpiSavings">0 %</strong></div>
+        <div class="metric-card">
+          <div class="metric-lbl">Flux de la période</div>
+          <div class="metric-val" style="color:var(--ok);" id="mIncome">0 F</div>
+          <div class="metric-sub">Dépenses : <strong style="color:var(--danger);" id="mExpense">0 F</strong> • Épargne : <strong id="mSavings">0 %</strong></div>
         </div>
-        <div class="kpi-box">
-          <div class="kpi-title">Reste à vivre / jour</div>
-          <div class="kpi-num" id="kpiDaily">0 F</div>
-          <div class="kpi-note" id="kpiAvgDay">Moyenne dépensée : 0 F/jour</div>
+        <div class="metric-card">
+          <div class="metric-lbl">Reste à vivre / jour</div>
+          <div class="metric-val" id="mDaily">0 F</div>
+          <div class="metric-sub" id="mAvgDay">Moyenne dépensée : 0 F/jour</div>
         </div>
-        <div class="kpi-box">
-          <div class="kpi-title">Score de santé</div>
-          <div class="kpi-num" id="kpiScore">-- / 100</div>
-          <div class="kpi-note">Évaluation de votre équilibre</div>
+        <div class="metric-card">
+          <div class="metric-lbl">Score de santé</div>
+          <div class="metric-val" id="mHealth">-- / 100</div>
+          <div class="metric-sub">Équilibre financier</div>
         </div>
       </div>
 
-      <!-- ENVELOPPES PHYSIQUES -->
-      <div class="wa-card" id="envelopesCard">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
-          <div>
-            <h3>Enveloppes physiques</h3>
-            <small style="color:var(--wa-muted);">Revenu = + sur l'enveloppe • Dépense = - sur l'enveloppe.</small>
-          </div>
-          <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <input type="text" id="newEnvName" placeholder="Ex: Poche, Coffre..." style="width:165px;" />
-            <input type="number" id="newEnvInit" step="any" value="0" placeholder="Solde initial" style="width:110px;" />
-            <button type="button" class="wa-btn wa-btn-green" id="btnAddEnvelope">+ Enveloppe</button>
-          </div>
-        </div>
-        <div id="envelopesGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(170px, 1fr)); gap:10px;"></div>
-      </div>
-
-      <!-- FORMULAIRE NOUVELLE OPÉRATION + BROUILLON VOCAL + JUSTIFICATIF + GARDE-FOUS -->
-      <div class="wa-card" id="operationComposerCard">
+      <!-- ZONE DE BROUILLON & DÉTAIL D'OPÉRATION -->
+      <div class="wa-panel" id="draftCard">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
-          <h3 style="margin:0;" id="composerTitle">Nouvelle opération</h3>
+          <h3 style="margin:0;" id="draftCardTitle">Brouillon d'opération</h3>
           <div style="display:flex; gap:6px; flex-wrap:wrap;">
-            <button type="button" class="wa-btn wa-btn-danger wa-btn-sm" id="btnVoiceStart">🎤 Dicter</button>
-            <button type="button" class="wa-btn wa-btn-ghost wa-btn-sm" id="btnVoiceRetry">↻ Réessayer</button>
-            <button type="button" class="wa-btn wa-btn-ghost wa-btn-sm" id="btnClearDraft">✕ Effacer</button>
+            <button type="button" class="btn btn-red btn-sm" id="btnDraftVoice">🎤 Saisie vocale</button>
+            <button type="button" class="btn btn-soft btn-sm" id="btnDraftRetry">↻ Réessayer</button>
+            <button type="button" class="btn btn-soft btn-sm" id="btnDraftClear">✕ Effacer</button>
           </div>
         </div>
 
-        <div id="draftBanner" style="font-size:0.84rem; color:var(--wa-muted); background:var(--wa-surface-soft); padding:8px 12px; border-radius:var(--radius-md); margin-bottom:12px;">
-          Zone de brouillon : rien n'est enregistré avant de cliquer sur « Enregistrer l'opération ».
+        <div id="draftVoiceBox" style="font-size:0.84rem; color:var(--wa-subtext); background:var(--wa-soft); padding:8px 12px; border-radius:10px; margin-bottom:10px;">
+          Aucun enregistrement tant que vous ne validez pas.
         </div>
 
-        <div class="type-row">
-          <button type="button" class="type-chip active-expense" data-type="expense">Dépense (-)</button>
-          <button type="button" class="type-chip" data-type="income">Revenu (+)</button>
-          <button type="button" class="type-chip" data-type="transfer">Virement</button>
-        </div>
-
-        <div class="grid-form">
+        <div class="grid-fields">
           <div>
-            <label for="opAmount">Montant (ex: 2500 + 1500)</label>
-            <input type="text" id="opAmount" placeholder="Ex: 5000 ou 2500 + 1500" />
+            <label for="fType">Type</label>
+            <select id="fType">
+              <option value="expense">Dépense (- enveloppe)</option>
+              <option value="income">Revenu (+ enveloppe)</option>
+            </select>
           </div>
           <div>
-            <label for="opLabel">Libellé / Description</label>
-            <input type="text" id="opLabel" placeholder="Ex: Carburant, Salaire..." />
+            <label for="fAmount">Montant (calculatrice : ex. 2500 + 1500)</label>
+            <input type="text" id="fAmount" placeholder="Ex: 5000 ou 2500 + 1500" />
           </div>
           <div>
-            <label for="opCategory">Catégorie</label>
-            <select id="opCategory"></select>
+            <label for="fLabel">Libellé / Motif</label>
+            <input type="text" id="fLabel" placeholder="Ex: Carburant, Salaire..." />
           </div>
           <div>
-            <label for="opSubcat">Sous-catégorie</label>
-            <input type="text" id="opSubcat" placeholder="Optionnel" />
-          </div>
-          <div>
-            <label for="opWallet">Compte / Portefeuille</label>
-            <select id="opWallet">
+            <label for="fWallet">Portefeuille</label>
+            <select id="fWallet">
               <option value="Espèces">Espèces</option>
               <option value="Mobile Money">Mobile Money</option>
               <option value="Banque">Banque</option>
             </select>
           </div>
           <div>
-            <label for="opEnvelope">Enveloppe physique</label>
-            <select id="opEnvelope"></select>
-          </div>
-          <div id="opToWalletWrap" style="display:none;">
-            <label for="opToWallet">Vers le compte</label>
-            <select id="opToWallet">
-              <option value="Mobile Money">Mobile Money</option>
-              <option value="Banque">Banque</option>
-              <option value="Espèces">Espèces</option>
-            </select>
+            <label for="fEnvelope">Enveloppe physique</label>
+            <select id="fEnvelope"></select>
           </div>
           <div>
-            <label for="opDate">Date</label>
-            <input type="date" id="opDate" />
+            <label for="fCategory">Catégorie</label>
+            <select id="fCategory"></select>
+          </div>
+          <div>
+            <label for="fSubcat">Sous-catégorie</label>
+            <input type="text" id="fSubcat" placeholder="Optionnel" />
+          </div>
+          <div>
+            <label for="fDate">Date</label>
+            <input type="date" id="fDate" />
           </div>
         </div>
 
-        <!-- Justificatif optionnel -->
-        <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; background:var(--wa-surface-soft); padding:10px 12px; border-radius:var(--radius-md); border:1px dashed var(--wa-border);">
+        <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; background:var(--wa-soft); padding:9px 12px; border-radius:10px; border:1px dashed var(--wa-line);">
           <div>
-            <label for="opReceiptFile" style="margin-bottom:4px;">Justificatif optionnel (Photo compressée ou PDF ≤ 1,5 Mo)</label>
-            <input type="file" id="opReceiptFile" accept="image/*,application/pdf" capture="environment" style="font-size:0.84rem;" />
+            <label for="fReceipt" style="margin-bottom:4px;">Justificatif (Photo compressée ou PDF ≤ 1,5 Mo)</label>
+            <input type="file" id="fReceipt" accept="image/*,application/pdf" capture="environment" style="font-size:0.82rem;" />
           </div>
-          <div id="opReceiptPreview" style="font-size:0.84rem;"></div>
+          <div id="fReceiptPreview" style="font-size:0.82rem;"></div>
         </div>
 
-        <div id="composerGuard" class="guard-banner"></div>
+        <div id="draftGuardAlert" class="alert-msg"></div>
 
-        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:14px;">
-          <button type="button" class="wa-btn wa-btn-green" id="btnSaveOp">Enregistrer l'opération</button>
-          <button type="button" class="wa-btn wa-btn-ghost" id="btnCancelEdit" style="display:none;">Annuler la modification</button>
-          <button type="button" class="wa-btn wa-btn-soft-danger" id="btnUndoLast" style="display:none;">↶ Annuler la dernière opération</button>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;">
+          <button type="button" class="btn btn-green" id="btnValidateOp">Enregistrer l'opération</button>
+          <button type="button" class="btn btn-soft" id="btnAbortEdit" style="display:none;">Annuler la modification</button>
+          <button type="button" class="btn btn-soft-red" id="btnUndoLastOp" style="display:none;">↶ Annuler la dernière opération</button>
         </div>
       </div>
 
       <div class="grid-2">
-        <div class="wa-card">
+        <div class="wa-panel">
           <h3>Évolution Revenus vs Dépenses</h3>
-          <div id="chartIncExp"></div>
+          <div id="boxIncExp"></div>
         </div>
-        <div class="wa-card">
+        <div class="wa-panel">
           <h3>Répartition par Catégorie</h3>
-          <div id="chartCats"></div>
+          <div id="boxCats"></div>
         </div>
       </div>
 
       <div class="grid-2">
-        <div class="wa-card">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <h3 style="margin:0;">Suivi des Plafonds Mensuels</h3>
-            <button type="button" class="wa-btn wa-btn-ghost wa-btn-sm" onclick="switchView('tools')">Gérer</button>
-          </div>
-          <div id="homeCapsBox"></div>
+        <div class="wa-panel">
+          <h3>Suivi des Plafonds Mensuels</h3>
+          <div id="boxCaps"></div>
         </div>
-        <div class="wa-card">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <h3 style="margin:0;">Dernières opérations</h3>
-            <button type="button" class="wa-btn wa-btn-ghost wa-btn-sm" onclick="switchView('history')">Voir tout</button>
-          </div>
-          <div id="homeRecentBox"></div>
+        <div class="wa-panel">
+          <h3>Dernières opérations</h3>
+          <div id="boxRecent"></div>
         </div>
       </div>
     </section>
 
-    <!-- ONGLET 2 : HISTORIQUE -->
-    <section id="view-history" class="view-section">
-      <div class="wa-card">
+    <!-- ONGLET 2 : ENVELOPPES PHYSIQUES -->
+    <section id="pane-envelopes" class="wa-pane">
+      <div class="wa-panel">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+          <div>
+            <h3>Enveloppes physiques</h3>
+            <small style="color:var(--wa-subtext);">Chaque revenu ajoute (+) ; chaque dépense soustrait (-).</small>
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <input type="text" id="envNameInput" placeholder="Ex: Poche, Coffre..." style="width:165px;" />
+            <input type="number" id="envInitInput" step="any" value="0" placeholder="Solde initial" style="width:110px;" />
+            <button type="button" class="btn btn-green" id="btnCreateEnv">+ Enveloppe</button>
+          </div>
+        </div>
+        <div id="envCardsList" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(175px, 1fr)); gap:10px;"></div>
+      </div>
+    </section>
+
+    <!-- ONGLET 3 : HISTORIQUE -->
+    <section id="pane-history" class="wa-pane">
+      <div class="wa-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
           <h3 style="margin:0;">Historique des opérations</h3>
           <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <input type="text" id="histSearch" placeholder="Rechercher..." style="width:185px;" />
-            <select id="histCatFilter" style="width:175px;"></select>
+            <input type="text" id="hSearch" placeholder="Rechercher..." style="width:180px;" />
+            <select id="hCatFilter" style="width:170px;"></select>
           </div>
         </div>
         <div style="overflow-x:auto;">
@@ -735,18 +641,18 @@
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody id="histTableBody"></tbody>
+            <tbody id="hTableBody"></tbody>
           </table>
         </div>
       </div>
     </section>
 
-    <!-- ONGLET 3 : COMPARER -->
-    <section id="view-compare" class="view-section">
-      <div class="wa-card">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+    <!-- ONGLET 4 : COMPARER -->
+    <section id="pane-compare" class="wa-pane">
+      <div class="wa-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
           <h3 style="margin:0;">Comparateur Période vs Précédente</h3>
-          <select id="compareSelect" style="width:230px;">
+          <select id="cmpMode" style="width:225px;">
             <option value="month">Ce mois vs Mois dernier</option>
             <option value="week">Cette semaine vs Semaine dernière</option>
             <option value="year">Cette année vs Année dernière</option>
@@ -762,1022 +668,888 @@
                 <th>Évolution</th>
               </tr>
             </thead>
-            <tbody id="compareBody"></tbody>
+            <tbody id="cmpBody"></tbody>
           </table>
         </div>
       </div>
 
-      <div class="wa-card">
+      <div class="wa-panel">
         <h3>Calendrier Thermique (Intensité du mois)</h3>
-        <div class="heat-grid" id="heatGrid"></div>
+        <div class="cal-grid" id="calHeatGrid"></div>
       </div>
     </section>
 
-    <!-- ONGLET 4 : OUTILS -->
-    <section id="view-tools" class="view-section">
-      <div class="wa-card">
+    <!-- SECTION RÉGLAGES & OUTILS (ACCESSIBLE VIA LE MENU LATÉRAL) -->
+    <section id="pane-settings" class="wa-pane">
+      <div class="wa-panel" id="secSimulator">
         <h3>Simulateur d'Épargne « Et si ? »</h3>
-        <label for="simSlider">Réduire mes dépenses de : <strong id="simPctText">15 %</strong></label>
-        <input type="range" id="simSlider" min="0" max="60" step="5" value="15" />
-        <div class="kpi-grid" style="margin-top:12px; margin-bottom:0;">
-          <div class="kpi-box">
-            <div class="kpi-title">Gain dans 3 mois</div>
-            <div class="kpi-num" style="color:var(--success);" id="sim3m">0 F</div>
+        <label for="simRange">Réduire mes dépenses de : <strong id="simPct">15 %</strong></label>
+        <input type="range" id="simRange" min="0" max="60" step="5" value="15" />
+        <div class="metrics-row" style="margin-top:10px; margin-bottom:0;">
+          <div class="metric-card">
+            <div class="metric-lbl">Gain dans 3 mois</div>
+            <div class="metric-val" style="color:var(--ok);" id="simGain3">0 F</div>
           </div>
-          <div class="kpi-box">
-            <div class="kpi-title">Gain dans 1 an</div>
-            <div class="kpi-num" style="color:var(--success);" id="sim1y">0 F</div>
+          <div class="metric-card">
+            <div class="metric-lbl">Gain dans 1 an</div>
+            <div class="metric-val" style="color:var(--ok);" id="simGain12">0 F</div>
           </div>
         </div>
       </div>
 
-      <div class="grid-2">
-        <div class="wa-card">
+      <div class="grid-2" id="secBillsGoals">
+        <div class="wa-panel">
           <h3>Charges Fixes &amp; Échéances</h3>
-          <div style="display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap;">
-            <input type="text" id="billTitle" placeholder="Ex: Loyer, Internet" style="flex:1; min-width:130px;" />
-            <input type="number" id="billAmt" placeholder="Montant" style="width:115px;" />
-            <button type="button" class="wa-btn wa-btn-sm" id="btnAddBill">Ajouter</button>
+          <div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap;">
+            <input type="text" id="bName" placeholder="Ex: Loyer" style="flex:1; min-width:120px;" />
+            <input type="number" id="bAmt" placeholder="Montant" style="width:110px;" />
+            <button type="button" class="btn btn-teal btn-sm" id="btnAddB">Ajouter</button>
           </div>
-          <div id="billsContainer"></div>
+          <div id="bList"></div>
         </div>
 
-        <div class="wa-card">
+        <div class="wa-panel">
           <h3>Objectifs d'Épargne (Tirelires)</h3>
-          <div style="display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap;">
-            <input type="text" id="goalTitle" placeholder="Projet" style="flex:1; min-width:110px;" />
-            <input type="number" id="goalTarget" placeholder="Cible" style="width:100px;" />
-            <input type="number" id="goalSaved" placeholder="Épargné" style="width:100px;" />
-            <button type="button" class="wa-btn wa-btn-sm" id="btnAddGoal">Nouveau projet</button>
+          <div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap;">
+            <input type="text" id="gName" placeholder="Projet" style="flex:1; min-width:110px;" />
+            <input type="number" id="gTarget" placeholder="Cible" style="width:95px;" />
+            <input type="number" id="gSaved" placeholder="Épargné" style="width:95px;" />
+            <button type="button" class="btn btn-teal btn-sm" id="btnAddG">Nouveau</button>
           </div>
-          <div id="goalsContainer"></div>
+          <div id="gList"></div>
         </div>
       </div>
 
-      <div class="wa-card">
+      <div class="wa-panel" id="secCaps">
         <h3>Plafonds Mensuels par Catégorie</h3>
-        <div id="capsGrid" class="grid-form"></div>
+        <div id="capsEditor" class="grid-fields"></div>
       </div>
 
-      <div class="wa-card" id="backupCard">
+      <div class="wa-panel" id="secSecurityBackup">
         <h3>Sécurité &amp; Sauvegarde des Données</h3>
 
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding:10px 0; border-bottom:1px solid var(--wa-border);">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; padding:10px 0; border-bottom:1px solid var(--wa-line);">
           <div>
             <strong>Verrouillage par Code PIN</strong>
-            <div style="font-size:0.82rem; color:var(--wa-muted);">Protège l'ouverture de l'application</div>
+            <div style="font-size:0.8rem; color:var(--wa-subtext);">Code à 4 chiffres à l'ouverture</div>
           </div>
-          <div style="display:flex; gap:8px; align-items:center;">
-            <input type="password" id="pinInputSet" maxlength="4" placeholder="PIN 4 chiffres" style="width:125px;" />
-            <button type="button" class="wa-btn wa-btn-sm" id="btnActivatePin">Activer PIN</button>
-            <button type="button" class="wa-btn wa-btn-ghost wa-btn-sm" id="btnDeactivatePin">Désactiver</button>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <input type="password" id="pinSetInput" maxlength="4" placeholder="PIN 4 chiffres" style="width:120px;" />
+            <button type="button" class="btn btn-teal btn-sm" id="btnPinOn">Activer PIN</button>
+            <button type="button" class="btn btn-soft btn-sm" id="btnPinOff">Désactiver</button>
           </div>
         </div>
 
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding:12px 0; border-bottom:1px solid var(--wa-border);">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; padding:10px 0; border-bottom:1px solid var(--wa-line);">
           <div>
             <strong>Devise d'affichage</strong>
-            <div style="font-size:0.82rem; color:var(--wa-muted);">Symbole monétaire utilisé</div>
+            <div style="font-size:0.8rem; color:var(--wa-subtext);">Symbole monétaire</div>
           </div>
-          <div style="display:flex; gap:8px;">
-            <button type="button" class="wa-btn wa-btn-ghost wa-btn-sm curr-btn" data-curr="FCFA">FCFA</button>
-            <button type="button" class="wa-btn wa-btn-ghost wa-btn-sm curr-btn" data-curr="EUR">Euro (€)</button>
-            <button type="button" class="wa-btn wa-btn-ghost wa-btn-sm curr-btn" data-curr="USD">Dollar ($)</button>
+          <div style="display:flex; gap:6px;">
+            <button type="button" class="btn btn-soft btn-sm cur-pick" data-cur="FCFA">FCFA</button>
+            <button type="button" class="btn btn-soft btn-sm cur-pick" data-cur="EUR">Euro (€)</button>
+            <button type="button" class="btn btn-soft btn-sm cur-pick" data-cur="USD">Dollar ($)</button>
           </div>
         </div>
 
-        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;">
-          <button type="button" class="wa-btn wa-btn-green" id="btnSaveJson">Sauvegarder (.json)</button>
-          <label class="wa-btn wa-btn-ghost" style="margin:0;">
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;">
+          <button type="button" class="btn btn-green" id="btnExportBackup">Sauvegarder (.json)</button>
+          <label class="btn btn-soft" style="margin:0;">
             Restaurer (.json)
-            <input type="file" id="fileRestoreJson" accept="application/json,.json" style="display:none;" />
+            <input type="file" id="fileImportBackup" accept="application/json,.json" style="display:none;" />
           </label>
-          <button type="button" class="wa-btn wa-btn-ghost" id="btnDemoData">Charger des données de démonstration</button>
+          <button type="button" class="btn btn-soft" id="btnDemo">Charger des données de démonstration</button>
         </div>
       </div>
     </section>
   </main>
 
-  <!-- BARRE DE TÂCHES HORIZONTALE FLUIDE AU PIED DE LA PAGE -->
-  <footer class="wa-bottom-bar" aria-label="Barre de navigation rapide">
-    <div class="bottom-bar-inner">
-      <button type="button" class="dock-btn active" data-dock="home">
-        <span>🏠</span><span>Accueil</span>
-      </button>
-      <button type="button" class="dock-btn" data-dock="history">
-        <span>📋</span><span>Historique</span>
-      </button>
-      <button type="button" class="dock-fab" id="btnQuickComposer" title="Nouvelle opération / Brouillon">+</button>
-      <button type="button" class="dock-btn" data-dock="compare">
-        <span>📊</span><span>Comparer</span>
-      </button>
-      <button type="button" class="dock-btn" data-dock="tools">
-        <span>🧰</span><span>Outils</span>
-      </button>
+  <!-- BARRE D'ACCÈS DIRECT TOUJOURS VISIBLE EN BAS (SAISIE + REVENU + DÉPENSE + JUSTIFICATIF + MICRO) -->
+  <div class="wa-composer-dock" aria-label="Barre d'enregistrement rapide">
+    <div class="dock-container">
+      <input
+        type="text"
+        id="dockQuickText"
+        class="dock-quick-input"
+        placeholder="Saisie rapide (ex: 5000 carburant)..."
+      />
+      <button type="button" class="btn btn-green btn-sm" id="dockBtnIncome" title="Enregistrer un revenu (+)">+ Revenu</button>
+      <button type="button" class="btn btn-red btn-sm" id="dockBtnExpense" title="Enregistrer une dépense (-)">- Dépense</button>
+      <label class="dock-round btn-soft" style="border:1px solid var(--wa-line); margin:0;" title="Joindre photo ou PDF">
+        📎
+        <input type="file" id="dockReceiptInput" accept="image/*,application/pdf" capture="environment" style="display:none;" />
+      </label>
+      <button type="button" class="dock-round btn-green" id="dockBtnVoice" title="Saisie vocale">🎤</button>
     </div>
-  </footer>
+  </div>
 
   <script>
   (function () {
     'use strict';
 
-    const STORAGE_KEY = 'fintrack_wa_suite_v1';
-    const CATEGORIES = [
+    const KEY = 'fintrack_whatsapp_v1';
+    const CATS = [
       'Alimentation', 'Transport', 'Logement', 'Santé', 'Éducation',
       'Factures & Énergie', 'Loisirs', 'Salaire / Revenus', 'Commerce', 'Autres'
     ];
-    const RULES = [
-      { kw: ['riz', 'pain', 'repas', 'nourriture', 'marché', 'marche', 'eau'], cat: 'Alimentation' },
-      { kw: ['essence', 'carburant', 'taxi', 'moto', 'bus', 'transport'], cat: 'Transport' },
-      { kw: ['loyer', 'maison', 'caution'], cat: 'Logement' },
-      { kw: ['pharmacie', 'hôpital', 'hopital', 'médecin', 'santé', 'sante'], cat: 'Santé' },
-      { kw: ['sbee', 'courant', 'électricité', 'electricite', 'internet', 'forfait', 'facture'], cat: 'Factures & Énergie' },
-      { kw: ['salaire', 'paie', 'prime', 'vente', 'revenu', 'entrée', 'entree'], cat: 'Salaire / Revenus' }
+    const KEYWORDS = [
+      { w: ['riz', 'pain', 'repas', 'nourriture', 'marché', 'marche', 'eau'], c: 'Alimentation' },
+      { w: ['essence', 'carburant', 'taxi', 'moto', 'bus', 'transport'], c: 'Transport' },
+      { w: ['loyer', 'maison', 'caution'], c: 'Logement' },
+      { w: ['pharmacie', 'hôpital', 'hopital', 'médecin', 'santé', 'sante'], c: 'Santé' },
+      { w: ['sbee', 'courant', 'électricité', 'electricite', 'internet', 'forfait', 'facture'], c: 'Factures & Énergie' },
+      { w: ['salaire', 'paie', 'prime', 'vente', 'revenu', 'entrée', 'entree'], c: 'Salaire / Revenus' }
     ];
 
-    function initialState() {
+    function makeDefaultState() {
       return {
-        themeDark: false,
+        dark: false,
         currency: 'FCFA',
         period: 'month',
         pin: null,
-        envelopes: [{ id: 'env-portefeuille', name: 'Portefeuille', balance: 0 }],
+        envelopes: [{ id: 'env-default', name: 'Portefeuille', balance: 0 }],
         operations: [],
-        fixedBills: [],
-        savingsGoals: [],
-        monthlyCaps: {
+        bills: [],
+        goals: [],
+        caps: {
           'Alimentation': 0,
           'Transport': 0,
           'Logement': 0,
           'Factures & Énergie': 0,
           'Loisirs': 0
         },
-        lastCreatedOpId: null
+        lastOpId: null
       };
     }
 
-    let state = loadAppState();
-    let opType = 'expense';
-    let draftReceipt = null;
-    let editingId = null;
-    let confirmNegative = false;
-    let pinBuffer = '';
+    let app = loadState();
+    let attachment = null;
+    let editId = null;
+    let negConfirmed = false;
+    let pinInput = '';
 
-    function loadAppState() {
+    function loadState() {
       try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return initialState();
-        const parsed = JSON.parse(raw);
-        const base = initialState();
-        return Object.assign(base, parsed, {
-          envelopes: Array.isArray(parsed.envelopes) && parsed.envelopes.length ? parsed.envelopes : base.envelopes,
-          operations: Array.isArray(parsed.operations) ? parsed.operations : [],
-          fixedBills: Array.isArray(parsed.fixedBills) ? parsed.fixedBills : [],
-          savingsGoals: Array.isArray(parsed.savingsGoals) ? parsed.savingsGoals : [],
-          monthlyCaps: Object.assign(base.monthlyCaps, parsed.monthlyCaps || {})
+        const raw = localStorage.getItem(KEY);
+        if (!raw) return makeDefaultState();
+        const p = JSON.parse(raw);
+        const def = makeDefaultState();
+        return Object.assign(def, p, {
+          envelopes: Array.isArray(p.envelopes) && p.envelopes.length ? p.envelopes : def.envelopes,
+          operations: Array.isArray(p.operations) ? p.operations : [],
+          bills: Array.isArray(p.bills) ? p.bills : [],
+          goals: Array.isArray(p.goals) ? p.goals : [],
+          caps: Object.assign(def.caps, p.caps || {})
         });
       } catch (_) {
-        return initialState();
+        return makeDefaultState();
       }
     }
 
-    function saveAppState() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    function saveState() {
+      localStorage.setItem(KEY, JSON.stringify(app));
       if (typeof window.onFinTrackSmartUpdate === 'function') {
         window.onFinTrackSmartUpdate({
-          envelopes: state.envelopes.slice(),
-          operations: state.operations.slice()
+          envelopes: app.envelopes.slice(),
+          operations: app.operations.slice()
         });
       }
     }
 
-    function fmt(amount) {
-      const n = Number(amount) || 0;
-      const str = n.toLocaleString('fr-FR', { maximumFractionDigits: 2 });
-      if (state.currency === 'EUR') return str + ' €';
-      if (state.currency === 'USD') return '$' + str;
-      return str + ' F';
+    function money(v) {
+      const n = Number(v) || 0;
+      const s = n.toLocaleString('fr-FR', { maximumFractionDigits: 2 });
+      if (app.currency === 'EUR') return s + ' €';
+      if (app.currency === 'USD') return '$' + s;
+      return s + ' F';
     }
 
-    function esc(s) {
-      return String(s ?? '').replace(/[&<>"']/g, function (c) {
-        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] || c;
+    function esc(x) {
+      return String(x ?? '').replace(/[&<>"']/g, function (m) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m] || m;
       });
     }
 
-    // --- Thème WhatsApp ---
-    function applyTheme() {
-      document.body.classList.toggle('wa-dark', !!state.themeDark);
+    // --- Thème & Menu latéral ---
+    function applyTheme() { document.body.classList.toggle('wa-dark', !!app.dark); }
+    function switchThemeMode() { app.dark = !app.dark; applyTheme(); saveState(); }
+    window.switchThemeMode = switchThemeMode;
+
+    document.getElementById('btnTopTheme').addEventListener('click', switchThemeMode);
+
+    function toggleLeftDrawer(open) {
+      document.getElementById('waLeftDrawer').classList.toggle('open', !!open);
+      document.getElementById('waBackdrop').classList.toggle('open', !!open);
     }
+    window.toggleLeftDrawer = toggleLeftDrawer;
+    document.getElementById('btnOpenLeftDrawer').addEventListener('click', function () { toggleLeftDrawer(true); });
 
-    function toggleTheme() {
-      state.themeDark = !state.themeDark;
-      applyTheme();
-      saveAppState();
-    }
-
-    document.getElementById('btnHeaderTheme').addEventListener('click', toggleTheme);
-    document.getElementById('btnToggleTheme').addEventListener('click', toggleTheme);
-
-    // --- Menu latéral gauche rabattable ---
-    function openDrawer() {
-      document.getElementById('sideDrawer').classList.add('open');
-      document.getElementById('drawerBackdrop').classList.add('open');
-    }
-    function closeDrawer() {
-      document.getElementById('sideDrawer').classList.remove('open');
-      document.getElementById('drawerBackdrop').classList.remove('open');
-    }
-    window.closeDrawer = closeDrawer;
-
-    document.getElementById('btnOpenDrawer').addEventListener('click', openDrawer);
-
-    document.querySelectorAll('[data-drawer-page]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        switchView(btn.dataset.drawerPage);
-        closeDrawer();
-      });
-    });
-
-    window.jumpToSection = function (page, elementId) {
-      switchView(page);
-      closeDrawer();
+    window.scrollToId = function (id) {
       setTimeout(function () {
-        const el = document.getElementById(elementId);
+        const el = document.getElementById(id);
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 60);
     };
 
-    // --- Navigation principale & barre basse ---
-    function switchView(viewName) {
-      document.querySelectorAll('.view-section').forEach(function (sec) {
-        sec.classList.toggle('active', sec.id === 'view-' + viewName);
+    function selectTab(tabName) {
+      document.querySelectorAll('.wa-pane').forEach(function (p) {
+        p.classList.toggle('active', p.id === 'pane-' + tabName);
       });
-      document.querySelectorAll('.dock-btn').forEach(function (btn) {
-        btn.classList.toggle('active', btn.dataset.dock === viewName);
-      });
-      document.querySelectorAll('.drawer-nav-btn').forEach(function (btn) {
-        btn.classList.toggle('active', btn.dataset.drawerPage === viewName);
+      document.querySelectorAll('.wa-tab').forEach(function (t) {
+        t.classList.toggle('active', t.dataset.tab === tabName);
       });
       renderAll();
     }
-    window.switchView = switchView;
+    window.selectTab = selectTab;
 
-    document.querySelectorAll('.dock-btn').forEach(function (btn) {
-      btn.addEventListener('click', function () { switchView(btn.dataset.dock); });
+    document.querySelectorAll('.wa-tab').forEach(function (t) {
+      t.addEventListener('click', function () { selectTab(t.dataset.tab); });
     });
 
-    document.getElementById('btnQuickComposer').addEventListener('click', function () {
-      switchView('home');
-      const card = document.getElementById('operationComposerCard');
-      if (card) card.scrollIntoView({ behavior: 'smooth' });
-      document.getElementById('opAmount').focus();
-    });
-
-    // --- Périodes ---
-    document.querySelectorAll('.period-chip').forEach(function (chip) {
-      chip.addEventListener('click', function () {
-        state.period = chip.dataset.period;
-        document.querySelectorAll('.period-chip').forEach(function (c) {
-          c.classList.toggle('active', c.dataset.period === state.period);
-        });
-        saveAppState();
+    document.querySelectorAll('.p-pill').forEach(function (pill) {
+      pill.addEventListener('click', function () {
+        app.period = pill.dataset.p;
+        document.querySelectorAll('.p-pill').forEach(function (x) { x.classList.toggle('active', x.dataset.p === app.period); });
+        saveState();
         renderAll();
       });
     });
 
-    // --- Garde-fous ---
-    function showGuard(msg, isError) {
-      const box = document.getElementById('composerGuard');
-      box.className = 'guard-banner ' + (isError ? 'err' : 'warn');
-      box.textContent = msg;
+    // --- Garde-fous & calcul ---
+    function setAlert(msg, isErr) {
+      const el = document.getElementById('draftGuardAlert');
+      el.className = 'alert-msg ' + (isErr ? 'err' : 'warn');
+      el.textContent = msg;
     }
-    function clearGuard() {
-      const box = document.getElementById('composerGuard');
-      box.className = 'guard-banner';
-      box.textContent = '';
+    function clearAlert() {
+      const el = document.getElementById('draftGuardAlert');
+      el.className = 'alert-msg';
+      el.textContent = '';
     }
 
-    function evalExpr(raw) {
-      const clean = String(raw || '').replace(/\s+/g, '').replace(',', '.');
-      if (!clean || !/^[0-9+\-*/().]+$/.test(clean)) return NaN;
+    function calcExpr(str) {
+      const c = String(str || '').replace(/\s+/g, '').replace(',', '.');
+      if (!c || !/^[0-9+\-*/().]+$/.test(c)) return NaN;
       try {
-        const res = Function('"use strict"; return (' + clean + ')')();
-        return typeof res === 'number' && Number.isFinite(res) ? Number(res.toFixed(2)) : NaN;
-      } catch (_) {
-        return NaN;
-      }
+        const r = Function('"use strict"; return (' + c + ')')();
+        return typeof r === 'number' && Number.isFinite(r) ? Number(r.toFixed(2)) : NaN;
+      } catch (_) { return NaN; }
     }
 
-    function autoCat(label) {
-      const lower = String(label || '').toLowerCase();
-      for (const r of RULES) {
-        if (r.kw.some(function (k) { return lower.includes(k); })) return r.cat;
+    function guessCat(lbl) {
+      const low = String(lbl || '').toLowerCase();
+      for (const item of KEYWORDS) {
+        if (item.w.some(function (k) { return low.includes(k); })) return item.c;
       }
       return null;
     }
 
     // --- Enveloppes physiques ---
-    function applyEnvDelta(envId, delta) {
-      const env = state.envelopes.find(function (e) { return e.id === envId; });
+    function deltaEnv(envId, d) {
+      const env = app.envelopes.find(function (e) { return e.id === envId; });
       if (!env) return;
-      env.balance = Number(((Number(env.balance) || 0) + (Number(delta) || 0)).toFixed(2));
+      env.balance = Number(((Number(env.balance) || 0) + (Number(d) || 0)).toFixed(2));
     }
 
-    document.getElementById('btnAddEnvelope').addEventListener('click', function () {
-      const nameInp = document.getElementById('newEnvName');
-      const initInp = document.getElementById('newEnvInit');
-      const name = String(nameInp.value || '').trim();
-      if (!name) {
-        showGuard('Veuillez saisir un nom d\'enveloppe.', true);
-        return;
-      }
-      const initVal = parseFloat(initInp.value);
+    document.getElementById('btnCreateEnv').addEventListener('click', function () {
+      const nEl = document.getElementById('envNameInput');
+      const iEl = document.getElementById('envInitInput');
+      const name = String(nEl.value || '').trim();
+      if (!name) { alert('Saisissez un nom d\'enveloppe.'); return; }
+      const init = parseFloat(iEl.value);
       const created = {
         id: 'env-' + Date.now() + '-' + Math.random().toString(36).slice(2, 5),
         name: name,
-        balance: Number.isFinite(initVal) ? Number(initVal.toFixed(2)) : 0
+        balance: Number.isFinite(init) ? Number(init.toFixed(2)) : 0
       };
-      state.envelopes.push(created);
-      nameInp.value = '';
-      initInp.value = '0';
-      clearGuard();
-      saveAppState();
+      app.envelopes.push(created);
+      nEl.value = '';
+      iEl.value = '0';
+      saveState();
       renderAll();
-      document.getElementById('opEnvelope').value = created.id;
+      document.getElementById('fEnvelope').value = created.id;
     });
 
-    window.removeEnvelopeSafe = function (envId) {
-      clearGuard();
-      if (state.envelopes.length <= 1) {
-        showGuard('Suppression impossible : au moins une enveloppe doit rester active.', true);
+    window.deleteEnvSafe = function (envId) {
+      if (app.envelopes.length <= 1) { alert('Impossible de supprimer la dernière enveloppe.'); return; }
+      if (app.operations.some(function (o) { return o.envelopeId === envId; })) {
+        alert('Cette enveloppe contient déjà des opérations.');
         return;
       }
-      if (state.operations.some(function (o) { return o.envelopeId === envId; })) {
-        showGuard('Suppression impossible : cette enveloppe contient déjà des opérations.', true);
-        return;
-      }
-      state.envelopes = state.envelopes.filter(function (e) { return e.id !== envId; });
-      saveAppState();
+      app.envelopes = app.envelopes.filter(function (e) { return e.id !== envId; });
+      saveState();
       renderAll();
     };
 
-    // --- Type & auto-catégorie ---
-    document.querySelectorAll('.type-chip').forEach(function (chip) {
-      chip.addEventListener('click', function () {
-        opType = chip.dataset.type;
-        document.querySelectorAll('.type-chip').forEach(function (c) { c.className = 'type-chip'; });
-        chip.classList.add('active-' + opType);
-        document.getElementById('opToWalletWrap').style.display = opType === 'transfer' ? 'block' : 'none';
-        confirmNegative = false;
-        clearGuard();
-      });
-    });
-
-    document.getElementById('opLabel').addEventListener('input', function (e) {
-      const c = autoCat(e.target.value);
-      if (c) document.getElementById('opCategory').value = c;
-    });
-
-    // --- Justificatif ---
-    function compressImg(file, maxW, quality) {
+    // --- Justificatifs ---
+    function compressPhoto(file, maxW, q) {
       return new Promise(function (resolve, reject) {
-        const reader = new FileReader();
-        reader.onload = function (ev) {
+        const rd = new FileReader();
+        rd.onload = function (ev) {
           const img = new Image();
           img.onload = function () {
             let w = img.width, h = img.height;
             if (w > maxW) { h = Math.round((h * maxW) / w); w = maxW; }
-            const canvas = document.createElement('canvas');
-            canvas.width = w; canvas.height = h;
-            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-            resolve(canvas.toDataURL('image/jpeg', quality));
+            const cv = document.createElement('canvas');
+            cv.width = w; cv.height = h;
+            cv.getContext('2d').drawImage(img, 0, 0, w, h);
+            resolve(cv.toDataURL('image/jpeg', q));
           };
           img.onerror = reject;
           img.src = ev.target.result;
         };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
+        rd.onerror = reject;
+        rd.readAsDataURL(file);
       });
     }
 
-    function renderReceiptPreview(att) {
-      const box = document.getElementById('opReceiptPreview');
+    function showReceiptPreview(att) {
+      const box = document.getElementById('fReceiptPreview');
       if (!att || !att.data) { box.innerHTML = ''; return; }
-      const delBtn = '<button type="button" class="wa-btn wa-btn-ghost wa-btn-sm" style="margin-left:8px;" onclick="clearReceiptOnly()">Retirer</button>';
-      if (att.type === 'pdf') {
-        box.innerHTML = '📄 PDF : <strong>' + esc(att.name) + '</strong>' + delBtn;
-      } else {
-        box.innerHTML = '<span style="display:inline-flex;align-items:center;gap:6px;"><img src="' + att.data + '" style="height:38px;border-radius:5px;" />Photo compressée' + delBtn + '</span>';
-      }
+      const rm = '<button type="button" class="btn btn-soft btn-sm" style="margin-left:6px;" onclick="dropDraftReceipt()">Retirer</button>';
+      if (att.type === 'pdf') box.innerHTML = '📄 PDF : <strong>' + esc(att.name) + '</strong>' + rm;
+      else box.innerHTML = '<span style="display:inline-flex;align-items:center;gap:6px;"><img src="' + att.data + '" style="height:36px;border-radius:5px;" />Photo prête' + rm + '</span>';
     }
 
-    window.clearReceiptOnly = function () {
-      draftReceipt = null;
-      document.getElementById('opReceiptFile').value = '';
-      renderReceiptPreview(null);
-      clearGuard();
+    window.dropDraftReceipt = function () {
+      attachment = null;
+      document.getElementById('fReceipt').value = '';
+      document.getElementById('dockReceiptInput').value = '';
+      showReceiptPreview(null);
+      clearAlert();
     };
 
-    document.getElementById('opReceiptFile').addEventListener('change', async function (e) {
-      const file = e.target.files && e.target.files[0];
-      if (!file) { draftReceipt = null; renderReceiptPreview(null); return; }
-      clearGuard();
+    async function handleReceiptChosen(file) {
+      if (!file) return;
+      clearAlert();
       if (file.type === 'application/pdf') {
         if (file.size > 1.5 * 1024 * 1024) {
-          showGuard('PDF > 1,5 Mo : choisissez un fichier plus léger.', true);
-          e.target.value = '';
+          setAlert('PDF > 1,5 Mo : choisissez un fichier plus léger.', true);
           return;
         }
         const r = new FileReader();
-        r.onload = function () { draftReceipt = { name: file.name, type: 'pdf', data: r.result }; renderReceiptPreview(draftReceipt); };
+        r.onload = function () { attachment = { name: file.name, type: 'pdf', data: r.result }; showReceiptPreview(attachment); };
         r.readAsDataURL(file);
       } else if (file.type && file.type.startsWith('image/')) {
         try {
-          const dataUrl = await compressImg(file, 1000, 0.72);
-          draftReceipt = { name: file.name, type: 'image', data: dataUrl };
-          renderReceiptPreview(draftReceipt);
-        } catch (_) {
-          showGuard('Erreur de compression image.', true);
-        }
+          const dUrl = await compressPhoto(file, 1000, 0.72);
+          attachment = { name: file.name, type: 'image', data: dUrl };
+          showReceiptPreview(attachment);
+        } catch (_) { setAlert('Erreur de compression photo.', true); }
       } else {
-        showGuard('Format non pris en charge (photo ou PDF uniquement).', true);
-        e.target.value = '';
+        setAlert('Format accepté : photo ou PDF.', true);
       }
+    }
+
+    document.getElementById('fReceipt').addEventListener('change', function (e) { handleReceiptChosen(e.target.files && e.target.files[0]); });
+    document.getElementById('dockReceiptInput').addEventListener('change', function (e) {
+      handleReceiptChosen(e.target.files && e.target.files[0]);
+      selectTab('operations');
     });
 
     // --- Saisie vocale en brouillon ---
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    let rec = null;
-    if (SR) {
-      rec = new SR();
-      rec.lang = 'fr-FR';
-      rec.interimResults = false;
-      rec.onstart = function () {
-        document.getElementById('draftBanner').textContent = '🎤 Écoute en cours... ex. : « Dépense 3500 carburant mobile money ».';
+    const SpeechClass = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recObj = null;
+    if (SpeechClass) {
+      recObj = new SpeechClass();
+      recObj.lang = 'fr-FR';
+      recObj.interimResults = false;
+      recObj.onstart = function () {
+        document.getElementById('draftVoiceBox').textContent = '🎤 Écoute en cours... ex. : « Dépense 4000 carburant mobile money ».';
       };
-      rec.onresult = function (ev) {
-        const spoken = ev.results[0][0].transcript;
-        document.getElementById('draftBanner').textContent = 'Entendu (brouillon non enregistré) : « ' + spoken + ' ».';
-        const lower = spoken.toLowerCase();
-
-        const isInc = /(revenu|entrée|entree|salaire|reçu|recu|vente|gain)/i.test(lower);
-        opType = isInc ? 'income' : 'expense';
-        document.querySelectorAll('.type-chip').forEach(function (c) {
-          c.className = 'type-chip' + (c.dataset.type === opType ? ' active-' + opType : '');
-        });
-        document.getElementById('opToWalletWrap').style.display = 'none';
-
-        const amtMatch = lower.replace(/\s+(?=\d{3})/g, '').match(/\d+([.,]\d+)?/);
-        if (amtMatch) document.getElementById('opAmount').value = amtMatch[0].replace(',', '.');
-
-        let wallet = 'Espèces';
-        if (/(mobile money|momo|mtn|moov|celtiis|flooz)/i.test(lower)) wallet = 'Mobile Money';
-        else if (/(banque|carte|virement|chèque|cheque)/i.test(lower)) wallet = 'Banque';
-        document.getElementById('opWallet').value = wallet;
-
-        const cleanLabel = lower
+      recObj.onresult = function (ev) {
+        const txt = ev.results[0][0].transcript;
+        document.getElementById('draftVoiceBox').textContent = 'Entendu (brouillon non enregistré) : « ' + txt + ' ».';
+        const low = txt.toLowerCase();
+        document.getElementById('fType').value = /(revenu|entrée|entree|salaire|reçu|recu|vente|gain)/i.test(low) ? 'income' : 'expense';
+        const m = low.replace(/\s+(?=\d{3})/g, '').match(/\d+([.,]\d+)?/);
+        if (m) document.getElementById('fAmount').value = m[0].replace(',', '.');
+        let wal = 'Espèces';
+        if (/(mobile money|momo|mtn|moov|celtiis|flooz)/i.test(low)) wal = 'Mobile Money';
+        else if (/(banque|carte|virement|chèque|cheque)/i.test(low)) wal = 'Banque';
+        document.getElementById('fWallet').value = wal;
+        const cleanLbl = low
           .replace(/(dépense|depense|revenu|entrée|entree|de|pour|par|en|francs|fcfa|euros|dollars)/gi, ' ')
           .replace(/(mobile money|momo|mtn|moov|celtiis|flooz|banque|carte|virement|chèque|cheque|espèces|especes|cash|liquide)/gi, ' ')
           .replace(/\d+([.,]\d+)?/g, ' ')
           .replace(/\s+/g, ' ')
           .trim();
-
-        if (cleanLabel) {
-          const cap = cleanLabel.charAt(0).toUpperCase() + cleanLabel.slice(1);
-          document.getElementById('opLabel').value = cap;
-          const cat = autoCat(cap);
-          if (cat) document.getElementById('opCategory').value = cat;
+        if (cleanLbl) {
+          const cap = cleanLbl.charAt(0).toUpperCase() + cleanLbl.slice(1);
+          document.getElementById('fLabel').value = cap;
+          const gc = guessCat(cap);
+          if (gc) document.getElementById('fCategory').value = gc;
         }
-        confirmNegative = false;
-        clearGuard();
+        negConfirmed = false;
+        clearAlert();
       };
-      rec.onerror = function (ev) { showGuard('Micro : ' + ev.error, true); };
+      recObj.onerror = function (ev) { setAlert('Micro : ' + ev.error, true); };
     } else {
-      document.getElementById('btnVoiceStart').disabled = true;
-      document.getElementById('btnVoiceRetry').disabled = true;
-      document.getElementById('btnHeaderVoice').disabled = true;
+      ['btnDraftVoice', 'btnDraftRetry', 'btnTopVoice', 'dockBtnVoice'].forEach(function (id) {
+        const b = document.getElementById(id);
+        if (b) b.disabled = true;
+      });
     }
 
-    function triggerVoice() {
-      if (!rec) return;
-      switchView('home');
-      clearGuard();
-      rec.start();
+    function startVoiceDraft() {
+      if (!recObj) return;
+      selectTab('operations');
+      clearAlert();
+      recObj.start();
     }
-
-    document.getElementById('btnVoiceStart').addEventListener('click', triggerVoice);
-    document.getElementById('btnHeaderVoice').addEventListener('click', triggerVoice);
-    document.getElementById('btnVoiceRetry').addEventListener('click', function () {
-      resetDraft(true);
-      if (rec) rec.start();
+    document.getElementById('btnDraftVoice').addEventListener('click', startVoiceDraft);
+    document.getElementById('btnTopVoice').addEventListener('click', startVoiceDraft);
+    document.getElementById('dockBtnVoice').addEventListener('click', startVoiceDraft);
+    document.getElementById('btnDraftRetry').addEventListener('click', function () {
+      clearDraftForm(true);
+      if (recObj) recObj.start();
     });
 
-    function resetDraft(keepMsg) {
-      editingId = null;
-      confirmNegative = false;
-      opType = 'expense';
-      document.querySelectorAll('.type-chip').forEach(function (c) {
-        c.className = 'type-chip' + (c.dataset.type === 'expense' ? ' active-expense' : '');
-      });
-      document.getElementById('opToWalletWrap').style.display = 'none';
-      document.getElementById('composerTitle').textContent = 'Nouvelle opération';
-      document.getElementById('btnCancelEdit').style.display = 'none';
-      document.getElementById('opAmount').value = '';
-      document.getElementById('opLabel').value = '';
-      document.getElementById('opSubcat').value = '';
-      document.getElementById('opWallet').value = 'Espèces';
-      document.getElementById('opDate').value = new Date().toISOString().slice(0, 10);
-      draftReceipt = null;
-      document.getElementById('opReceiptFile').value = '';
-      renderReceiptPreview(null);
-      clearGuard();
-      if (!keepMsg) {
-        document.getElementById('draftBanner').textContent = 'Brouillon effacé — aucune donnée n\'a été enregistrée.';
+    function clearDraftForm(keepText) {
+      editId = null;
+      negConfirmed = false;
+      document.getElementById('draftCardTitle').textContent = 'Brouillon d\'opération';
+      document.getElementById('btnAbortEdit').style.display = 'none';
+      document.getElementById('fType').value = 'expense';
+      document.getElementById('fAmount').value = '';
+      document.getElementById('fLabel').value = '';
+      document.getElementById('fSubcat').value = '';
+      document.getElementById('fWallet').value = 'Espèces';
+      document.getElementById('fDate').value = new Date().toISOString().slice(0, 10);
+      attachment = null;
+      document.getElementById('fReceipt').value = '';
+      document.getElementById('dockReceiptInput').value = '';
+      showReceiptPreview(null);
+      clearAlert();
+      if (!keepText) {
+        document.getElementById('draftVoiceBox').textContent = 'Brouillon effacé — aucune donnée n\'a été enregistrée.';
       }
     }
 
-    document.getElementById('btnClearDraft').addEventListener('click', function () { resetDraft(false); });
-    document.getElementById('btnCancelEdit').addEventListener('click', function () { resetDraft(false); });
+    document.getElementById('btnDraftClear').addEventListener('click', function () { clearDraftForm(false); });
+    document.getElementById('btnAbortEdit').addEventListener('click', function () { clearDraftForm(false); });
+    document.getElementById('fLabel').addEventListener('input', function (e) {
+      const gc = guessCat(e.target.value);
+      if (gc) document.getElementById('fCategory').value = gc;
+    });
 
-    // --- Enregistrement / Édition / Suppression / Annulation ---
-    document.getElementById('btnSaveOp').addEventListener('click', function () {
-      clearGuard();
-      const amount = evalExpr(document.getElementById('opAmount').value);
+    // --- Validation depuis Brouillon ou Barre d'accès direct ---
+    function commitOperation(overrideType, quickText) {
+      clearAlert();
+      const rawAmt = quickText ? quickText : document.getElementById('fAmount').value;
+      let amount = calcExpr(rawAmt);
+      let label = String(document.getElementById('fLabel').value || '').trim();
+
+      if (quickText) {
+        const m = String(quickText).replace(/\s+(?=\d{3})/g, '').match(/\d+([.,]\d+)?/);
+        amount = m ? parseFloat(m[0].replace(',', '.')) : NaN;
+        const txtRest = String(quickText).replace(/\d+([.,]\d+)?/, '').trim();
+        if (txtRest) label = txtRest.charAt(0).toUpperCase() + txtRest.slice(1);
+      }
+
       if (!Number.isFinite(amount) || amount <= 0) {
-        showGuard('Montant invalide : saisissez un montant strictement supérieur à 0.', true);
+        setAlert('Montant invalide : saisissez un montant supérieur à 0.', true);
         return;
       }
 
-      const envId = document.getElementById('opEnvelope').value;
-      const env = state.envelopes.find(function (e) { return e.id === envId; });
-      if (!env) {
-        showGuard('Veuillez sélectionner une enveloppe.', true);
-        return;
-      }
+      const type = overrideType || (document.getElementById('fType').value === 'income' ? 'income' : 'expense');
+      const envId = document.getElementById('fEnvelope').value;
+      const env = app.envelopes.find(function (e) { return e.id === envId; });
+      if (!env) { setAlert('Enveloppe introuvable.', true); return; }
 
-      const label = String(document.getElementById('opLabel').value || '').trim() ||
-        (opType === 'income' ? 'Revenu' : opType === 'transfer' ? 'Virement' : 'Dépense');
-      const category = document.getElementById('opCategory').value || 'Autres';
-      const subcat = String(document.getElementById('opSubcat').value || '').trim();
-      const wallet = document.getElementById('opWallet').value || 'Espèces';
-      const toWallet = document.getElementById('opToWallet').value || 'Banque';
-      const dateStr = document.getElementById('opDate').value || new Date().toISOString().slice(0, 10);
+      const finalLabel = label || (type === 'income' ? 'Revenu' : 'Dépense');
+      const category = guessCat(finalLabel) || document.getElementById('fCategory').value || 'Autres';
+      const subcat = String(document.getElementById('fSubcat').value || '').trim();
+      const wallet = document.getElementById('fWallet').value || 'Espèces';
+      const dateVal = document.getElementById('fDate').value || new Date().toISOString().slice(0, 10);
 
-      const existing = editingId ? state.operations.find(function (o) { return o.id === editingId; }) : null;
-      const newDelta = opType === 'income' ? amount : (opType === 'expense' ? -amount : 0);
-
-      let nextEnvBal = (Number(env.balance) || 0) + newDelta;
+      const existing = editId ? app.operations.find(function (o) { return o.id === editId; }) : null;
+      const newD = type === 'income' ? amount : -amount;
+      let projBal = (Number(env.balance) || 0) + newD;
       if (existing && existing.envelopeId === envId) {
-        const oldDelta = existing.type === 'income' ? existing.amount : (existing.type === 'expense' ? -existing.amount : 0);
-        nextEnvBal = (Number(env.balance) || 0) - oldDelta + newDelta;
+        const oldD = existing.type === 'income' ? existing.amount : -existing.amount;
+        projBal = (Number(env.balance) || 0) - oldD + newD;
       }
 
-      if (opType === 'expense' && nextEnvBal < 0 && !confirmNegative) {
-        confirmNegative = true;
-        showGuard(
-          'Alerte : cette dépense fera passer « ' + env.name + ' » à ' + fmt(nextEnvBal) +
-          '. Cliquez encore sur « Enregistrer l\'opération » pour confirmer.',
+      if (type === 'expense' && projBal < 0 && !negConfirmed) {
+        negConfirmed = true;
+        setAlert(
+          'Attention : cette dépense fera passer « ' + env.name + ' » à ' + money(projBal) +
+          '. Cliquez à nouveau sur « Enregistrer l\'opération » pour confirmer.',
           false
         );
         return;
       }
-
-      confirmNegative = false;
+      negConfirmed = false;
 
       if (existing) {
-        const oldDelta = existing.type === 'income' ? existing.amount : (existing.type === 'expense' ? -existing.amount : 0);
-        applyEnvDelta(existing.envelopeId, -oldDelta);
-        applyEnvDelta(envId, newDelta);
-
-        existing.type = opType;
+        const oldD = existing.type === 'income' ? existing.amount : -existing.amount;
+        deltaEnv(existing.envelopeId, -oldD);
+        deltaEnv(envId, newD);
+        existing.type = type;
         existing.amount = amount;
-        existing.label = label;
+        existing.label = finalLabel;
         existing.category = category;
         existing.subcategory = subcat;
         existing.wallet = wallet;
-        existing.toWallet = opType === 'transfer' ? toWallet : null;
         existing.envelopeId = envId;
-        existing.date = dateStr;
-        existing.attachment = draftReceipt;
-        state.lastCreatedOpId = null;
+        existing.date = dateVal;
+        existing.attachment = attachment;
+        app.lastOpId = null;
       } else {
-        applyEnvDelta(envId, newDelta);
-        const id = 'op-' + Date.now() + '-' + Math.random().toString(36).slice(2, 5);
-        state.operations.unshift({
-          id: id,
-          type: opType,
+        deltaEnv(envId, newD);
+        const newId = 'op-' + Date.now() + '-' + Math.random().toString(36).slice(2, 5);
+        app.operations.unshift({
+          id: newId,
+          type: type,
           amount: amount,
-          label: label,
+          label: finalLabel,
           category: category,
           subcategory: subcat,
           wallet: wallet,
-          toWallet: opType === 'transfer' ? toWallet : null,
           envelopeId: envId,
-          date: dateStr,
-          attachment: draftReceipt
+          date: dateVal,
+          attachment: attachment
         });
-        state.lastCreatedOpId = id;
+        app.lastOpId = newId;
       }
 
-      saveAppState();
-      resetDraft(true);
+      if (quickText) document.getElementById('dockQuickText').value = '';
+      saveState();
+      clearDraftForm(true);
       renderAll();
+    }
+
+    document.getElementById('btnValidateOp').addEventListener('click', function () { commitOperation(null, null); });
+    document.getElementById('dockBtnIncome').addEventListener('click', function () {
+      const q = document.getElementById('dockQuickText').value.trim();
+      if (q) commitOperation('income', q);
+      else { document.getElementById('fType').value = 'income'; commitOperation('income', null); }
+    });
+    document.getElementById('dockBtnExpense').addEventListener('click', function () {
+      const q = document.getElementById('dockQuickText').value.trim();
+      if (q) commitOperation('expense', q);
+      else { document.getElementById('fType').value = 'expense'; commitOperation('expense', null); }
     });
 
-    document.getElementById('btnUndoLast').addEventListener('click', function () {
-      if (!state.lastCreatedOpId) return;
-      const idx = state.operations.findIndex(function (o) { return o.id === state.lastCreatedOpId; });
+    document.getElementById('btnUndoLastOp').addEventListener('click', function () {
+      if (!app.lastOpId) return;
+      const idx = app.operations.findIndex(function (o) { return o.id === app.lastOpId; });
       if (idx !== -1) {
-        const op = state.operations[idx];
-        const delta = op.type === 'income' ? op.amount : (op.type === 'expense' ? -op.amount : 0);
-        applyEnvDelta(op.envelopeId, -delta);
-        state.operations.splice(idx, 1);
+        const op = app.operations[idx];
+        deltaEnv(op.envelopeId, op.type === 'income' ? -op.amount : op.amount);
+        app.operations.splice(idx, 1);
       }
-      state.lastCreatedOpId = null;
-      saveAppState();
+      app.lastOpId = null;
+      saveState();
       renderAll();
-      document.getElementById('draftBanner').textContent = 'Dernière opération annulée ; solde de l\'enveloppe restauré.';
     });
 
-    window.editOp = function (opId) {
-      const op = state.operations.find(function (o) { return o.id === opId; });
+    window.editOpRow = function (id) {
+      const op = app.operations.find(function (o) { return o.id === id; });
       if (!op) return;
-      switchView('home');
-      editingId = op.id;
-      confirmNegative = false;
-      opType = op.type || 'expense';
-      document.querySelectorAll('.type-chip').forEach(function (c) {
-        c.className = 'type-chip' + (c.dataset.type === opType ? ' active-' + opType : '');
-      });
-      document.getElementById('opToWalletWrap').style.display = opType === 'transfer' ? 'block' : 'none';
-      document.getElementById('composerTitle').textContent = 'Modifier l\'opération';
-      document.getElementById('btnCancelEdit').style.display = 'inline-block';
-      document.getElementById('opAmount').value = op.amount;
-      document.getElementById('opLabel').value = op.label;
-      document.getElementById('opCategory').value = op.category || 'Autres';
-      document.getElementById('opSubcat').value = op.subcategory || '';
-      document.getElementById('opWallet').value = op.wallet || 'Espèces';
-      if (op.toWallet) document.getElementById('opToWallet').value = op.toWallet;
-      if (state.envelopes.some(function (e) { return e.id === op.envelopeId; })) {
-        document.getElementById('opEnvelope').value = op.envelopeId;
-      }
-      document.getElementById('opDate').value = (op.date || '').slice(0, 10) || new Date().toISOString().slice(0, 10);
-      draftReceipt = op.attachment || null;
-      renderReceiptPreview(draftReceipt);
-      document.getElementById('operationComposerCard').scrollIntoView({ behavior: 'smooth' });
+      selectTab('operations');
+      editId = op.id;
+      negConfirmed = false;
+      document.getElementById('draftCardTitle').textContent = 'Modifier l\'opération';
+      document.getElementById('btnAbortEdit').style.display = 'inline-flex';
+      document.getElementById('fType').value = op.type;
+      document.getElementById('fAmount').value = op.amount;
+      document.getElementById('fLabel').value = op.label;
+      document.getElementById('fCategory').value = op.category || 'Autres';
+      document.getElementById('fSubcat').value = op.subcategory || '';
+      document.getElementById('fWallet').value = op.wallet || 'Espèces';
+      if (app.envelopes.some(function (e) { return e.id === op.envelopeId; })) document.getElementById('fEnvelope').value = op.envelopeId;
+      document.getElementById('fDate').value = (op.date || '').slice(0, 10) || new Date().toISOString().slice(0, 10);
+      attachment = op.attachment || null;
+      showReceiptPreview(attachment);
+      scrollToId('draftCard');
     };
 
-    window.deleteOp = function (opId) {
-      const idx = state.operations.findIndex(function (o) { return o.id === opId; });
+    window.delOpRow = function (id) {
+      const idx = app.operations.findIndex(function (o) { return o.id === id; });
       if (idx === -1) return;
-      const op = state.operations[idx];
-      const delta = op.type === 'income' ? op.amount : (op.type === 'expense' ? -op.amount : 0);
-      applyEnvDelta(op.envelopeId, -delta);
-      state.operations.splice(idx, 1);
-      if (state.lastCreatedOpId === opId) state.lastCreatedOpId = null;
-      if (editingId === opId) resetDraft(true);
-      saveAppState();
+      const op = app.operations[idx];
+      deltaEnv(op.envelopeId, op.type === 'income' ? -op.amount : op.amount);
+      app.operations.splice(idx, 1);
+      if (app.lastOpId === id) app.lastOpId = null;
+      if (editId === id) clearDraftForm(true);
+      saveState();
       renderAll();
     };
 
-    window.openReceipt = function (opId) {
-      const op = state.operations.find(function (o) { return o.id === opId; });
+    window.showOpReceipt = function (id) {
+      const op = app.operations.find(function (o) { return o.id === id; });
       if (!op || !op.attachment || !op.attachment.data) return;
-      const win = window.open('', '_blank');
-      if (!win) return;
-      if (op.attachment.type === 'pdf') {
-        win.document.write('<iframe src="' + op.attachment.data + '" style="width:100%;height:100%;border:0;"></iframe>');
-      } else {
-        win.document.write('<img src="' + op.attachment.data + '" style="max-width:100%;height:auto;" />');
-      }
+      const w = window.open('', '_blank');
+      if (!w) return;
+      if (op.attachment.type === 'pdf') w.document.write('<iframe src="' + op.attachment.data + '" style="width:100%;height:100%;border:0;"></iframe>');
+      else w.document.write('<img src="' + op.attachment.data + '" style="max-width:100%;height:auto;" />');
     };
 
-    // --- Filtrage période & Rendu ---
-    function matchPeriod(dateStr) {
-      if (state.period === 'all') return true;
-      const d = new Date(dateStr);
+    // --- Rendu ---
+    function inPeriod(dStr) {
+      if (app.period === 'all') return true;
+      const d = new Date(dStr);
       if (Number.isNaN(d.getTime())) return true;
       const now = new Date();
-      if (state.period === 'today') return d.toDateString() === now.toDateString();
-      if (state.period === 'week') return (now - d) / 86400000 <= 7;
-      if (state.period === 'month') return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
-      if (state.period === 'year') return d.getFullYear() === now.getFullYear();
+      if (app.period === 'today') return d.toDateString() === now.toDateString();
+      if (app.period === 'week') return (now - d) / 86400000 <= 7;
+      if (app.period === 'month') return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+      if (app.period === 'year') return d.getFullYear() === now.getFullYear();
       return true;
     }
 
     function renderAll() {
-      const catSel = document.getElementById('opCategory');
-      const prevC = catSel.value;
-      catSel.innerHTML = CATEGORIES.map(function (c) {
-        return '<option value="' + esc(c) + '">' + esc(c) + '</option>';
-      }).join('');
-      if (prevC) catSel.value = prevC;
+      const fCat = document.getElementById('fCategory');
+      const pc = fCat.value;
+      fCat.innerHTML = CATS.map(function (c) { return '<option value="' + esc(c) + '">' + esc(c) + '</option>'; }).join('');
+      if (pc) fCat.value = pc;
 
-      const histCatSel = document.getElementById('histCatFilter');
-      const prevHC = histCatSel.value;
-      histCatSel.innerHTML = '<option value="ALL">Toutes catégories</option>' + CATEGORIES.map(function (c) {
-        return '<option value="' + esc(c) + '">' + esc(c) + '</option>';
-      }).join('');
-      if (prevHC) histCatSel.value = prevHC;
+      const hCat = document.getElementById('hCatFilter');
+      const phc = hCat.value;
+      hCat.innerHTML = '<option value="ALL">Toutes catégories</option>' + CATS.map(function (c) { return '<option value="' + esc(c) + '">' + esc(c) + '</option>'; }).join('');
+      if (phc) hCat.value = phc;
 
-      const envSel = document.getElementById('opEnvelope');
-      const prevE = envSel.value;
-      envSel.innerHTML = state.envelopes.map(function (e) {
-        return '<option value="' + esc(e.id) + '">' + esc(e.name) + ' (' + fmt(e.balance) + ')</option>';
-      }).join('');
-      if (prevE && state.envelopes.some(function (e) { return e.id === prevE; })) envSel.value = prevE;
+      const fEnv = document.getElementById('fEnvelope');
+      const pe = fEnv.value;
+      fEnv.innerHTML = app.envelopes.map(function (e) { return '<option value="' + esc(e.id) + '">' + esc(e.name) + ' (' + money(e.balance) + ')</option>'; }).join('');
+      if (pe && app.envelopes.some(function (e) { return e.id === pe; })) fEnv.value = pe;
 
-      // Enveloppes
-      const canDel = state.envelopes.length > 1;
-      document.getElementById('envelopesGrid').innerHTML = state.envelopes.map(function (env) {
+      const canDelEnv = app.envelopes.length > 1;
+      document.getElementById('envCardsList').innerHTML = app.envelopes.map(function (env) {
         const bal = Number(env.balance) || 0;
-        const inUse = state.operations.some(function (o) { return o.envelopeId === env.id; });
-        const dis = !canDel || inUse;
+        const used = app.operations.some(function (o) { return o.envelopeId === env.id; });
+        const dis = !canDelEnv || used;
         return (
-          '<div style="border:1px solid var(--wa-border);border-radius:var(--radius-md);padding:10px 12px;background:var(--wa-surface-soft);">' +
+          '<div style="border:1px solid var(--wa-line);border-radius:10px;padding:10px 12px;background:var(--wa-soft);">' +
             '<div style="display:flex;justify-content:space-between;align-items:center;gap:6px;">' +
               '<strong style="font-size:0.86rem;">' + esc(env.name) + '</strong>' +
-              '<button type="button" ' + (dis ? 'disabled ' : '') + 'onclick="removeEnvelopeSafe(\'' + esc(env.id) + '\')" ' +
-                'style="border:1px solid rgba(217,48,37,0.3);background:var(--danger-bg);color:var(--danger);border-radius:6px;padding:2px 6px;font-size:0.74rem;cursor:' + (dis ? 'not-allowed' : 'pointer') + ';">✕</button>' +
+              '<button type="button" ' + (dis ? 'disabled ' : '') + 'onclick="deleteEnvSafe(\'' + esc(env.id) + '\')" ' +
+                'style="border:none;background:var(--danger-soft);color:var(--danger);border-radius:6px;padding:2px 6px;font-size:0.74rem;cursor:' + (dis ? 'not-allowed' : 'pointer') + ';">✕</button>' +
             '</div>' +
-            '<div style="font-size:1.06rem;font-weight:800;margin-top:4px;color:' + (bal < 0 ? 'var(--danger)' : 'var(--success)') + ';">' + fmt(bal) + '</div>' +
+            '<div style="font-size:1.06rem;font-weight:800;margin-top:4px;color:' + (bal < 0 ? 'var(--danger)' : 'var(--ok)') + ';">' + money(bal) + '</div>' +
           '</div>'
         );
       }).join('');
 
-      // KPIs
-      const envTotal = state.envelopes.reduce(function (s, e) { return s + (Number(e.balance) || 0); }, 0);
-      const pOps = state.operations.filter(function (o) { return matchPeriod(o.date); });
+      const envSum = app.envelopes.reduce(function (s, e) { return s + (Number(e.balance) || 0); }, 0);
+      const pOps = app.operations.filter(function (o) { return inPeriod(o.date); });
       const inc = pOps.filter(function (o) { return o.type === 'income'; }).reduce(function (s, o) { return s + o.amount; }, 0);
       const exp = pOps.filter(function (o) { return o.type === 'expense'; }).reduce(function (s, o) { return s + o.amount; }, 0);
-      const savRate = inc > 0 ? Math.round(((inc - exp) / inc) * 100) : 0;
+      const sav = inc > 0 ? Math.round(((inc - exp) / inc) * 100) : 0;
 
       const now = new Date();
-      const daysMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-      const remDays = Math.max(1, daysMonth - now.getDate() + 1);
-      const avgDay = exp / Math.max(1, now.getDate());
-      const dailyAllowance = envTotal > 0 ? envTotal / remDays : 0;
-      const score = Math.max(0, Math.min(100, 50 + savRate + (envTotal >= 0 ? 15 : -25)));
+      const dim = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+      const remD = Math.max(1, dim - now.getDate() + 1);
+      const avgD = exp / Math.max(1, now.getDate());
+      const daily = envSum > 0 ? envSum / remD : 0;
+      const score = Math.max(0, Math.min(100, 50 + sav + (envSum >= 0 ? 15 : -25)));
 
-      document.getElementById('kpiTreasury').textContent = fmt(envTotal);
-      document.getElementById('kpiAutonomy').textContent = 'Autonomie : ' + (avgDay > 0 ? Math.floor(envTotal / avgDay) + ' jours' : 'stable');
-      document.getElementById('kpiIncome').textContent = fmt(inc);
-      document.getElementById('kpiExpense').textContent = fmt(exp);
-      document.getElementById('kpiSavings').textContent = savRate + ' %';
-      document.getElementById('kpiDaily').textContent = fmt(dailyAllowance);
-      document.getElementById('kpiAvgDay').textContent = 'Moyenne dépensée : ' + fmt(avgDay) + '/jour';
-      document.getElementById('kpiScore').textContent = score + ' / 100';
-      document.getElementById('headerWalletSummary').textContent = state.envelopes.length + ' enveloppe(s) • Trésorerie : ' + fmt(envTotal);
-      document.getElementById('liveAnalysisText').textContent =
-        'Enveloppes : ' + fmt(envTotal) + ' • Revenus : ' + fmt(inc) + ' • Dépenses : ' + fmt(exp) + ' • Taux d\'épargne : ' + savRate + ' %.';
+      document.getElementById('mTreasury').textContent = money(envSum);
+      document.getElementById('mAutonomy').textContent = 'Autonomie : ' + (avgD > 0 ? Math.floor(envSum / avgD) + ' jours' : 'stable');
+      document.getElementById('mIncome').textContent = money(inc);
+      document.getElementById('mExpense').textContent = money(exp);
+      document.getElementById('mSavings').textContent = sav + ' %';
+      document.getElementById('mDaily').textContent = money(daily);
+      document.getElementById('mAvgDay').textContent = 'Moyenne dépensée : ' + money(avgD) + '/jour';
+      document.getElementById('mHealth').textContent = score + ' / 100';
+      document.getElementById('topStatusLine').textContent = app.envelopes.length + ' enveloppe(s) • ' + money(envSum);
+      document.getElementById('liveSummaryLine').textContent = 'Enveloppes : ' + money(envSum) + ' • Revenus : ' + money(inc) + ' • Dépenses : ' + money(exp);
+      document.getElementById('btnUndoLastOp').style.display = app.lastOpId ? 'inline-flex' : 'none';
 
-      document.getElementById('btnUndoLast').style.display = state.lastCreatedOpId ? 'inline-flex' : 'none';
+      document.getElementById('boxIncExp').innerHTML =
+        '<div style="display:flex;justify-content:space-between;font-size:0.84rem;"><span>Revenus</span><strong style="color:var(--ok);">' + money(inc) + '</strong></div>' +
+        '<div class="bar-bg"><div class="bar-fill" style="width:' + (inc > 0 ? 100 : 0) + '%;"></div></div>' +
+        '<div style="display:flex;justify-content:space-between;font-size:0.84rem;margin-top:8px;"><span>Dépenses</span><strong style="color:var(--danger);">' + money(exp) + '</strong></div>' +
+        '<div class="bar-bg"><div class="bar-fill" style="background:var(--danger);width:' + Math.min(100, inc > 0 ? (exp / inc) * 100 : (exp > 0 ? 100 : 0)) + '%;"></div></div>';
 
-      // Graphiques & aperçus Accueil
-      document.getElementById('chartIncExp').innerHTML =
-        '<div style="display:flex;justify-content:space-between;font-size:0.86rem;"><span>Revenus</span><strong style="color:var(--success);">' + fmt(inc) + '</strong></div>' +
-        '<div class="meter-track"><div class="meter-fill" style="width:' + (inc > 0 ? 100 : 0) + '%;"></div></div>' +
-        '<div style="display:flex;justify-content:space-between;font-size:0.86rem;margin-top:10px;"><span>Dépenses</span><strong style="color:var(--danger);">' + fmt(exp) + '</strong></div>' +
-        '<div class="meter-track"><div class="meter-fill" style="background:var(--danger);width:' + Math.min(100, inc > 0 ? (exp / inc) * 100 : (exp > 0 ? 100 : 0)) + '%;"></div></div>';
+      const catTotals = {};
+      pOps.filter(function (o) { return o.type === 'expense'; }).forEach(function (o) { catTotals[o.category] = (catTotals[o.category] || 0) + o.amount; });
+      const cArr = Object.entries(catTotals);
+      document.getElementById('boxCats').innerHTML = cArr.length
+        ? cArr.map(function (it) { return '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--wa-line);font-size:0.84rem;"><span>' + esc(it[0]) + '</span><strong>' + money(it[1]) + '</strong></div>'; }).join('')
+        : '<div style="color:var(--wa-subtext);font-size:0.84rem;">Aucune dépense.</div>';
 
-      const catMap = {};
-      pOps.filter(function (o) { return o.type === 'expense'; }).forEach(function (o) {
-        catMap[o.category] = (catMap[o.category] || 0) + o.amount;
-      });
-      const catArr = Object.entries(catMap);
-      document.getElementById('chartCats').innerHTML = catArr.length
-        ? catArr.map(function (item) {
-            return '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--wa-border);font-size:0.86rem;"><span>' + esc(item[0]) + '</span><strong>' + fmt(item[1]) + '</strong></div>';
-          }).join('')
-        : '<div style="color:var(--wa-muted);font-size:0.86rem;">Aucune dépense sur cette période.</div>';
-
-      document.getElementById('homeCapsBox').innerHTML = Object.entries(state.monthlyCaps).map(function (entry) {
-        const cap = Number(entry[1]) || 0;
-        const spent = catMap[entry[0]] || 0;
-        const pct = cap > 0 ? Math.min(100, Math.round((spent / cap) * 100)) : 0;
-        return '<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;font-size:0.82rem;"><span>' + esc(entry[0]) + '</span><span>' + fmt(spent) + ' / ' + fmt(cap) + '</span></div><div class="meter-track"><div class="meter-fill" style="width:' + pct + '%;background:' + (pct >= 100 ? 'var(--danger)' : 'var(--wa-green)') + ';"></div></div></div>';
+      document.getElementById('boxCaps').innerHTML = Object.entries(app.caps).map(function (ent) {
+        const cap = Number(ent[1]) || 0;
+        const sp = catTotals[ent[0]] || 0;
+        const pct = cap > 0 ? Math.min(100, Math.round((sp / cap) * 100)) : 0;
+        return '<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;font-size:0.82rem;"><span>' + esc(ent[0]) + '</span><span>' + money(sp) + ' / ' + money(cap) + '</span></div><div class="bar-bg"><div class="bar-fill" style="width:' + pct + '%;background:' + (pct >= 100 ? 'var(--danger)' : 'var(--wa-accent)') + ';"></div></div></div>';
       }).join('');
 
-      document.getElementById('homeRecentBox').innerHTML = state.operations.slice(0, 5).map(function (op) {
-        const env = state.envelopes.find(function (e) { return e.id === op.envelopeId; });
-        return '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--wa-border);font-size:0.85rem;"><span><strong>' + esc(op.label) + '</strong> <small style="color:var(--wa-muted);">• ' + esc(env ? env.name : '') + '</small></span><strong style="color:' + (op.type === 'income' ? 'var(--success)' : 'var(--danger)') + ';">' + (op.type === 'income' ? '+' : '-') + fmt(op.amount) + '</strong></div>';
-      }).join('') || '<div style="color:var(--wa-muted);font-size:0.85rem;">Aucune opération récente.</div>';
+      document.getElementById('boxRecent').innerHTML = app.operations.slice(0, 5).map(function (op) {
+        const env = app.envelopes.find(function (e) { return e.id === op.envelopeId; });
+        return '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--wa-line);font-size:0.84rem;"><span><strong>' + esc(op.label) + '</strong> <small style="color:var(--wa-subtext);">• ' + esc(env ? env.name : '') + '</small></span><strong style="color:' + (op.type === 'income' ? 'var(--ok)' : 'var(--danger)') + ';">' + (op.type === 'income' ? '+' : '-') + money(op.amount) + '</strong></div>';
+      }).join('') || '<div style="color:var(--wa-subtext);font-size:0.84rem;">Aucune opération.</div>';
 
-      renderHistoryTable();
-      renderCompareSection();
-      renderToolsSection();
-    }
-
-    function renderHistoryTable() {
-      const q = String(document.getElementById('histSearch').value || '').toLowerCase().trim();
-      const catF = document.getElementById('histCatFilter').value;
-      const list = state.operations.filter(function (o) {
-        return (!q || String(o.label).toLowerCase().includes(q)) && (catF === 'ALL' || o.category === catF);
+      // Historique
+      const q = String(document.getElementById('hSearch').value || '').toLowerCase().trim();
+      const cf = document.getElementById('hCatFilter').value;
+      const rows = app.operations.filter(function (o) {
+        return (!q || String(o.label).toLowerCase().includes(q)) && (cf === 'ALL' || o.category === cf);
       });
-
-      document.getElementById('histTableBody').innerHTML = list.map(function (op) {
-        const env = state.envelopes.find(function (e) { return e.id === op.envelopeId; });
-        const envInfo = (env ? env.name : 'Enveloppe') + ' • ' + (op.wallet || 'Espèces');
-        const attBtn = op.attachment
-          ? '<button type="button" class="wa-btn wa-btn-ghost wa-btn-sm" onclick="openReceipt(\'' + esc(op.id) + '\')">📎 Voir</button>'
-          : '—';
+      document.getElementById('hTableBody').innerHTML = rows.map(function (op) {
+        const env = app.envelopes.find(function (e) { return e.id === op.envelopeId; });
+        const attB = op.attachment ? '<button type="button" class="btn btn-soft btn-sm" onclick="showOpReceipt(\'' + esc(op.id) + '\')">📎 Voir</button>' : '—';
         return (
           '<tr>' +
             '<td>' + esc((op.date || '').slice(0, 10)) + '</td>' +
             '<td><strong>' + esc(op.label) + '</strong></td>' +
             '<td>' + esc(op.category || 'Autres') + '</td>' +
-            '<td>' + esc(envInfo) + '</td>' +
-            '<td>' + attBtn + '</td>' +
-            '<td style="font-weight:700;color:' + (op.type === 'income' ? 'var(--success)' : 'var(--danger)') + ';">' +
-              (op.type === 'income' ? '+' : '-') + fmt(op.amount) +
-            '</td>' +
+            '<td>' + esc((env ? env.name : 'Enveloppe') + ' • ' + (op.wallet || 'Espèces')) + '</td>' +
+            '<td>' + attB + '</td>' +
+            '<td style="font-weight:700;color:' + (op.type === 'income' ? 'var(--ok)' : 'var(--danger)') + ';">' + (op.type === 'income' ? '+' : '-') + money(op.amount) + '</td>' +
             '<td>' +
-              '<button type="button" class="wa-btn wa-btn-ghost wa-btn-sm" onclick="editOp(\'' + esc(op.id) + '\')">Éditer</button> ' +
-              '<button type="button" class="wa-btn wa-btn-soft-danger wa-btn-sm" onclick="deleteOp(\'' + esc(op.id) + '\')">Supprimer</button>' +
+              '<button type="button" class="btn btn-soft btn-sm" onclick="editOpRow(\'' + esc(op.id) + '\')">Éditer</button> ' +
+              '<button type="button" class="btn btn-soft-red btn-sm" onclick="delOpRow(\'' + esc(op.id) + '\')">Supprimer</button>' +
             '</td>' +
           '</tr>'
         );
-      }).join('') || '<tr><td colspan="7" style="color:var(--wa-muted);">Aucune opération trouvée.</td></tr>';
-    }
+      }).join('') || '<tr><td colspan="7" style="color:var(--wa-subtext);">Aucune opération.</td></tr>';
 
-    document.getElementById('histSearch').addEventListener('input', renderHistoryTable);
-    document.getElementById('histCatFilter').addEventListener('change', renderHistoryTable);
-
-    function renderCompareSection() {
-      const mode = document.getElementById('compareSelect').value;
-      const now = new Date();
-      const cur = {}, prev = {};
-      state.operations.filter(function (o) { return o.type === 'expense'; }).forEach(function (o) {
+      // Comparateur & Thermique
+      const mode = document.getElementById('cmpMode').value;
+      const curM = {}, prevM = {};
+      app.operations.filter(function (o) { return o.type === 'expense'; }).forEach(function (o) {
         const d = new Date(o.date);
         const c = o.category || 'Autres';
         if (mode === 'month') {
-          if (d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth()) cur[c] = (cur[c] || 0) + o.amount;
+          if (d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth()) curM[c] = (curM[c] || 0) + o.amount;
           const pm = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-          if (d.getFullYear() === pm.getFullYear() && d.getMonth() === pm.getMonth()) prev[c] = (prev[c] || 0) + o.amount;
+          if (d.getFullYear() === pm.getFullYear() && d.getMonth() === pm.getMonth()) prevM[c] = (prevM[c] || 0) + o.amount;
         } else if (mode === 'year') {
-          if (d.getFullYear() === now.getFullYear()) cur[c] = (cur[c] || 0) + o.amount;
-          if (d.getFullYear() === now.getFullYear() - 1) prev[c] = (prev[c] || 0) + o.amount;
+          if (d.getFullYear() === now.getFullYear()) curM[c] = (curM[c] || 0) + o.amount;
+          if (d.getFullYear() === now.getFullYear() - 1) prevM[c] = (prevM[c] || 0) + o.amount;
         } else {
-          const days = (now - d) / 86400000;
-          if (days >= 0 && days <= 7) cur[c] = (cur[c] || 0) + o.amount;
-          else if (days > 7 && days <= 14) prev[c] = (prev[c] || 0) + o.amount;
+          const df = (now - d) / 86400000;
+          if (df >= 0 && df <= 7) curM[c] = (curM[c] || 0) + o.amount;
+          else if (df > 7 && df <= 14) prevM[c] = (prevM[c] || 0) + o.amount;
         }
       });
-
-      const keys = Array.from(new Set(Object.keys(cur).concat(Object.keys(prev))));
-      document.getElementById('compareBody').innerHTML = keys.map(function (k) {
-        const a = cur[k] || 0, b = prev[k] || 0;
+      const allK = Array.from(new Set(Object.keys(curM).concat(Object.keys(prevM))));
+      document.getElementById('cmpBody').innerHTML = allK.map(function (k) {
+        const a = curM[k] || 0, b = prevM[k] || 0;
         const pct = b > 0 ? Math.round(((a - b) / b) * 100) : (a > 0 ? 100 : 0);
-        return '<tr><td>' + esc(k) + '</td><td>' + fmt(a) + '</td><td>' + fmt(b) + '</td><td>' + (pct >= 0 ? '+' : '') + pct + ' %</td></tr>';
-      }).join('') || '<tr><td colspan="4" style="color:var(--wa-muted);">Aucune donnée comparative.</td></tr>';
+        return '<tr><td>' + esc(k) + '</td><td>' + money(a) + '</td><td>' + money(b) + '</td><td>' + (pct >= 0 ? '+' : '') + pct + ' %</td></tr>';
+      }).join('') || '<tr><td colspan="4" style="color:var(--wa-subtext);">Aucune donnée.</td></tr>';
 
-      const daysInM = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-      const dayMap = {};
-      state.operations.filter(function (o) {
+      const dMap = {};
+      app.operations.filter(function (o) {
         if (o.type !== 'expense') return false;
         const d = new Date(o.date);
         return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
       }).forEach(function (o) {
-        const day = new Date(o.date).getDate();
-        dayMap[day] = (dayMap[day] || 0) + o.amount;
+        const dy = new Date(o.date).getDate();
+        dMap[dy] = (dMap[dy] || 0) + o.amount;
       });
-      const maxVal = Math.max(1, ...Object.values(dayMap));
-      let cells = '';
-      for (let i = 1; i <= daysInM; i++) {
-        const val = dayMap[i] || 0;
-        const bg = val === 0 ? 'var(--wa-surface-soft)' : (val / maxVal > 0.6 ? 'var(--danger-bg)' : 'var(--warn-bg)');
-        cells += '<div class="heat-day" style="background:' + bg + ';"><strong>' + i + '</strong><div>' + (val > 0 ? fmt(val) : '—') + '</div></div>';
+      const mx = Math.max(1, ...Object.values(dMap));
+      let hCells = '';
+      for (let i = 1; i <= dim; i++) {
+        const v = dMap[i] || 0;
+        const bg = v === 0 ? 'var(--wa-soft)' : (v / mx > 0.6 ? 'var(--danger-soft)' : 'var(--warn-soft)');
+        hCells += '<div class="cal-cell" style="background:' + bg + ';"><strong>' + i + '</strong><div>' + (v > 0 ? money(v) : '—') + '</div></div>';
       }
-      document.getElementById('heatGrid').innerHTML = cells;
-    }
+      document.getElementById('calHeatGrid').innerHTML = hCells;
 
-    document.getElementById('compareSelect').addEventListener('change', renderCompareSection);
-
-    function renderToolsSection() {
-      const pct = Number(document.getElementById('simSlider').value) || 0;
-      document.getElementById('simPctText').textContent = pct + ' %';
-      const now = new Date();
-      const mExp = state.operations.filter(function (o) {
+      // Réglages & Outils
+      const sPct = Number(document.getElementById('simRange').value) || 0;
+      document.getElementById('simPct').textContent = sPct + ' %';
+      const mSp = app.operations.filter(function (o) {
         if (o.type !== 'expense') return false;
         const d = new Date(o.date);
         return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
       }).reduce(function (s, o) { return s + o.amount; }, 0);
-      const gainM = mExp * (pct / 100);
-      document.getElementById('sim3m').textContent = fmt(gainM * 3);
-      document.getElementById('sim1y').textContent = fmt(gainM * 12);
+      const gM = mSp * (sPct / 100);
+      document.getElementById('simGain3').textContent = money(gM * 3);
+      document.getElementById('simGain12').textContent = money(gM * 12);
 
-      document.getElementById('billsContainer').innerHTML = state.fixedBills.map(function (b, i) {
-        return '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--wa-border);font-size:0.86rem;"><span>' + esc(b.name) + ' — <strong>' + fmt(b.amount) + '</strong></span><button type="button" class="wa-btn wa-btn-soft-danger wa-btn-sm" onclick="delBill(' + i + ')">✕</button></div>';
-      }).join('') || '<div style="color:var(--wa-muted);font-size:0.84rem;">Aucune charge fixe.</div>';
+      document.getElementById('bList').innerHTML = app.bills.map(function (b, idx) {
+        return '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--wa-line);font-size:0.84rem;"><span>' + esc(b.name) + ' — <strong>' + money(b.amount) + '</strong></span><button type="button" class="btn btn-soft-red btn-sm" onclick="rmBill(' + idx + ')">✕</button></div>';
+      }).join('') || '<div style="color:var(--wa-subtext);font-size:0.82rem;">Aucune charge fixe.</div>';
 
-      document.getElementById('goalsContainer').innerHTML = state.savingsGoals.map(function (g, i) {
+      document.getElementById('gList').innerHTML = app.goals.map(function (g, idx) {
         const p = g.target > 0 ? Math.min(100, Math.round((g.saved / g.target) * 100)) : 0;
-        return '<div style="margin-bottom:10px;font-size:0.86rem;"><div style="display:flex;justify-content:space-between;"><strong>' + esc(g.name) + '</strong><span>' + fmt(g.saved) + ' / ' + fmt(g.target) + ' (' + p + ' %) <button type="button" class="wa-btn wa-btn-soft-danger wa-btn-sm" onclick="delGoal(' + i + ')">✕</button></span></div><div class="meter-track"><div class="meter-fill" style="width:' + p + '%;"></div></div></div>';
-      }).join('') || '<div style="color:var(--wa-muted);font-size:0.84rem;">Aucun objectif enregistré.</div>';
+        return '<div style="margin-bottom:8px;font-size:0.84rem;"><div style="display:flex;justify-content:space-between;"><strong>' + esc(g.name) + '</strong><span>' + money(g.saved) + ' / ' + money(g.target) + ' (' + p + ' %) <button type="button" class="btn btn-soft-red btn-sm" onclick="rmGoal(' + idx + ')">✕</button></span></div><div class="bar-bg"><div class="bar-fill" style="width:' + p + '%;"></div></div></div>';
+      }).join('') || '<div style="color:var(--wa-subtext);font-size:0.82rem;">Aucun objectif.</div>';
 
-      document.getElementById('capsGrid').innerHTML = Object.keys(state.monthlyCaps).map(function (c) {
-        return '<div><label>' + esc(c) + '</label><input type="number" value="' + (state.monthlyCaps[c] || 0) + '" onchange="setCap(\'' + esc(c) + '\', this.value)" /></div>';
+      document.getElementById('capsEditor').innerHTML = Object.keys(app.caps).map(function (c) {
+        return '<div><label>' + esc(c) + '</label><input type="number" value="' + (app.caps[c] || 0) + '" onchange="changeCap(\'' + esc(c) + '\', this.value)" /></div>';
       }).join('');
     }
 
-    document.getElementById('simSlider').addEventListener('input', renderToolsSection);
+    document.getElementById('hSearch').addEventListener('input', renderAll);
+    document.getElementById('hCatFilter').addEventListener('change', renderAll);
+    document.getElementById('cmpMode').addEventListener('change', renderAll);
+    document.getElementById('simRange').addEventListener('input', renderAll);
 
-    document.getElementById('btnAddBill').addEventListener('click', function () {
-      const name = String(document.getElementById('billTitle').value || '').trim();
-      const amt = parseFloat(document.getElementById('billAmt').value);
-      if (!name || !Number.isFinite(amt) || amt <= 0) return;
-      state.fixedBills.push({ name: name, amount: amt });
-      document.getElementById('billTitle').value = '';
-      document.getElementById('billAmt').value = '';
-      saveAppState();
-      renderToolsSection();
+    document.getElementById('btnAddB').addEventListener('click', function () {
+      const n = String(document.getElementById('bName').value || '').trim();
+      const a = parseFloat(document.getElementById('bAmt').value);
+      if (!n || !Number.isFinite(a) || a <= 0) return;
+      app.bills.push({ name: n, amount: a });
+      document.getElementById('bName').value = '';
+      document.getElementById('bAmt').value = '';
+      saveState(); renderAll();
     });
+    window.rmBill = function (i) { app.bills.splice(i, 1); saveState(); renderAll(); };
 
-    window.delBill = function (i) { state.fixedBills.splice(i, 1); saveAppState(); renderToolsSection(); };
-
-    document.getElementById('btnAddGoal').addEventListener('click', function () {
-      const name = String(document.getElementById('goalTitle').value || '').trim();
-      const target = parseFloat(document.getElementById('goalTarget').value);
-      const saved = parseFloat(document.getElementById('goalSaved').value) || 0;
-      if (!name || !Number.isFinite(target) || target <= 0) return;
-      state.savingsGoals.push({ name: name, target: target, saved: saved });
-      document.getElementById('goalTitle').value = '';
-      document.getElementById('goalTarget').value = '';
-      document.getElementById('goalSaved').value = '';
-      saveAppState();
-      renderToolsSection();
+    document.getElementById('btnAddG').addEventListener('click', function () {
+      const n = String(document.getElementById('gName').value || '').trim();
+      const t = parseFloat(document.getElementById('gTarget').value);
+      const s = parseFloat(document.getElementById('gSaved').value) || 0;
+      if (!n || !Number.isFinite(t) || t <= 0) return;
+      app.goals.push({ name: n, target: t, saved: s });
+      document.getElementById('gName').value = '';
+      document.getElementById('gTarget').value = '';
+      document.getElementById('gSaved').value = '';
+      saveState(); renderAll();
     });
-
-    window.delGoal = function (i) { state.savingsGoals.splice(i, 1); saveAppState(); renderToolsSection(); };
-
-    window.setCap = function (c, v) {
-      state.monthlyCaps[c] = Math.max(0, parseFloat(v) || 0);
-      saveAppState();
-      renderAll();
-    };
+    window.rmGoal = function (i) { app.goals.splice(i, 1); saveState(); renderAll(); };
+    window.changeCap = function (c, v) { app.caps[c] = Math.max(0, parseFloat(v) || 0); saveState(); renderAll(); };
 
     // --- PIN & Devise ---
-    function updatePinScreen() {
-      const scr = document.getElementById('pinLockScreen');
-      if (state.pin) { scr.classList.add('active'); pinReset(); }
-      else { scr.classList.remove('active'); }
+    function showPinIfSet() {
+      const m = document.getElementById('pinModal');
+      if (app.pin) { m.classList.add('show'); pinClear(); }
+      else m.classList.remove('show');
     }
-
-    window.pinPress = function (d) {
-      if (pinBuffer.length < 4) {
-        pinBuffer += d;
-        document.getElementById('pinDots').textContent = '● '.repeat(pinBuffer.length) + '• '.repeat(4 - pinBuffer.length);
+    window.pinTap = function (d) {
+      if (pinInput.length < 4) {
+        pinInput += d;
+        document.getElementById('pinDots').textContent = '● '.repeat(pinInput.length) + '• '.repeat(4 - pinInput.length);
       }
     };
-    window.pinReset = function () {
-      pinBuffer = '';
+    window.pinClear = function () {
+      pinInput = '';
       document.getElementById('pinDots').textContent = '• • • •';
-      document.getElementById('pinError').textContent = '';
+      document.getElementById('pinErr').textContent = '';
     };
-    window.pinSubmit = function () {
-      if (pinBuffer === state.pin) {
-        document.getElementById('pinLockScreen').classList.remove('active');
-        pinReset();
-      } else {
-        document.getElementById('pinError').textContent = 'PIN incorrect.';
-        pinReset();
-      }
+    window.pinCheck = function () {
+      if (pinInput === app.pin) { document.getElementById('pinModal').classList.remove('show'); pinClear(); }
+      else { document.getElementById('pinErr').textContent = 'PIN incorrect.'; pinClear(); }
     };
 
-    document.getElementById('btnActivatePin').addEventListener('click', function () {
-      const p = String(document.getElementById('pinInputSet').value || '').trim();
-      if (!/^\d{4}$/.test(p)) { alert('Entrez un code PIN à 4 chiffres.'); return; }
-      state.pin = p;
-      document.getElementById('pinInputSet').value = '';
-      saveAppState();
-      alert('Code PIN activé.');
+    document.getElementById('btnPinOn').addEventListener('click', function () {
+      const v = String(document.getElementById('pinSetInput').value || '').trim();
+      if (!/^\d{4}$/.test(v)) { alert('Entrez un PIN à 4 chiffres.'); return; }
+      app.pin = v;
+      document.getElementById('pinSetInput').value = '';
+      saveState(); alert('PIN activé.');
+    });
+    document.getElementById('btnPinOff').addEventListener('click', function () { app.pin = null; saveState(); alert('PIN désactivé.'); });
+
+    document.querySelectorAll('.cur-pick').forEach(function (b) {
+      b.addEventListener('click', function () { app.currency = b.dataset.cur; saveState(); renderAll(); });
     });
 
-    document.getElementById('btnDeactivatePin').addEventListener('click', function () {
-      state.pin = null;
-      saveAppState();
-      alert('Code PIN désactivé.');
-    });
-
-    document.querySelectorAll('.curr-btn').forEach(function (b) {
-      b.addEventListener('click', function () {
-        state.currency = b.dataset.curr;
-        saveAppState();
-        renderAll();
-      });
-    });
-
-    // --- Export / Import JSON complet ---
-    function exportJson() {
-      const bundle = Object.assign({}, state, {
-        smartModule: {
-          envelopes: state.envelopes,
-          smartOperations: state.operations
-        },
+    // --- Export / Import JSON ---
+    function exportBackupJson() {
+      const data = Object.assign({}, app, {
+        smartModule: { envelopes: app.envelopes, smartOperations: app.operations },
         exportedAt: new Date().toISOString()
       });
-      const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: 'application/json' });
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -1788,67 +1560,60 @@
       setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
     }
 
-    function importJsonFile(file) {
+    function importBackupFile(file) {
       if (!file) return;
       const r = new FileReader();
       r.onload = function (ev) {
         try {
-          const parsed = JSON.parse(ev.target.result);
-          const sm = parsed.smartModule || {};
-          state = Object.assign(initialState(), parsed, {
-            envelopes: Array.isArray(parsed.envelopes) ? parsed.envelopes : (Array.isArray(sm.envelopes) ? sm.envelopes : initialState().envelopes),
-            operations: Array.isArray(parsed.operations) ? parsed.operations : (Array.isArray(sm.smartOperations) ? sm.smartOperations : [])
+          const p = JSON.parse(ev.target.result);
+          const sm = p.smartModule || {};
+          app = Object.assign(makeDefaultState(), p, {
+            envelopes: Array.isArray(p.envelopes) ? p.envelopes : (Array.isArray(sm.envelopes) ? sm.envelopes : makeDefaultState().envelopes),
+            operations: Array.isArray(p.operations) ? p.operations : (Array.isArray(sm.smartOperations) ? sm.smartOperations : [])
           });
-          applyTheme();
-          saveAppState();
-          renderAll();
-          updatePinScreen();
-          alert('Données restaurées.');
-        } catch (_) {
-          alert('Fichier JSON invalide.');
-        }
+          applyTheme(); saveState(); renderAll(); showPinIfSet();
+          alert('Restauration terminée.');
+        } catch (_) { alert('Fichier JSON invalide.'); }
       };
       r.readAsText(file);
     }
 
-    document.getElementById('btnSaveJson').addEventListener('click', exportJson);
-    document.getElementById('fileRestoreJson').addEventListener('change', function (e) {
-      importJsonFile(e.target.files && e.target.files[0]);
+    document.getElementById('btnExportBackup').addEventListener('click', exportBackupJson);
+    document.getElementById('fileImportBackup').addEventListener('change', function (e) {
+      importBackupFile(e.target.files && e.target.files[0]);
       e.target.value = '';
     });
 
-    document.getElementById('btnDemoData').addEventListener('click', function () {
-      const today = new Date().toISOString().slice(0, 10);
-      state.envelopes = [
-        { id: 'env-poche', name: 'Portefeuille', balance: 35000 },
-        { id: 'env-coffre', name: 'Coffre', balance: 120000 }
+    document.getElementById('btnDemo').addEventListener('click', function () {
+      const t = new Date().toISOString().slice(0, 10);
+      app.envelopes = [
+        { id: 'env-poche', name: 'Portefeuille', balance: 40000 },
+        { id: 'env-coffre', name: 'Coffre', balance: 130000 }
       ];
-      state.operations = [
-        { id: 'demo-1', type: 'income', amount: 150000, label: 'Salaire', category: 'Salaire / Revenus', subcategory: '', wallet: 'Banque', envelopeId: 'env-coffre', date: today, attachment: null },
-        { id: 'demo-2', type: 'expense', amount: 6500, label: 'Transport & repas', category: 'Transport', subcategory: '', wallet: 'Mobile Money', envelopeId: 'env-poche', date: today, attachment: null }
+      app.operations = [
+        { id: 'd1', type: 'income', amount: 150000, label: 'Salaire', category: 'Salaire / Revenus', subcategory: '', wallet: 'Banque', envelopeId: 'env-coffre', date: t, attachment: null },
+        { id: 'd2', type: 'expense', amount: 5000, label: 'Carburant', category: 'Transport', subcategory: '', wallet: 'Mobile Money', envelopeId: 'env-poche', date: t, attachment: null }
       ];
-      state.lastCreatedOpId = null;
-      saveAppState();
-      renderAll();
+      app.lastOpId = null;
+      saveState(); renderAll();
     });
 
     window.FinTrackSmartBackup = {
-      getPayload: function () { return { envelopes: state.envelopes.slice(), smartOperations: state.operations.slice() }; },
+      getPayload: function () { return { envelopes: app.envelopes.slice(), smartOperations: app.operations.slice() }; },
       restorePayload: function (p) {
         if (!p || typeof p !== 'object') return;
-        if (Array.isArray(p.envelopes) && p.envelopes.length) state.envelopes = p.envelopes;
-        if (Array.isArray(p.smartOperations)) state.operations = p.smartOperations;
-        saveAppState();
-        renderAll();
+        if (Array.isArray(p.envelopes) && p.envelopes.length) app.envelopes = p.envelopes;
+        if (Array.isArray(p.smartOperations)) app.operations = p.smartOperations;
+        saveState(); renderAll();
       },
-      downloadJson: exportJson,
-      handleFileImport: importJsonFile
+      downloadJson: exportBackupJson,
+      handleFileImport: importBackupFile
     };
 
     // Démarrage
     applyTheme();
-    resetDraft(true);
-    updatePinScreen();
+    clearDraftForm(true);
+    showPinIfSet();
     renderAll();
   })();
   </script>
