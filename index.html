@@ -1,1589 +1,1801 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FinTrack AI — Tableau de Bord WhatsApp</title>
-  <style>
-    :root {
-      --wa-teal: #008069;
-      --wa-teal-dark: #005c4b;
-      --wa-accent: #00a884;
-      --wa-bubble: #d9fdd3;
-      --wa-bg: #efeae2;
-      --wa-dots: rgba(11, 20, 26, 0.04);
-      --wa-surface: #ffffff;
-      --wa-soft: #f0f2f5;
-      --wa-text: #111b21;
-      --wa-muted: #54656f;
-      --wa-line: #e9edef;
-      --danger: #d93025;
-      --danger-bg: #fce8e6;
-      --warn: #9a6700;
-      --warn-bg: #fff8c5;
-      --ok: #008069;
-      --ok-bg: #d9fdd3;
-      --shadow: 0 1px 3px rgba(11, 20, 26, 0.09);
-      --menu-shadow: 0 6px 20px rgba(11, 20, 26, 0.18);
-    }
+ <meta charset="UTF-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+ <title>Générateur de Badge — Semaine de l'Évangile CUA</title>
+ <link rel="preconnect" href="https://fonts.googleapis.com" />
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+ <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet" />
+ <style>
+   :root {
+     --bg-page: #f1f5f9;
+     --bg-card: #ffffff;
+     --bg-subtle: #f8fafc;
+     --text-main: #0f172a;
+     --text-muted: #475569;
+     --border-soft: #cbd5e1;
+     --navy-pure: #0a1e47;
+     --navy-arc: #112c63;
+     --orange-accent: #d49a2a;
+     --white-pure: #ffffff;
+     --share-green: #16a34a;
+     --share-hover: #15803d;
+     --danger-red: #dc2626;
+     --danger-bg: #fef2f2;
+     --success-green: #15803d;
+     --success-bg: #f0fdf4;
+   }
 
-    body.wa-dark {
-      --wa-teal: #1f2c34;
-      --wa-teal-dark: #111b21;
-      --wa-accent: #00a884;
-      --wa-bubble: #005c4b;
-      --wa-bg: #0b141a;
-      --wa-dots: rgba(255, 255, 255, 0.025);
-      --wa-surface: #111b21;
-      --wa-soft: #202c33;
-      --wa-text: #e9edef;
-      --wa-muted: #8696a0;
-      --wa-line: #222d34;
-      --danger-bg: rgba(217, 48, 37, 0.22);
-      --warn-bg: rgba(154, 103, 0, 0.25);
-      --ok-bg: rgba(0, 168, 132, 0.2);
-      --menu-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
-    }
+   *,
+   *::before,
+   *::after {
+     box-sizing: border-box;
+     margin: 0;
+     padding: 0;
+   }
 
-    * { box-sizing: border-box; }
+   html,
+   body {
+     width: 100%;
+     min-height: 100%;
+     background-color: var(--bg-page);
+     color: var(--text-main);
+     font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+     line-height: 1.5;
+     overflow-x: hidden;
+     -webkit-tap-highlight-color: transparent;
+   }
 
-    body {
-      margin: 0;
-      font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: var(--wa-bg);
-      background-image:
-        radial-gradient(var(--wa-dots) 1px, transparent 1px),
-        radial-gradient(var(--wa-dots) 1px, var(--wa-bg) 1px);
-      background-size: 22px 22px;
-      background-position: 0 0, 11px 11px;
-      color: var(--wa-text);
-      padding-bottom: 86px;
-    }
+   .app-shell {
+     width: 100%;
+     max-width: 1140px;
+     margin: 0 auto;
+     padding: 18px 14px 40px;
+   }
 
-    /* Écran PIN */
-    #pinLockOverlay {
-      position: fixed;
-      inset: 0;
-      background: var(--wa-teal-dark);
-      color: #fff;
-      z-index: 9999;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 18px;
-    }
-    #pinLockOverlay.active { display: flex; }
-    .pin-box {
-      width: 100%;
-      max-width: 330px;
-      background: #111b21;
-      border: 1px solid #222d34;
-      border-radius: 16px;
-      padding: 22px;
-      text-align: center;
-    }
-    .pin-dots { font-size: 1.7rem; letter-spacing: 10px; margin: 12px 0; color: var(--wa-accent); }
-    .pin-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
-    .pin-key {
-      padding: 12px;
-      border: none;
-      border-radius: 10px;
-      background: #202c33;
-      color: #e9edef;
-      font-weight: 700;
-      font-size: 1rem;
-      cursor: pointer;
-    }
+   .app-header {
+     text-align: center;
+     margin-bottom: 18px;
+   }
 
-    /* Barre supérieure WhatsApp sans onglets horizontaux */
-    .wa-header {
-      background: var(--wa-teal);
-      color: #ffffff;
-      position: sticky;
-      top: 0;
-      z-index: 300;
-      box-shadow: 0 2px 5px rgba(11, 20, 26, 0.15);
-    }
-    .wa-header-inner {
-      max-width: 1120px;
-      margin: 0 auto;
-      padding: 11px 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      position: relative;
-    }
-    .wa-brand-title { font-size: 1.1rem; font-weight: 700; }
-    .wa-brand-sub { font-size: 0.74rem; opacity: 0.88; }
+   .app-header h1 {
+     font-size: clamp(1.25rem, 3.6vw, 1.9rem);
+     font-weight: 900;
+     color: var(--navy-pure);
+     letter-spacing: -0.02em;
+   }
 
-    .wa-more-btn {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      border: none;
-      background: transparent;
-      color: #ffffff;
-      font-size: 1.35rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .wa-more-btn:hover { background: rgba(255, 255, 255, 0.14); }
+   .main-grid {
+     display: grid;
+     grid-template-columns: 1fr;
+     gap: 20px;
+     align-items: start;
+   }
 
-    /* Menu déroulant des 3 points style WhatsApp */
-    #waOverflowBackdrop {
-      position: fixed;
-      inset: 0;
-      z-index: 440;
-      display: none;
-    }
-    #waOverflowBackdrop.open { display: block; }
+   @media (min-width: 880px) {
+     .main-grid {
+       grid-template-columns: minmax(320px, 400px) minmax(340px, 1fr);
+       gap: 24px;
+     }
 
-    #waOverflowMenu {
-      position: fixed;
-      top: 56px;
-      right: 12px;
-      width: 260px;
-      max-width: calc(100vw - 24px);
-      background: var(--wa-surface);
-      border: 1px solid var(--wa-line);
-      border-radius: 10px;
-      box-shadow: var(--menu-shadow);
-      z-index: 450;
-      padding: 6px 0;
-      display: none;
-      max-height: calc(100vh - 90px);
-      overflow-y: auto;
-    }
-    #waOverflowMenu.open { display: block; }
+     .app-shell {
+       padding: 26px 20px 48px;
+     }
+   }
 
-    .wa-menu-item {
-      width: 100%;
-      border: none;
-      background: transparent;
-      color: var(--wa-text);
-      padding: 11px 16px;
-      text-align: left;
-      font-size: 0.9rem;
-      font-weight: 500;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .wa-menu-item:hover { background: var(--wa-soft); }
-    .wa-menu-sep { height: 1px; background: var(--wa-line); margin: 4px 0; }
+   .panel {
+     background: var(--bg-card);
+     border: 1px solid var(--border-soft);
+     border-radius: 20px;
+     padding: 18px;
+     box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+   }
 
-    /* Conteneur principal */
-    .wa-container {
-      max-width: 1120px;
-      margin: 12px auto;
-      padding: 0 12px;
-    }
-    .page-view { display: none; }
-    .page-view.active { display: block; }
+   @media (min-width: 600px) {
+     .panel {
+       padding: 22px;
+     }
+   }
 
-    .wa-card {
-      background: var(--wa-surface);
-      border: 1px solid var(--wa-line);
-      border-radius: 12px;
-      padding: 14px;
-      margin-bottom: 12px;
-      box-shadow: var(--shadow);
-    }
-    .wa-card-green {
-      background: var(--wa-bubble);
-      border-color: rgba(0, 128, 105, 0.25);
-    }
-    .wa-card h3, .wa-card h4 { margin: 0 0 8px 0; font-size: 0.98rem; }
+   .field-block {
+     margin-bottom: 16px;
+     border-radius: 14px;
+     transition: background-color 0.2s ease, box-shadow 0.2s ease;
+   }
 
-    /* Sélecteur de période : Journée / Semaine / Mois / Année */
-    .timeframe-bar {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
-    }
-    .tf-btn {
-      border: 1px solid var(--wa-line);
-      background: var(--wa-surface);
-      color: var(--wa-text);
-      border-radius: 999px;
-      padding: 6px 13px;
-      font-size: 0.82rem;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    .tf-btn.active {
-      background: var(--wa-teal);
-      color: #ffffff;
-      border-color: var(--wa-teal);
-    }
+   .field-block.field-error {
+     background-color: var(--danger-bg);
+     padding: 10px;
+     margin-left: -10px;
+     margin-right: -10px;
+     box-shadow: 0 0 0 2px var(--danger-red);
+     animation: shakeField 0.35s ease;
+   }
 
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-    .kpi-card {
-      background: var(--wa-surface);
-      border: 1px solid var(--wa-line);
-      border-radius: 12px;
-      padding: 12px;
-      box-shadow: var(--shadow);
-    }
-    .kpi-lbl { font-size: 0.72rem; font-weight: 700; color: var(--wa-muted); text-transform: uppercase; }
-    .kpi-val { font-size: 1.32rem; font-weight: 800; margin: 4px 0; }
-    .kpi-sub { font-size: 0.78rem; color: var(--wa-muted); }
+   @keyframes shakeField {
+     0%, 100% { transform: translateX(0); }
+     25% { transform: translateX(-5px); }
+     75% { transform: translateX(5px); }
+   }
 
-    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 12px; }
-    .grid-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
+   .field-label {
+     display: block;
+     font-size: 0.9rem;
+     font-weight: 700;
+     color: var(--text-main);
+     margin-bottom: 6px;
+   }
 
-    label { display: block; font-size: 0.76rem; font-weight: 600; color: var(--wa-muted); margin-bottom: 4px; }
-    input, select {
-      width: 100%;
-      padding: 8px 10px;
-      border: 1px solid var(--wa-line);
-      border-radius: 10px;
-      background: var(--wa-soft);
-      color: var(--wa-text);
-      font-size: 0.88rem;
-    }
+   .req-star {
+     color: var(--danger-red);
+     font-weight: 800;
+   }
 
-    .btn {
-      border: 1px solid transparent;
-      border-radius: 999px;
-      padding: 8px 14px;
-      font-size: 0.84rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-    }
-    .btn-teal { background: var(--wa-teal); color: #fff; }
-    .btn-green { background: var(--wa-accent); color: #fff; }
-    .btn-red { background: var(--danger); color: #fff; }
-    .btn-soft { background: var(--wa-soft); color: var(--wa-text); border-color: var(--wa-line); }
-    .btn-soft-red { background: var(--danger-bg); color: var(--danger); }
-    .btn-sm { padding: 5px 10px; font-size: 0.78rem; }
+   .text-input {
+     width: 100%;
+     padding: 12px 14px;
+     font-size: 1rem;
+     font-weight: 600;
+     font-family: inherit;
+     color: var(--text-main);
+     background: var(--bg-subtle);
+     border: 1.5px solid var(--border-soft);
+     border-radius: 12px;
+     outline: none;
+     transition: border-color 0.2s ease, background-color 0.2s ease;
+   }
 
-    .guard-msg {
-      display: none;
-      margin-top: 10px;
-      padding: 9px 12px;
-      border-radius: 10px;
-      font-size: 0.85rem;
-      font-weight: 600;
-    }
-    .guard-msg.err { display: block; background: var(--danger-bg); color: var(--danger); }
-    .guard-msg.warn { display: block; background: var(--warn-bg); color: var(--warn); }
+   .text-input:focus {
+     border-color: var(--navy-pure);
+     background: var(--white-pure);
+     box-shadow: 0 0 0 3px rgba(10, 30, 71, 0.12);
+   }
 
-    .meter-bg { height: 8px; border-radius: 999px; background: var(--wa-soft); overflow: hidden; margin-top: 5px; }
-    .meter-fill { height: 100%; background: var(--wa-accent); }
+   .text-input.input-invalid {
+     border-color: var(--danger-red);
+     background: var(--white-pure);
+   }
 
-    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-    th, td { padding: 8px; border-bottom: 1px solid var(--wa-line); text-align: left; }
+   .upload-dropzone {
+     position: relative;
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     justify-content: center;
+     gap: 6px;
+     width: 100%;
+     min-height: 98px;
+     padding: 14px;
+     border: 2px dashed #94a3b8;
+     border-radius: 14px;
+     background: var(--bg-subtle);
+     cursor: pointer;
+     text-align: center;
+     transition: border-color 0.2s ease, background-color 0.2s ease;
+   }
 
-    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 8px; }
-    .cal-day { border: 1px solid var(--wa-line); border-radius: 8px; padding: 6px 4px; text-align: center; font-size: 0.75rem; }
+   .upload-dropzone:hover,
+   .upload-dropzone.dragover {
+     border-color: var(--navy-pure);
+     background: #eff6ff;
+   }
 
-    /* PIED DE PAGE AVEC EXACTEMENT 4 BOUTONS */
-    footer.wa-footer-four {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: var(--wa-surface);
-      border-top: 1px solid var(--wa-line);
-      z-index: 350;
-      padding: 6px 8px;
-      box-shadow: 0 -2px 8px rgba(11, 20, 26, 0.08);
-    }
-    .footer-four-row {
-      max-width: 760px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
-    }
-    .foot-4-btn {
-      border: none;
-      background: transparent;
-      color: var(--wa-muted);
-      border-radius: 10px;
-      padding: 7px 4px;
-      font-size: 0.78rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-    }
-    .foot-4-btn.active {
-      color: var(--wa-accent);
-      background: var(--wa-soft);
-    }
-  </style>
+   .upload-dropzone.invalid-zone {
+     border-color: var(--danger-red);
+     background: var(--white-pure);
+   }
+
+   .upload-dropzone input[type="file"] {
+     position: absolute;
+     inset: 0;
+     width: 100%;
+     height: 100%;
+     opacity: 0;
+     cursor: pointer;
+   }
+
+   .upload-main-text {
+     font-size: 0.92rem;
+     font-weight: 700;
+     color: var(--navy-pure);
+     display: inline-flex;
+     align-items: center;
+     gap: 8px;
+   }
+
+   .photo-status-row {
+     margin-top: 8px;
+     display: none;
+     align-items: center;
+     justify-content: space-between;
+     gap: 8px;
+     font-size: 0.82rem;
+     color: var(--success-green);
+     font-weight: 600;
+   }
+
+   .photo-status-row.visible {
+     display: flex;
+   }
+
+   .photo-file-name {
+     overflow: hidden;
+     text-overflow: ellipsis;
+     white-space: nowrap;
+     max-width: 220px;
+   }
+
+   .clear-photo-btn {
+     padding: 5px 10px;
+     font-size: 0.76rem;
+     font-weight: 700;
+     font-family: inherit;
+     color: var(--danger-red);
+     background: var(--danger-bg);
+     border: 1px solid #fecaca;
+     border-radius: 8px;
+     cursor: pointer;
+     flex-shrink: 0;
+   }
+
+   .clear-photo-btn:hover {
+     background: #fee2e2;
+   }
+
+   .validation-alert {
+     display: none;
+     padding: 11px 13px;
+     border-radius: 12px;
+     font-size: 0.85rem;
+     font-weight: 600;
+     margin-bottom: 14px;
+     background: var(--danger-bg);
+     color: #991b1b;
+     border: 1px solid #fca5a5;
+   }
+
+   .validation-alert.visible {
+     display: block;
+   }
+
+   .toast-notice {
+     display: none;
+     padding: 11px 13px;
+     border-radius: 12px;
+     font-size: 0.84rem;
+     font-weight: 600;
+     margin-bottom: 14px;
+     background: var(--success-bg);
+     color: var(--success-green);
+     border: 1px solid #86efac;
+   }
+
+   .toast-notice.visible {
+     display: block;
+   }
+
+   .actions-stack {
+     display: flex;
+     flex-direction: column;
+     gap: 10px;
+   }
+
+   .btn-action {
+     width: 100%;
+     padding: 13px 16px;
+     font-size: 0.95rem;
+     font-weight: 700;
+     font-family: inherit;
+     border: none;
+     border-radius: 13px;
+     cursor: pointer;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     gap: 9px;
+     transition: transform 0.12s ease, opacity 0.2s ease, background-color 0.2s ease;
+   }
+
+   .btn-action:active {
+     transform: scale(0.985);
+   }
+
+   .btn-action.incomplete {
+     opacity: 0.85;
+   }
+
+   .btn-share {
+     background: var(--share-green);
+     color: var(--white-pure);
+     box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25);
+   }
+
+   .btn-share:hover {
+     background: var(--share-hover);
+   }
+
+   .btn-download {
+     background: var(--navy-pure);
+     color: var(--white-pure);
+     box-shadow: 0 4px 12px rgba(10, 30, 71, 0.2);
+   }
+
+   .btn-download:hover {
+     background: var(--navy-arc);
+   }
+
+   .preview-column {
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     width: 100%;
+   }
+
+   .canvas-frame-box {
+     position: relative;
+     width: 100%;
+     max-width: 540px;
+     aspect-ratio: 1 / 1;
+     border-radius: 18px;
+     overflow: hidden;
+     background: var(--navy-pure);
+     box-shadow: 0 14px 34px rgba(10, 30, 71, 0.22);
+     border: 2px solid #cbd5e1;
+     touch-action: none;
+     user-select: none;
+     -webkit-user-select: none;
+   }
+
+   .canvas-frame-box.can-drag {
+     cursor: grab;
+   }
+
+   .canvas-frame-box.is-dragging {
+     cursor: grabbing;
+   }
+
+   #badgeCanvas {
+     display: block;
+     width: 100%;
+     height: 100%;
+   }
+
+   .crop-toolbar {
+     width: 100%;
+     max-width: 540px;
+     margin-top: 12px;
+     padding: 8px 12px;
+     background: var(--bg-card);
+     border: 1px solid var(--border-soft);
+     border-radius: 14px;
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     gap: 8px;
+     box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+   }
+
+   .crop-toolbar.disabled {
+     opacity: 0.5;
+     pointer-events: none;
+   }
+
+   .zoom-group {
+     display: inline-flex;
+     align-items: center;
+     gap: 6px;
+   }
+
+   .crop-btn {
+     min-width: 38px;
+     height: 36px;
+     padding: 0 10px;
+     border-radius: 10px;
+     border: 1px solid var(--border-soft);
+     background: var(--bg-subtle);
+     color: var(--navy-pure);
+     font-size: 1rem;
+     font-weight: 800;
+     font-family: inherit;
+     cursor: pointer;
+     display: inline-flex;
+     align-items: center;
+     justify-content: center;
+     transition: background-color 0.15s ease, border-color 0.15s ease;
+   }
+
+   .crop-btn:hover {
+     background: #e2e8f0;
+     border-color: #94a3b8;
+   }
+
+   .crop-btn:active {
+     background: #cbd5e1;
+   }
+
+   .crop-btn.reset-btn {
+     font-size: 0.8rem;
+     font-weight: 700;
+     padding: 0 12px;
+   }
+
+   .zoom-readout {
+     min-width: 54px;
+     text-align: center;
+     font-size: 0.85rem;
+     font-weight: 800;
+     color: var(--navy-pure);
+     font-variant-numeric: tabular-nums;
+   }
+ </style>
 </head>
 <body>
-
-  <!-- ÉCRAN DE DÉVERROUILLAGE PIN -->
-  <div id="pinLockOverlay" aria-modal="true">
-    <div class="pin-box">
-      <h3 style="margin:0;">FinTrack Sécurisé</h3>
-      <div style="font-size:0.82rem; color:#8696a0; margin-top:4px;">Code PIN à 4 chiffres</div>
-      <div class="pin-dots" id="pinDots">• • • •</div>
-      <div id="pinErr" style="color:#f87171; font-size:0.82rem; min-height:18px;"></div>
-      <div class="pin-grid">
-        <button type="button" class="pin-key" onclick="pinPush('1')">1</button>
-        <button type="button" class="pin-key" onclick="pinPush('2')">2</button>
-        <button type="button" class="pin-key" onclick="pinPush('3')">3</button>
-        <button type="button" class="pin-key" onclick="pinPush('4')">4</button>
-        <button type="button" class="pin-key" onclick="pinPush('5')">5</button>
-        <button type="button" class="pin-key" onclick="pinPush('6')">6</button>
-        <button type="button" class="pin-key" onclick="pinPush('7')">7</button>
-        <button type="button" class="pin-key" onclick="pinPush('8')">8</button>
-        <button type="button" class="pin-key" onclick="pinPush('9')">9</button>
-        <button type="button" class="pin-key" onclick="pinReset()">Effacer</button>
-        <button type="button" class="pin-key" onclick="pinPush('0')">0</button>
-        <button type="button" class="pin-key" onclick="pinVerify()">OK</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MENU DÉROULANT DES 3 POINTS STYLE WHATSAPP -->
-  <div id="waOverflowBackdrop" onclick="closeOverflow()"></div>
-  <div id="waOverflowMenu" role="menu" aria-label="Options et paramètres">
-    <button type="button" class="wa-menu-item" onclick="openExtraView('envelopes'); closeOverflow();">
-      <span>💼 Enveloppes physiques</span>
-    </button>
-    <button type="button" class="wa-menu-item" onclick="openExtraView('compare'); closeOverflow();">
-      <span>📊 Comparateur & Thermique</span>
-    </button>
-    <div class="wa-menu-sep"></div>
-    <button type="button" class="wa-menu-item" onclick="openExtraView('settings'); closeOverflow(); jumpTo('blockSimulator');">
-      <span>📈 Simulateur « Et si ? »</span>
-    </button>
-    <button type="button" class="wa-menu-item" onclick="openExtraView('settings'); closeOverflow(); jumpTo('blockBillsGoals');">
-      <span>📌 Charges fixes & Objectifs</span>
-    </button>
-    <button type="button" class="wa-menu-item" onclick="openExtraView('settings'); closeOverflow(); jumpTo('blockCaps');">
-      <span>🎯 Plafonds mensuels</span>
-    </button>
-    <button type="button" class="wa-menu-item" onclick="openExtraView('settings'); closeOverflow(); jumpTo('blockPinCurrency');">
-      <span>🔐 Code PIN & Devise</span>
-    </button>
-    <button type="button" class="wa-menu-item" onclick="openExtraView('settings'); closeOverflow(); jumpTo('blockBackup');">
-      <span>💾 Sauvegarde / Restauration .json</span>
-    </button>
-    <div class="wa-menu-sep"></div>
-    <button type="button" class="wa-menu-item" onclick="toggleWaTheme(); closeOverflow();">
-      <span>🌓 Thème clair / sombre</span>
-    </button>
-  </div>
-
-  <!-- EN-TÊTE WHATSAPP AVEC BOUTON 3 POINTS À DROITE -->
-  <header class="wa-header">
-    <div class="wa-header-inner">
-      <div>
-        <div class="wa-brand-title">FinTrack AI</div>
-        <div class="wa-brand-sub" id="headerSummary">Tableau de bord • Enveloppes & brouillon</div>
-      </div>
-      <button type="button" class="wa-more-btn" id="btnThreeDots" title="Plus d'options" aria-label="Plus d'options">⋮</button>
-    </div>
-  </header>
-
-  <!-- CONTENU PRINCIPAL -->
-  <main class="wa-container">
-
-    <!-- PAGE D'ACCUEIL : TABLEAU DE BORD RÉCAPITULATIF À L'OUVERTURE -->
-    <section id="view-dashboard" class="page-view active">
-      <div class="timeframe-bar" id="timeframeBar" role="group" aria-label="Période du tableau de bord">
-        <button type="button" class="tf-btn" data-tf="today">Journée</button>
-        <button type="button" class="tf-btn" data-tf="week">Semaine</button>
-        <button type="button" class="tf-btn active" data-tf="month">Mois</button>
-        <button type="button" class="tf-btn" data-tf="year">Année</button>
-      </div>
-
-      <div class="wa-card wa-card-green">
-        <h3 id="dashPeriodHeading">Récapitulatif du mois</h3>
-        <div id="dashSummaryText" style="font-size:0.89rem;">Chargement du tableau de bord...</div>
-      </div>
-
-      <div class="kpi-grid">
-        <div class="kpi-card">
-          <div class="kpi-lbl">Trésorerie totale</div>
-          <div class="kpi-val" id="dTreasury">0 F</div>
-          <div class="kpi-sub" id="dAutonomy">Autonomie : calcul...</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-lbl">Revenus (période)</div>
-          <div class="kpi-val" style="color:var(--ok);" id="dIncome">0 F</div>
-          <div class="kpi-sub">Taux d'épargne : <strong id="dSavings">0 %</strong></div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-lbl">Dépenses (période)</div>
-          <div class="kpi-val" style="color:var(--danger);" id="dExpense">0 F</div>
-          <div class="kpi-sub" id="dAvgDay">Moyenne : 0 F/jour</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-lbl">Reste à vivre / jour</div>
-          <div class="kpi-val" id="dDaily">0 F</div>
-          <div class="kpi-sub">Score santé : <strong id="dScore">-- / 100</strong></div>
-        </div>
-      </div>
-
-      <!-- ENVELOPPES PHYSIQUES SUR LE TABLEAU DE BORD -->
-      <div class="wa-card" id="dashEnvelopesCard">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
-          <div>
-            <h3>Enveloppes physiques</h3>
-            <small style="color:var(--wa-muted);">Revenu = + sur l'enveloppe • Dépense = - sur l'enveloppe.</small>
-          </div>
-          <div style="display:flex; gap:6px; flex-wrap:wrap;">
-            <input type="text" id="envNewName" placeholder="Nouvelle enveloppe..." style="width:155px;" />
-            <input type="number" id="envNewInit" step="any" value="0" placeholder="Solde initial" style="width:105px;" />
-            <button type="button" class="btn btn-green btn-sm" id="btnCreateEnvelope">+ Ajouter</button>
-          </div>
-        </div>
-        <div id="dashEnvelopesGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(170px, 1fr)); gap:10px;"></div>
-      </div>
-
-      <!-- FORMULAIRE DE SAISIE & BROUILLON VOCAL -->
-      <div class="wa-card" id="composerCard">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
-          <h3 style="margin:0;" id="composerTitle">Nouvelle opération / Brouillon</h3>
-          <div style="display:flex; gap:6px; flex-wrap:wrap;">
-            <button type="button" class="btn btn-red btn-sm" id="btnStartVoiceDraft">🎤 Dicter</button>
-            <button type="button" class="btn btn-soft btn-sm" id="btnRetryVoiceDraft">↻ Réessayer</button>
-            <button type="button" class="btn btn-soft btn-sm" id="btnClearDraftForm">✕ Effacer</button>
-          </div>
-        </div>
-
-        <div id="draftStatusBanner" style="font-size:0.84rem; color:var(--wa-muted); background:var(--wa-soft); padding:8px 12px; border-radius:10px; margin-bottom:10px;">
-          Brouillon prêt : rien n'est enregistré avant validation.
-        </div>
-
-        <div class="grid-fields">
-          <div>
-            <label for="opTypeSelect">Type d'opération</label>
-            <select id="opTypeSelect">
-              <option value="expense">Dépense (- enveloppe)</option>
-              <option value="income">Revenu (+ enveloppe)</option>
-            </select>
-          </div>
-          <div>
-            <label for="opAmountInput">Montant (ex: 5000 ou 2500 + 1500)</label>
-            <input type="text" id="opAmountInput" placeholder="Ex: 5000 ou 2500 + 1500" />
-          </div>
-          <div>
-            <label for="opLabelInput">Libellé</label>
-            <input type="text" id="opLabelInput" placeholder="Ex: Carburant, Salaire..." />
-          </div>
-          <div>
-            <label for="opWalletSelect">Portefeuille</label>
-            <select id="opWalletSelect">
-              <option value="Espèces">Espèces</option>
-              <option value="Mobile Money">Mobile Money</option>
-              <option value="Banque">Banque</option>
-            </select>
-          </div>
-          <div>
-            <label for="opEnvelopeSelect">Enveloppe physique</label>
-            <select id="opEnvelopeSelect"></select>
-          </div>
-          <div>
-            <label for="opCategorySelect">Catégorie</label>
-            <select id="opCategorySelect"></select>
-          </div>
-          <div>
-            <label for="opSubcatInput">Sous-catégorie</label>
-            <input type="text" id="opSubcatInput" placeholder="Optionnel" />
-          </div>
-          <div>
-            <label for="opDateInput">Date</label>
-            <input type="date" id="opDateInput" />
-          </div>
-        </div>
-
-        <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; background:var(--wa-soft); padding:9px 12px; border-radius:10px; border:1px dashed var(--wa-line);">
-          <div>
-            <label for="opReceiptInput" style="margin-bottom:4px;">Justificatif optionnel (Photo compressée ou PDF ≤ 1,5 Mo)</label>
-            <input type="file" id="opReceiptInput" accept="image/*,application/pdf" capture="environment" style="font-size:0.82rem;" />
-          </div>
-          <div id="opReceiptBox" style="font-size:0.82rem;"></div>
-        </div>
-
-        <div id="composerGuardAlert" class="guard-msg"></div>
-
-        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;">
-          <button type="button" class="btn btn-green" id="btnSaveOperation">Enregistrer l'opération</button>
-          <button type="button" class="btn btn-soft" id="btnCancelEditOp" style="display:none;">Annuler la modification</button>
-          <button type="button" class="btn btn-soft-red" id="btnUndoLastCreated" style="display:none;">↶ Annuler la dernière opération</button>
-        </div>
-      </div>
-
-      <div class="grid-2">
-        <div class="wa-card">
-          <h3>Revenus vs Dépenses (période choisie)</h3>
-          <div id="dashIncExpChart"></div>
-        </div>
-        <div class="wa-card">
-          <h3>Répartition par Catégorie</h3>
-          <div id="dashCategoryList"></div>
-        </div>
-      </div>
-
-      <div class="grid-2">
-        <div class="wa-card">
-          <h3>Suivi des Plafonds Mensuels</h3>
-          <div id="dashCapsPreview"></div>
-        </div>
-        <div class="wa-card">
-          <h3>Dernières opérations</h3>
-          <div id="dashRecentOps"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- VUE HISTORIQUE -->
-    <section id="view-history" class="page-view">
-      <div class="wa-card">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
-          <h3 style="margin:0;">Historique des opérations</h3>
-          <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <input type="text" id="histSearchBox" placeholder="Rechercher..." style="width:180px;" />
-            <select id="histCategoryFilter" style="width:170px;"></select>
-          </div>
-        </div>
-        <div style="overflow-x:auto;">
-          <table>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Libellé</th>
-                <th>Catégorie</th>
-                <th>Enveloppe / Compte</th>
-                <th>Justificatif</th>
-                <th>Montant</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="histRowsBody"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- VUE COMPARATEUR & THERMIQUE (ACCESSIBLE VIA LE MENU 3 POINTS) -->
-    <section id="view-compare" class="page-view">
-      <div class="wa-card">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
-          <h3 style="margin:0;">Comparateur Période vs Précédente</h3>
-          <select id="cmpPeriodSelect" style="width:225px;">
-            <option value="month">Ce mois vs Mois dernier</option>
-            <option value="week">Cette semaine vs Semaine dernière</option>
-            <option value="year">Cette année vs Année dernière</option>
-          </select>
-        </div>
-        <div style="overflow-x:auto;">
-          <table>
-            <thead>
-              <tr>
-                <th>Catégorie</th>
-                <th>Actuel</th>
-                <th>Précédent</th>
-                <th>Évolution</th>
-              </tr>
-            </thead>
-            <tbody id="cmpRowsBody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="wa-card">
-        <h3>Calendrier Thermique (Intensité du mois)</h3>
-        <div class="cal-grid" id="heatCalendarGrid"></div>
-      </div>
-    </section>
-
-    <!-- VUE ENVELOPPES DÉTAILLÉES (ACCESSIBLE VIA LE MENU 3 POINTS) -->
-    <section id="view-envelopes" class="page-view">
-      <div class="wa-card">
-        <h3>Gestion des Enveloppes Physiques</h3>
-        <p style="font-size:0.84rem; color:var(--wa-muted); margin-top:0;">
-          Ajoutez, consultez ou supprimez vos enveloppes (la suppression est bloquée s'il ne reste qu'une enveloppe ou si l'enveloppe contient des opérations).
-        </p>
-        <div id="extraEnvelopesGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:10px;"></div>
-      </div>
-    </section>
-
-    <!-- VUE RÉGLAGES & OUTILS (ACCESSIBLE VIA LE MENU 3 POINTS) -->
-    <section id="view-settings" class="page-view">
-      <div class="wa-card" id="blockSimulator">
-        <h3>Simulateur d'Épargne « Et si ? »</h3>
-        <label for="simSliderInput">Réduire mes dépenses de : <strong id="simSliderLabel">15 %</strong></label>
-        <input type="range" id="simSliderInput" min="0" max="60" step="5" value="15" />
-        <div class="kpi-grid" style="margin-top:10px; margin-bottom:0;">
-          <div class="kpi-card">
-            <div class="kpi-lbl">Gain dans 3 mois</div>
-            <div class="kpi-val" style="color:var(--ok);" id="simOut3">0 F</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-lbl">Gain dans 1 an</div>
-            <div class="kpi-val" style="color:var(--ok);" id="simOut12">0 F</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="grid-2" id="blockBillsGoals">
-        <div class="wa-card">
-          <h3>Charges Fixes & Échéances</h3>
-          <div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap;">
-            <input type="text" id="newBillName" placeholder="Ex: Loyer" style="flex:1; min-width:120px;" />
-            <input type="number" id="newBillAmount" placeholder="Montant" style="width:110px;" />
-            <button type="button" class="btn btn-teal btn-sm" id="btnAddFixedBill">Ajouter</button>
-          </div>
-          <div id="fixedBillsList"></div>
-        </div>
-
-        <div class="wa-card">
-          <h3>Objectifs d'Épargne (Tirelires)</h3>
-          <div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap;">
-            <input type="text" id="newGoalName" placeholder="Projet" style="flex:1; min-width:110px;" />
-            <input type="number" id="newGoalTarget" placeholder="Cible" style="width:95px;" />
-            <input type="number" id="newGoalSaved" placeholder="Épargné" style="width:95px;" />
-            <button type="button" class="btn btn-teal btn-sm" id="btnAddSavingsGoal">Nouveau</button>
-          </div>
-          <div id="savingsGoalsList"></div>
-        </div>
-      </div>
-
-      <div class="wa-card" id="blockCaps">
-        <h3>Plafonds Mensuels par Catégorie</h3>
-        <div id="capsFormGrid" class="grid-fields"></div>
-      </div>
-
-      <div class="wa-card" id="blockPinCurrency">
-        <h3>Sécurité & Devise</h3>
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; padding:10px 0; border-bottom:1px solid var(--wa-line);">
-          <div>
-            <strong>Verrouillage par Code PIN</strong>
-            <div style="font-size:0.8rem; color:var(--wa-muted);">Code à 4 chiffres à l'ouverture</div>
-          </div>
-          <div style="display:flex; gap:6px; align-items:center;">
-            <input type="password" id="pinCodeField" maxlength="4" placeholder="PIN 4 chiffres" style="width:120px;" />
-            <button type="button" class="btn btn-teal btn-sm" id="btnEnablePin">Activer PIN</button>
-            <button type="button" class="btn btn-soft btn-sm" id="btnDisablePin">Désactiver</button>
-          </div>
-        </div>
-
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; padding:10px 0;">
-          <div>
-            <strong>Devise d'affichage</strong>
-            <div style="font-size:0.8rem; color:var(--wa-muted);">Symbole monétaire</div>
-          </div>
-          <div style="display:flex; gap:6px;">
-            <button type="button" class="btn btn-soft btn-sm currency-choice" data-cur="FCFA">FCFA</button>
-            <button type="button" class="btn btn-soft btn-sm currency-choice" data-cur="EUR">Euro (€)</button>
-            <button type="button" class="btn btn-soft btn-sm currency-choice" data-cur="USD">Dollar ($)</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="wa-card" id="blockBackup">
-        <h3>Sauvegarde & Restauration des Données</h3>
-        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
-          <button type="button" class="btn btn-green" id="btnDownloadBackup">Sauvegarder (.json)</button>
-          <label class="btn btn-soft" style="margin:0;">
-            Restaurer (.json)
-            <input type="file" id="inputRestoreBackup" accept="application/json,.json" style="display:none;" />
-          </label>
-          <button type="button" class="btn btn-soft" id="btnLoadDemoData">Charger des données de démonstration</button>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <!-- EXACTEMENT 4 BOUTONS AU PIED DE PAGE -->
-  <footer class="wa-footer-four" aria-label="Barre de navigation principale">
-    <div class="footer-four-row">
-      <button type="button" class="foot-4-btn active" id="navBtnDashboard" data-nav="dashboard">
-        <span>🏠</span><span>Accueil</span>
-      </button>
-      <button type="button" class="foot-4-btn" id="navBtnHistory" data-nav="history">
-        <span>📋</span><span>Historique</span>
-      </button>
-      <button type="button" class="foot-4-btn" id="navBtnEntry" data-nav="entry">
-        <span>➕</span><span>Saisie</span>
-      </button>
-      <button type="button" class="foot-4-btn" id="navBtnVoice" data-nav="voice">
-        <span>🎤</span><span>Vocal</span>
-      </button>
-    </div>
-  </footer>
-
-  <script>
-  (function () {
-    'use strict';
-
-    const STORAGE_KEY = 'fintrack_wa_four_btn_v1';
-    const CATEGORIES = [
-      'Alimentation', 'Transport', 'Logement', 'Santé', 'Éducation',
-      'Factures & Énergie', 'Loisirs', 'Salaire / Revenus', 'Commerce', 'Autres'
-    ];
-    const RULES = [
-      { kw: ['riz', 'pain', 'repas', 'nourriture', 'marché', 'marche', 'eau'], cat: 'Alimentation' },
-      { kw: ['essence', 'carburant', 'taxi', 'moto', 'bus', 'transport'], cat: 'Transport' },
-      { kw: ['loyer', 'maison', 'caution'], cat: 'Logement' },
-      { kw: ['pharmacie', 'hôpital', 'hopital', 'médecin', 'santé', 'sante'], cat: 'Santé' },
-      { kw: ['sbee', 'courant', 'électricité', 'electricite', 'internet', 'forfait', 'facture'], cat: 'Factures & Énergie' },
-      { kw: ['salaire', 'paie', 'prime', 'vente', 'revenu', 'entrée', 'entree'], cat: 'Salaire / Revenus' }
-    ];
-
-    function defaultState() {
-      return {
-        dark: false,
-        currency: 'FCFA',
-        timeframe: 'month',
-        pin: null,
-        envelopes: [{ id: 'env-main', name: 'Portefeuille', balance: 0 }],
-        operations: [],
-        bills: [],
-        goals: [],
-        caps: {
-          'Alimentation': 0,
-          'Transport': 0,
-          'Logement': 0,
-          'Factures & Énergie': 0,
-          'Loisirs': 0
-        },
-        lastCreatedId: null
-      };
-    }
-
-    let db = loadDb();
-    let draftAtt = null;
-    let editingOpId = null;
-    let negConfirmed = false;
-    let pinBuffer = '';
-
-    function loadDb() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return defaultState();
-        const p = JSON.parse(raw);
-        const def = defaultState();
-        return Object.assign(def, p, {
-          envelopes: Array.isArray(p.envelopes) && p.envelopes.length ? p.envelopes : def.envelopes,
-          operations: Array.isArray(p.operations) ? p.operations : [],
-          bills: Array.isArray(p.bills) ? p.bills : [],
-          goals: Array.isArray(p.goals) ? p.goals : [],
-          caps: Object.assign(def.caps, p.caps || {})
-        });
-      } catch (_) {
-        return defaultState();
-      }
-    }
-
-    function saveDb() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
-      if (typeof window.onFinTrackSmartUpdate === 'function') {
-        window.onFinTrackSmartUpdate({
-          envelopes: db.envelopes.slice(),
-          operations: db.operations.slice()
-        });
-      }
-    }
-
-    function fmtMoney(val) {
-      const n = Number(val) || 0;
-      const s = n.toLocaleString('fr-FR', { maximumFractionDigits: 2 });
-      if (db.currency === 'EUR') return s + ' €';
-      if (db.currency === 'USD') return '$' + s;
-      return s + ' F';
-    }
-
-    function esc(str) {
-      return String(str ?? '').replace(/[&<>"']/g, function (c) {
-        return { '&': '&', '<': '<', '>': '>', '"': '"', "'": ''' }[c] || c;
-      });
-    }
-
-    // --- Thème ---
-    function applyWaTheme() { document.body.classList.toggle('wa-dark', !!db.dark); }
-    function toggleWaTheme() { db.dark = !db.dark; applyWaTheme(); saveDb(); }
-    window.toggleWaTheme = toggleWaTheme;
-
-    // --- Menu 3 points WhatsApp ---
-    function openOverflow() {
-      document.getElementById('waOverflowMenu').classList.add('open');
-      document.getElementById('waOverflowBackdrop').classList.add('open');
-    }
-    function closeOverflow() {
-      document.getElementById('waOverflowMenu').classList.remove('open');
-      document.getElementById('waOverflowBackdrop').classList.remove('open');
-    }
-    window.closeOverflow = closeOverflow;
-
-    document.getElementById('btnThreeDots').addEventListener('click', function (e) {
-      e.stopPropagation();
-      const menu = document.getElementById('waOverflowMenu');
-      if (menu.classList.contains('open')) closeOverflow();
-      else openOverflow();
-    });
-
-    function showView(viewId) {
-      document.querySelectorAll('.page-view').forEach(function (v) {
-        v.classList.toggle('active', v.id === 'view-' + viewId);
-      });
-      document.querySelectorAll('.foot-4-btn').forEach(function (b) {
-        b.classList.remove('active');
-      });
-      if (viewId === 'dashboard') document.getElementById('navBtnDashboard').classList.add('active');
-      if (viewId === 'history') document.getElementById('navBtnHistory').classList.add('active');
-      renderDashboard();
-    }
-
-    window.openExtraView = function (viewId) {
-      showView(viewId);
-    };
-
-    window.jumpTo = function (elId) {
-      setTimeout(function () {
-        const el = document.getElementById(elId);
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 60);
-    };
-
-    // --- 4 boutons du pied de page ---
-    document.getElementById('navBtnDashboard').addEventListener('click', function () {
-      showView('dashboard');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-
-    document.getElementById('navBtnHistory').addEventListener('click', function () {
-      showView('history');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-
-    document.getElementById('navBtnEntry').addEventListener('click', function () {
-      showView('dashboard');
-      document.getElementById('navBtnEntry').classList.add('active');
-      const card = document.getElementById('composerCard');
-      if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      document.getElementById('opAmountInput').focus();
-    });
-
-    // --- Reconnaissance vocale en brouillon ---
-    const SpeechApi = window.SpeechRecognition || window.webkitSpeechRecognition;
-    let recognizer = null;
-    if (SpeechApi) {
-      recognizer = new SpeechApi();
-      recognizer.lang = 'fr-FR';
-      recognizer.interimResults = false;
-      recognizer.onstart = function () {
-        document.getElementById('draftStatusBanner').textContent = '🎤 Écoute en cours... ex. : « Dépense 5000 carburant mobile money ».';
-      };
-      recognizer.onresult = function (ev) {
-        const spoken = ev.results[0][0].transcript;
-        document.getElementById('draftStatusBanner').textContent = 'Brouillon vocal (non enregistré) : « ' + spoken + ' ».';
-        const low = spoken.toLowerCase();
-        document.getElementById('opTypeSelect').value = /(revenu|entrée|entree|salaire|reçu|recu|vente|gain)/i.test(low) ? 'income' : 'expense';
-        const m = low.replace(/\s+(?=\d{3})/g, '').match(/\d+([.,]\d+)?/);
-        if (m) document.getElementById('opAmountInput').value = m[0].replace(',', '.');
-        let wal = 'Espèces';
-        if (/(mobile money|momo|mtn|moov|celtiis|flooz)/i.test(low)) wal = 'Mobile Money';
-        else if (/(banque|carte|virement|chèque|cheque)/i.test(low)) wal = 'Banque';
-        document.getElementById('opWalletSelect').value = wal;
-        const clean = low
-          .replace(/(dépense|depense|revenu|entrée|entree|de|pour|par|en|francs|fcfa|euros|dollars)/gi, ' ')
-          .replace(/(mobile money|momo|mtn|moov|celtiis|flooz|banque|carte|virement|chèque|cheque|espèces|especes|cash|liquide)/gi, ' ')
-          .replace(/\d+([.,]\d+)?/g, ' ')
-          .replace(/\s+/g, ' ')
-          .trim();
-        if (clean) {
-          const cap = clean.charAt(0).toUpperCase() + clean.slice(1);
-          document.getElementById('opLabelInput').value = cap;
-          const gc = guessCategory(cap);
-          if (gc) document.getElementById('opCategorySelect').value = gc;
-        }
-        negConfirmed = false;
-        clearGuardAlert();
-      };
-      recognizer.onerror = function (ev) {
-        showGuardAlert('Micro : ' + ev.error, true);
-      };
-    } else {
-      ['btnStartVoiceDraft', 'btnRetryVoiceDraft', 'navBtnVoice'].forEach(function (id) {
-        const b = document.getElementById(id);
-        if (b) b.disabled = true;
-      });
-    }
-
-    function triggerVoiceRecording() {
-      if (!recognizer) return;
-      showView('dashboard');
-      document.getElementById('navBtnVoice').classList.add('active');
-      const card = document.getElementById('composerCard');
-      if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      clearGuardAlert();
-      recognizer.start();
-    }
-
-    document.getElementById('navBtnVoice').addEventListener('click', triggerVoiceRecording);
-    document.getElementById('btnStartVoiceDraft').addEventListener('click', triggerVoiceRecording);
-    document.getElementById('btnRetryVoiceDraft').addEventListener('click', function () {
-      resetDraft(true);
-      if (recognizer) recognizer.start();
-    });
-
-    // --- Sélecteur Journée / Semaine / Mois / Année ---
-    document.querySelectorAll('.tf-btn').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        db.timeframe = btn.dataset.tf;
-        document.querySelectorAll('.tf-btn').forEach(function (b) {
-          b.classList.toggle('active', b.dataset.tf === db.timeframe);
-        });
-        saveDb();
-        renderDashboard();
-      });
-    });
-
-    // --- Garde-fous & calcul ---
-    function showGuardAlert(msg, isErr) {
-      const box = document.getElementById('composerGuardAlert');
-      box.className = 'guard-msg ' + (isErr ? 'err' : 'warn');
-      box.textContent = msg;
-    }
-    function clearGuardAlert() {
-      const box = document.getElementById('composerGuardAlert');
-      box.className = 'guard-msg';
-      box.textContent = '';
-    }
-
-    function evalMath(raw) {
-      const c = String(raw || '').replace(/\s+/g, '').replace(',', '.');
-      if (!c || !/^[0-9+\-*/().]+$/.test(c)) return NaN;
-      try {
-        const r = Function('"use strict"; return (' + c + ')')();
-        return typeof r === 'number' && Number.isFinite(r) ? Number(r.toFixed(2)) : NaN;
-      } catch (_) { return NaN; }
-    }
-
-    function guessCategory(label) {
-      const low = String(label || '').toLowerCase();
-      for (const r of RULES) {
-        if (r.kw.some(function (k) { return low.includes(k); })) return r.cat;
-      }
-      return null;
-    }
-
-    // --- Enveloppes physiques ---
-    function applyDeltaToEnvelope(envId, delta) {
-      const env = db.envelopes.find(function (e) { return e.id === envId; });
-      if (!env) return;
-      env.balance = Number(((Number(env.balance) || 0) + (Number(delta) || 0)).toFixed(2));
-    }
-
-    document.getElementById('btnCreateEnvelope').addEventListener('click', function () {
-      const nInp = document.getElementById('envNewName');
-      const iInp = document.getElementById('envNewInit');
-      const name = String(nInp.value || '').trim();
-      if (!name) { alert('Saisissez un nom d\'enveloppe.'); return; }
-      const init = parseFloat(iInp.value);
-      const env = {
-        id: 'env-' + Date.now() + '-' + Math.random().toString(36).slice(2, 5),
-        name: name,
-        balance: Number.isFinite(init) ? Number(init.toFixed(2)) : 0
-      };
-      db.envelopes.push(env);
-      nInp.value = '';
-      iInp.value = '0';
-      saveDb();
-      renderDashboard();
-      document.getElementById('opEnvelopeSelect').value = env.id;
-    });
-
-    window.deleteEnvelopeIfUnused = function (envId) {
-      if (db.envelopes.length <= 1) { alert('Suppression impossible : au moins une enveloppe est requise.'); return; }
-      if (db.operations.some(function (o) { return o.envelopeId === envId; })) {
-        alert('Suppression impossible : cette enveloppe contient déjà des opérations.');
-        return;
-      }
-      db.envelopes = db.envelopes.filter(function (e) { return e.id !== envId; });
-      saveDb();
-      renderDashboard();
-    };
-
-    // --- Justificatifs ---
-    function compressImage(file, maxW, quality) {
-      return new Promise(function (resolve, reject) {
-        const rd = new FileReader();
-        rd.onload = function (ev) {
-          const img = new Image();
-          img.onload = function () {
-            let w = img.width, h = img.height;
-            if (w > maxW) { h = Math.round((h * maxW) / w); w = maxW; }
-            const cv = document.createElement('canvas');
-            cv.width = w; cv.height = h;
-            cv.getContext('2d').drawImage(img, 0, 0, w, h);
-            resolve(cv.toDataURL('image/jpeg', quality));
-          };
-          img.onerror = reject;
-          img.src = ev.target.result;
-        };
-        rd.onerror = reject;
-        rd.readAsDataURL(file);
-      });
-    }
-
-    function renderReceiptPreview(att) {
-      const box = document.getElementById('opReceiptBox');
-      if (!att || !att.data) { box.innerHTML = ''; return; }
-      const btn = '<button type="button" class="btn btn-soft btn-sm" style="margin-left:6px;" onclick="removeDraftReceipt()">Retirer</button>';
-      if (att.type === 'pdf') box.innerHTML = '📄 PDF : <strong>' + esc(att.name) + '</strong>' + btn;
-      else box.innerHTML = '<span style="display:inline-flex;align-items:center;gap:6px;"><img src="' + att.data + '" style="height:36px;border-radius:5px;" />Photo compressée' + btn + '</span>';
-    }
-
-    window.removeDraftReceipt = function () {
-      draftAtt = null;
-      document.getElementById('opReceiptInput').value = '';
-      renderReceiptPreview(null);
-      clearGuardAlert();
-    };
-
-    document.getElementById('opReceiptInput').addEventListener('change', async function (e) {
-      const file = e.target.files && e.target.files[0];
-      if (!file) { draftAtt = null; renderReceiptPreview(null); return; }
-      clearGuardAlert();
-      if (file.type === 'application/pdf') {
-        if (file.size > 1.5 * 1024 * 1024) {
-          showGuardAlert('PDF > 1,5 Mo : choisissez un fichier plus léger.', true);
-          e.target.value = '';
-          return;
-        }
-        const r = new FileReader();
-        r.onload = function () { draftAtt = { name: file.name, type: 'pdf', data: r.result }; renderReceiptPreview(draftAtt); };
-        r.readAsDataURL(file);
-      } else if (file.type && file.type.startsWith('image/')) {
-        try {
-          const dUrl = await compressImage(file, 1000, 0.72);
-          draftAtt = { name: file.name, type: 'image', data: dUrl };
-          renderReceiptPreview(draftAtt);
-        } catch (_) { showGuardAlert('Erreur de compression image.', true); }
-      } else {
-        showGuardAlert('Format non pris en charge (photo ou PDF).', true);
-        e.target.value = '';
-      }
-    });
-
-    function resetDraft(keepBanner) {
-      editingOpId = null;
-      negConfirmed = false;
-      document.getElementById('composerTitle').textContent = 'Nouvelle opération / Brouillon';
-      document.getElementById('btnCancelEditOp').style.display = 'none';
-      document.getElementById('opTypeSelect').value = 'expense';
-      document.getElementById('opAmountInput').value = '';
-      document.getElementById('opLabelInput').value = '';
-      document.getElementById('opSubcatInput').value = '';
-      document.getElementById('opWalletSelect').value = 'Espèces';
-      document.getElementById('opDateInput').value = new Date().toISOString().slice(0, 10);
-      draftAtt = null;
-      document.getElementById('opReceiptInput').value = '';
-      renderReceiptPreview(null);
-      clearGuardAlert();
-      if (!keepBanner) {
-        document.getElementById('draftStatusBanner').textContent = 'Brouillon effacé — rien n\'a été enregistré.';
-      }
-    }
-
-    document.getElementById('btnClearDraftForm').addEventListener('click', function () { resetDraft(false); });
-    document.getElementById('btnCancelEditOp').addEventListener('click', function () { resetDraft(false); });
-    document.getElementById('opLabelInput').addEventListener('input', function (e) {
-      const gc = guessCategory(e.target.value);
-      if (gc) document.getElementById('opCategorySelect').value = gc;
-    });
-
-    // --- Enregistrement / Édition / Suppression / Annulation ---
-    document.getElementById('btnSaveOperation').addEventListener('click', function () {
-      clearGuardAlert();
-      const amount = evalMath(document.getElementById('opAmountInput').value);
-      if (!Number.isFinite(amount) || amount <= 0) {
-        showGuardAlert('Montant invalide : saisissez un montant strictement supérieur à 0.', true);
-        return;
-      }
-
-      const type = document.getElementById('opTypeSelect').value === 'income' ? 'income' : 'expense';
-      const envId = document.getElementById('opEnvelopeSelect').value;
-      const env = db.envelopes.find(function (e) { return e.id === envId; });
-      if (!env) { showGuardAlert('Sélectionnez une enveloppe.', true); return; }
-
-      const label = String(document.getElementById('opLabelInput').value || '').trim() || (type === 'income' ? 'Revenu' : 'Dépense');
-      const category = document.getElementById('opCategorySelect').value || 'Autres';
-      const subcat = String(document.getElementById('opSubcatInput').value || '').trim();
-      const wallet = document.getElementById('opWalletSelect').value || 'Espèces';
-      const dateStr = document.getElementById('opDateInput').value || new Date().toISOString().slice(0, 10);
-
-      const existing = editingOpId ? db.operations.find(function (o) { return o.id === editingOpId; }) : null;
-      const newD = type === 'income' ? amount : -amount;
-      let nextBal = (Number(env.balance) || 0) + newD;
-      if (existing && existing.envelopeId === envId) {
-        const oldD = existing.type === 'income' ? existing.amount : -existing.amount;
-        nextBal = (Number(env.balance) || 0) - oldD + newD;
-      }
-
-      if (type === 'expense' && nextBal < 0 && !negConfirmed) {
-        negConfirmed = true;
-        showGuardAlert(
-          'Alerte : cette dépense fera passer « ' + env.name + ' » à ' + fmtMoney(nextBal) +
-          '. Cliquez encore sur « Enregistrer l\'opération » pour confirmer.',
-          false
-        );
-        return;
-      }
-      negConfirmed = false;
-
-      if (existing) {
-        const oldD = existing.type === 'income' ? existing.amount : -existing.amount;
-        applyDeltaToEnvelope(existing.envelopeId, -oldD);
-        applyDeltaToEnvelope(envId, newD);
-        existing.type = type;
-        existing.amount = amount;
-        existing.label = label;
-        existing.category = category;
-        existing.subcategory = subcat;
-        existing.wallet = wallet;
-        existing.envelopeId = envId;
-        existing.date = dateStr;
-        existing.attachment = draftAtt;
-        db.lastCreatedId = null;
-      } else {
-        applyDeltaToEnvelope(envId, newD);
-        const id = 'op-' + Date.now() + '-' + Math.random().toString(36).slice(2, 5);
-        db.operations.unshift({
-          id: id,
-          type: type,
-          amount: amount,
-          label: label,
-          category: category,
-          subcategory: subcat,
-          wallet: wallet,
-          envelopeId: envId,
-          date: dateStr,
-          attachment: draftAtt
-        });
-        db.lastCreatedId = id;
-      }
-
-      saveDb();
-      resetDraft(true);
-      renderDashboard();
-    });
-
-    document.getElementById('btnUndoLastCreated').addEventListener('click', function () {
-      if (!db.lastCreatedId) return;
-      const idx = db.operations.findIndex(function (o) { return o.id === db.lastCreatedId; });
-      if (idx !== -1) {
-        const op = db.operations[idx];
-        applyDeltaToEnvelope(op.envelopeId, op.type === 'income' ? -op.amount : op.amount);
-        db.operations.splice(idx, 1);
-      }
-      db.lastCreatedId = null;
-      saveDb();
-      renderDashboard();
-    });
-
-    window.editOperationById = function (id) {
-      const op = db.operations.find(function (o) { return o.id === id; });
-      if (!op) return;
-      showView('dashboard');
-      editingOpId = op.id;
-      negConfirmed = false;
-      document.getElementById('composerTitle').textContent = 'Modifier l\'opération';
-      document.getElementById('btnCancelEditOp').style.display = 'inline-flex';
-      document.getElementById('opTypeSelect').value = op.type;
-      document.getElementById('opAmountInput').value = op.amount;
-      document.getElementById('opLabelInput').value = op.label;
-      document.getElementById('opCategorySelect').value = op.category || 'Autres';
-      document.getElementById('opSubcatInput').value = op.subcategory || '';
-      document.getElementById('opWalletSelect').value = op.wallet || 'Espèces';
-      if (db.envelopes.some(function (e) { return e.id === op.envelopeId; })) document.getElementById('opEnvelopeSelect').value = op.envelopeId;
-      document.getElementById('opDateInput').value = (op.date || '').slice(0, 10) || new Date().toISOString().slice(0, 10);
-      draftAtt = op.attachment || null;
-      renderReceiptPreview(draftAtt);
-      jumpTo('composerCard');
-    };
-
-    window.deleteOperationById = function (id) {
-      const idx = db.operations.findIndex(function (o) { return o.id === id; });
-      if (idx === -1) return;
-      const op = db.operations[idx];
-      applyDeltaToEnvelope(op.envelopeId, op.type === 'income' ? -op.amount : op.amount);
-      db.operations.splice(idx, 1);
-      if (db.lastCreatedId === id) db.lastCreatedId = null;
-      if (editingOpId === id) resetDraft(true);
-      saveDb();
-      renderDashboard();
-    };
-
-    window.viewReceiptById = function (id) {
-      const op = db.operations.find(function (o) { return o.id === id; });
-      if (!op || !op.attachment || !op.attachment.data) return;
-      const w = window.open('', '_blank');
-      if (!w) return;
-      if (op.attachment.type === 'pdf') w.document.write('<iframe src="' + op.attachment.data + '" style="width:100%;height:100%;border:0;"></iframe>');
-      else w.document.write('<img src="' + op.attachment.data + '" style="max-width:100%;height:auto;" />');
-    };
-
-    // --- Filtrage Journée / Semaine / Mois / Année ---
-    function matchesTimeframe(dStr) {
-      const d = new Date(dStr);
-      if (Number.isNaN(d.getTime())) return true;
-      const now = new Date();
-      if (db.timeframe === 'today') return d.toDateString() === now.toDateString();
-      if (db.timeframe === 'week') return (now - d) / 86400000 <= 7;
-      if (db.timeframe === 'year') return d.getFullYear() === now.getFullYear();
-      return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
-    }
-
-    function periodLabelText() {
-      if (db.timeframe === 'today') return 'de la journée';
-      if (db.timeframe === 'week') return 'de la semaine';
-      if (db.timeframe === 'year') return 'de l\'année';
-      return 'du mois';
-    }
-
-    function renderDashboard() {
-      const cSel = document.getElementById('opCategorySelect');
-      const pc = cSel.value;
-      cSel.innerHTML = CATEGORIES.map(function (c) { return '<option value="' + esc(c) + '">' + esc(c) + '</option>'; }).join('');
-      if (pc) cSel.value = pc;
-
-      const hSel = document.getElementById('histCategoryFilter');
-      const ph = hSel.value;
-      hSel.innerHTML = '<option value="ALL">Toutes catégories</option>' + CATEGORIES.map(function (c) { return '<option value="' + esc(c) + '">' + esc(c) + '</option>'; }).join('');
-      if (ph) hSel.value = ph;
-
-      const eSel = document.getElementById('opEnvelopeSelect');
-      const pe = eSel.value;
-      eSel.innerHTML = db.envelopes.map(function (e) { return '<option value="' + esc(e.id) + '">' + esc(e.name) + ' (' + fmtMoney(e.balance) + ')</option>'; }).join('');
-      if (pe && db.envelopes.some(function (e) { return e.id === pe; })) eSel.value = pe;
-
-      const canDel = db.envelopes.length > 1;
-      const envCardsHtml = db.envelopes.map(function (env) {
-        const bal = Number(env.balance) || 0;
-        const used = db.operations.some(function (o) { return o.envelopeId === env.id; });
-        const dis = !canDel || used;
-        return (
-          '<div style="border:1px solid var(--wa-line);border-radius:10px;padding:10px 12px;background:var(--wa-soft);">' +
-            '<div style="display:flex;justify-content:space-between;align-items:center;gap:6px;">' +
-              '<strong style="font-size:0.86rem;">' + esc(env.name) + '</strong>' +
-              '<button type="button" ' + (dis ? 'disabled ' : '') + 'onclick="deleteEnvelopeIfUnused(\'' + esc(env.id) + '\')" ' +
-                'style="border:none;background:var(--danger-bg);color:var(--danger);border-radius:6px;padding:2px 6px;font-size:0.74rem;cursor:' + (dis ? 'not-allowed' : 'pointer') + ';">✕</button>' +
-            '</div>' +
-            '<div style="font-size:1.06rem;font-weight:800;margin-top:4px;color:' + (bal < 0 ? 'var(--danger)' : 'var(--ok)') + ';">' + fmtMoney(bal) + '</div>' +
-          '</div>'
-        );
-      }).join('');
-      document.getElementById('dashEnvelopesGrid').innerHTML = envCardsHtml;
-      document.getElementById('extraEnvelopesGrid').innerHTML = envCardsHtml;
-
-      const treasury = db.envelopes.reduce(function (s, e) { return s + (Number(e.balance) || 0); }, 0);
-      const tfOps = db.operations.filter(function (o) { return matchesTimeframe(o.date); });
-      const inc = tfOps.filter(function (o) { return o.type === 'income'; }).reduce(function (s, o) { return s + o.amount; }, 0);
-      const exp = tfOps.filter(function (o) { return o.type === 'expense'; }).reduce(function (s, o) { return s + o.amount; }, 0);
-      const savRate = inc > 0 ? Math.round(((inc - exp) / inc) * 100) : 0;
-
-      const now = new Date();
-      const dim = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-      const remDays = Math.max(1, dim - now.getDate() + 1);
-      const avgDay = exp / Math.max(1, now.getDate());
-      const daily = treasury > 0 ? treasury / remDays : 0;
-      const score = Math.max(0, Math.min(100, 50 + savRate + (treasury >= 0 ? 15 : -25)));
-
-      document.getElementById('dashPeriodHeading').textContent = 'Récapitulatif ' + periodLabelText();
-      document.getElementById('dashSummaryText').textContent =
-        'Trésorerie : ' + fmtMoney(treasury) + ' • Revenus ' + periodLabelText() + ' : ' + fmtMoney(inc) +
-        ' • Dépenses ' + periodLabelText() + ' : ' + fmtMoney(exp) + ' • Épargne : ' + savRate + ' %.';
-
-      document.getElementById('dTreasury').textContent = fmtMoney(treasury);
-      document.getElementById('dAutonomy').textContent = 'Autonomie : ' + (avgDay > 0 ? Math.floor(treasury / avgDay) + ' jours' : 'stable');
-      document.getElementById('dIncome').textContent = fmtMoney(inc);
-      document.getElementById('dSavings').textContent = savRate + ' %';
-      document.getElementById('dExpense').textContent = fmtMoney(exp);
-      document.getElementById('dAvgDay').textContent = 'Moyenne : ' + fmtMoney(avgDay) + '/jour';
-      document.getElementById('dDaily').textContent = fmtMoney(daily);
-      document.getElementById('dScore').textContent = score + ' / 100';
-      document.getElementById('headerSummary').textContent = db.envelopes.length + ' enveloppe(s) • ' + fmtMoney(treasury);
-      document.getElementById('btnUndoLastCreated').style.display = db.lastCreatedId ? 'inline-flex' : 'none';
-
-      document.getElementById('dashIncExpChart').innerHTML =
-        '<div style="display:flex;justify-content:space-between;font-size:0.84rem;"><span>Revenus</span><strong style="color:var(--ok);">' + fmtMoney(inc) + '</strong></div>' +
-        '<div class="meter-bg"><div class="meter-fill" style="width:' + (inc > 0 ? 100 : 0) + '%;"></div></div>' +
-        '<div style="display:flex;justify-content:space-between;font-size:0.84rem;margin-top:8px;"><span>Dépenses</span><strong style="color:var(--danger);">' + fmtMoney(exp) + '</strong></div>' +
-        '<div class="meter-bg"><div class="meter-fill" style="background:var(--danger);width:' + Math.min(100, inc > 0 ? (exp / inc) * 100 : (exp > 0 ? 100 : 0)) + '%;"></div></div>';
-
-      const catMap = {};
-      tfOps.filter(function (o) { return o.type === 'expense'; }).forEach(function (o) {
-        catMap[o.category] = (catMap[o.category] || 0) + o.amount;
-      });
-      const cEntries = Object.entries(catMap);
-      document.getElementById('dashCategoryList').innerHTML = cEntries.length
-        ? cEntries.map(function (it) { return '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--wa-line);font-size:0.84rem;"><span>' + esc(it[0]) + '</span><strong>' + fmtMoney(it[1]) + '</strong></div>'; }).join('')
-        : '<div style="color:var(--wa-muted);font-size:0.84rem;">Aucune dépense sur cette période.</div>';
-
-      document.getElementById('dashCapsPreview').innerHTML = Object.entries(db.caps).map(function (ent) {
-        const cap = Number(ent[1]) || 0;
-        const sp = catMap[ent[0]] || 0;
-        const pct = cap > 0 ? Math.min(100, Math.round((sp / cap) * 100)) : 0;
-        return '<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;font-size:0.82rem;"><span>' + esc(ent[0]) + '</span><span>' + fmtMoney(sp) + ' / ' + fmtMoney(cap) + '</span></div><div class="meter-bg"><div class="meter-fill" style="width:' + pct + '%;background:' + (pct >= 100 ? 'var(--danger)' : 'var(--wa-accent)') + ';"></div></div></div>';
-      }).join('');
-
-      document.getElementById('dashRecentOps').innerHTML = db.operations.slice(0, 5).map(function (op) {
-        const env = db.envelopes.find(function (e) { return e.id === op.envelopeId; });
-        return '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--wa-line);font-size:0.84rem;"><span><strong>' + esc(op.label) + '</strong> <small style="color:var(--wa-muted);">• ' + esc(env ? env.name : '') + '</small></span><strong style="color:' + (op.type === 'income' ? 'var(--ok)' : 'var(--danger)') + ';">' + (op.type === 'income' ? '+' : '-') + fmtMoney(op.amount) + '</strong></div>';
-      }).join('') || '<div style="color:var(--wa-muted);font-size:0.84rem;">Aucune opération récente.</div>';
-
-      // Historique
-      const q = String(document.getElementById('histSearchBox').value || '').toLowerCase().trim();
-      const cf = document.getElementById('histCategoryFilter').value;
-      const rows = db.operations.filter(function (o) {
-        return (!q || String(o.label).toLowerCase().includes(q)) && (cf === 'ALL' || o.category === cf);
-      });
-      document.getElementById('histRowsBody').innerHTML = rows.map(function (op) {
-        const env = db.envelopes.find(function (e) { return e.id === op.envelopeId; });
-        const attBtn = op.attachment ? '<button type="button" class="btn btn-soft btn-sm" onclick="viewReceiptById(\'' + esc(op.id) + '\')">📎 Voir</button>' : '—';
-        return (
-          '<tr>' +
-            '<td>' + esc((op.date || '').slice(0, 10)) + '</td>' +
-            '<td><strong>' + esc(op.label) + '</strong></td>' +
-            '<td>' + esc(op.category || 'Autres') + '</td>' +
-            '<td>' + esc((env ? env.name : 'Enveloppe') + ' • ' + (op.wallet || 'Espèces')) + '</td>' +
-            '<td>' + attBtn + '</td>' +
-            '<td style="font-weight:700;color:' + (op.type === 'income' ? 'var(--ok)' : 'var(--danger)') + ';">' + (op.type === 'income' ? '+' : '-') + fmtMoney(op.amount) + '</td>' +
-            '<td>' +
-              '<button type="button" class="btn btn-soft btn-sm" onclick="editOperationById(\'' + esc(op.id) + '\')">Éditer</button> ' +
-              '<button type="button" class="btn btn-soft-red btn-sm" onclick="deleteOperationById(\'' + esc(op.id) + '\')">Supprimer</button>' +
-            '</td>' +
-          '</tr>'
-        );
-      }).join('') || '<tr><td colspan="7" style="color:var(--wa-muted);">Aucune opération.</td></tr>';
-
-      // Comparateur & Calendrier thermique
-      const mode = document.getElementById('cmpPeriodSelect').value;
-      const curM = {}, prevM = {};
-      db.operations.filter(function (o) { return o.type === 'expense'; }).forEach(function (o) {
-        const d = new Date(o.date);
-        const c = o.category || 'Autres';
-        if (mode === 'month') {
-          if (d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth()) curM[c] = (curM[c] || 0) + o.amount;
-          const pm = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-          if (d.getFullYear() === pm.getFullYear() && d.getMonth() === pm.getMonth()) prevM[c] = (prevM[c] || 0) + o.amount;
-        } else if (mode === 'year') {
-          if (d.getFullYear() === now.getFullYear()) curM[c] = (curM[c] || 0) + o.amount;
-          if (d.getFullYear() === now.getFullYear() - 1) prevM[c] = (prevM[c] || 0) + o.amount;
-        } else {
-          const df = (now - d) / 86400000;
-          if (df >= 0 && df <= 7) curM[c] = (curM[c] || 0) + o.amount;
-          else if (df > 7 && df <= 14) prevM[c] = (prevM[c] || 0) + o.amount;
-        }
-      });
-      const keys = Array.from(new Set(Object.keys(curM).concat(Object.keys(prevM))));
-      document.getElementById('cmpRowsBody').innerHTML = keys.map(function (k) {
-        const a = curM[k] || 0, b = prevM[k] || 0;
-        const pct = b > 0 ? Math.round(((a - b) / b) * 100) : (a > 0 ? 100 : 0);
-        return '<tr><td>' + esc(k) + '</td><td>' + fmtMoney(a) + '</td><td>' + fmtMoney(b) + '</td><td>' + (pct >= 0 ? '+' : '') + pct + ' %</td></tr>';
-      }).join('') || '<tr><td colspan="4" style="color:var(--wa-muted);">Aucune donnée comparative.</td></tr>';
-
-      const dMap = {};
-      db.operations.filter(function (o) {
-        if (o.type !== 'expense') return false;
-        const d = new Date(o.date);
-        return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
-      }).forEach(function (o) {
-        const dy = new Date(o.date).getDate();
-        dMap[dy] = (dMap[dy] || 0) + o.amount;
-      });
-      const mx = Math.max(1, ...Object.values(dMap));
-      let cells = '';
-      for (let i = 1; i <= dim; i++) {
-        const v = dMap[i] || 0;
-        const bg = v === 0 ? 'var(--wa-soft)' : (v / mx > 0.6 ? 'var(--danger-bg)' : 'var(--warn-bg)');
-        cells += '<div class="cal-day" style="background:' + bg + ';"><strong>' + i + '</strong><div>' + (v > 0 ? fmtMoney(v) : '—') + '</div></div>';
-      }
-      document.getElementById('heatCalendarGrid').innerHTML = cells;
-
-      // Simulateur, charges, objectifs, plafonds
-      const pct = Number(document.getElementById('simSliderInput').value) || 0;
-      document.getElementById('simSliderLabel').textContent = pct + ' %';
-      const mExp = db.operations.filter(function (o) {
-        if (o.type !== 'expense') return false;
-        const d = new Date(o.date);
-        return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
-      }).reduce(function (s, o) { return s + o.amount; }, 0);
-      const gM = mExp * (pct / 100);
-      document.getElementById('simOut3').textContent = fmtMoney(gM * 3);
-      document.getElementById('simOut12').textContent = fmtMoney(gM * 12);
-
-      document.getElementById('fixedBillsList').innerHTML = db.bills.map(function (b, idx) {
-        return '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--wa-line);font-size:0.84rem;"><span>' + esc(b.name) + ' — <strong>' + fmtMoney(b.amount) + '</strong></span><button type="button" class="btn btn-soft-red btn-sm" onclick="removeBillAt(' + idx + ')">✕</button></div>';
-      }).join('') || '<div style="color:var(--wa-muted);font-size:0.82rem;">Aucune charge fixe.</div>';
-
-      document.getElementById('savingsGoalsList').innerHTML = db.goals.map(function (g, idx) {
-        const p = g.target > 0 ? Math.min(100, Math.round((g.saved / g.target) * 100)) : 0;
-        return '<div style="margin-bottom:8px;font-size:0.84rem;"><div style="display:flex;justify-content:space-between;"><strong>' + esc(g.name) + '</strong><span>' + fmtMoney(g.saved) + ' / ' + fmtMoney(g.target) + ' (' + p + ' %) <button type="button" class="btn btn-soft-red btn-sm" onclick="removeGoalAt(' + idx + ')">✕</button></span></div><div class="meter-bg"><div class="meter-fill" style="width:' + p + '%;"></div></div></div>';
-      }).join('') || '<div style="color:var(--wa-muted);font-size:0.82rem;">Aucun objectif.</div>';
-
-      document.getElementById('capsFormGrid').innerHTML = Object.keys(db.caps).map(function (c) {
-        return '<div><label>' + esc(c) + '</label><input type="number" value="' + (db.caps[c] || 0) + '" onchange="updateCapVal(\'' + esc(c) + '\', this.value)" /></div>';
-      }).join('');
-    }
-
-    document.getElementById('histSearchBox').addEventListener('input', renderDashboard);
-    document.getElementById('histCategoryFilter').addEventListener('change', renderDashboard);
-    document.getElementById('cmpPeriodSelect').addEventListener('change', renderDashboard);
-    document.getElementById('simSliderInput').addEventListener('input', renderDashboard);
-
-    document.getElementById('btnAddFixedBill').addEventListener('click', function () {
-      const n = String(document.getElementById('newBillName').value || '').trim();
-      const a = parseFloat(document.getElementById('newBillAmount').value);
-      if (!n || !Number.isFinite(a) || a <= 0) return;
-      db.bills.push({ name: n, amount: a });
-      document.getElementById('newBillName').value = '';
-      document.getElementById('newBillAmount').value = '';
-      saveDb(); renderDashboard();
-    });
-    window.removeBillAt = function (i) { db.bills.splice(i, 1); saveDb(); renderDashboard(); };
-
-    document.getElementById('btnAddSavingsGoal').addEventListener('click', function () {
-      const n = String(document.getElementById('newGoalName').value || '').trim();
-      const t = parseFloat(document.getElementById('newGoalTarget').value);
-      const s = parseFloat(document.getElementById('newGoalSaved').value) || 0;
-      if (!n || !Number.isFinite(t) || t <= 0) return;
-      db.goals.push({ name: n, target: t, saved: s });
-      document.getElementById('newGoalName').value = '';
-      document.getElementById('newGoalTarget').value = '';
-      document.getElementById('newGoalSaved').value = '';
-      saveDb(); renderDashboard();
-    });
-    window.removeGoalAt = function (i) { db.goals.splice(i, 1); saveDb(); renderDashboard(); };
-    window.updateCapVal = function (c, v) { db.caps[c] = Math.max(0, parseFloat(v) || 0); saveDb(); renderDashboard(); };
-
-    // --- PIN & Devise ---
-    function applyPinLock() {
-      const ov = document.getElementById('pinLockOverlay');
-      if (db.pin) { ov.classList.add('active'); pinReset(); }
-      else ov.classList.remove('active');
-    }
-    window.pinPush = function (d) {
-      if (pinBuffer.length < 4) {
-        pinBuffer += d;
-        document.getElementById('pinDots').textContent = '● '.repeat(pinBuffer.length) + '• '.repeat(4 - pinBuffer.length);
-      }
-    };
-    window.pinReset = function () {
-      pinBuffer = '';
-      document.getElementById('pinDots').textContent = '• • • •';
-      document.getElementById('pinErr').textContent = '';
-    };
-    window.pinVerify = function () {
-      if (pinBuffer === db.pin) { document.getElementById('pinLockOverlay').classList.remove('active'); pinReset(); }
-      else { document.getElementById('pinErr').textContent = 'PIN incorrect.'; pinReset(); }
-    };
-
-    document.getElementById('btnEnablePin').addEventListener('click', function () {
-      const v = String(document.getElementById('pinCodeField').value || '').trim();
-      if (!/^\d{4}$/.test(v)) { alert('Saisissez un PIN à 4 chiffres.'); return; }
-      db.pin = v;
-      document.getElementById('pinCodeField').value = '';
-      saveDb(); alert('Code PIN activé.');
-    });
-    document.getElementById('btnDisablePin').addEventListener('click', function () { db.pin = null; saveDb(); alert('Code PIN désactivé.'); });
-
-    document.querySelectorAll('.currency-choice').forEach(function (b) {
-      b.addEventListener('click', function () { db.currency = b.dataset.cur; saveDb(); renderDashboard(); });
-    });
-
-    // --- Export / Import JSON ---
-    function exportJsonFile() {
-      const payload = Object.assign({}, db, {
-        smartModule: { envelopes: db.envelopes, smartOperations: db.operations },
-        exportedAt: new Date().toISOString()
-      });
-      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'fintrack-dashboard-' + new Date().toISOString().slice(0, 10) + '.json';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
-    }
-
-    function importJsonFile(file) {
-      if (!file) return;
-      const r = new FileReader();
-      r.onload = function (ev) {
-        try {
-          const p = JSON.parse(ev.target.result);
-          const sm = p.smartModule || {};
-          db = Object.assign(defaultState(), p, {
-            envelopes: Array.isArray(p.envelopes) ? p.envelopes : (Array.isArray(sm.envelopes) ? sm.envelopes : defaultState().envelopes),
-            operations: Array.isArray(p.operations) ? p.operations : (Array.isArray(sm.smartOperations) ? sm.smartOperations : [])
-          });
-          applyWaTheme(); saveDb(); renderDashboard(); applyPinLock();
-          alert('Données restaurées.');
-        } catch (_) { alert('Fichier JSON invalide.'); }
-      };
-      r.readAsText(file);
-    }
-
-    document.getElementById('btnDownloadBackup').addEventListener('click', exportJsonFile);
-    document.getElementById('inputRestoreBackup').addEventListener('change', function (e) {
-      importJsonFile(e.target.files && e.target.files[0]);
-      e.target.value = '';
-    });
-
-    document.getElementById('btnLoadDemoData').addEventListener('click', function () {
-      const today = new Date().toISOString().slice(0, 10);
-      db.envelopes = [
-        { id: 'env-poche', name: 'Portefeuille', balance: 45000 },
-        { id: 'env-coffre', name: 'Coffre', balance: 160000 }
-      ];
-      db.operations = [
-        { id: 'demo-inc', type: 'income', amount: 180000, label: 'Salaire', category: 'Salaire / Revenus', subcategory: '', wallet: 'Banque', envelopeId: 'env-coffre', date: today, attachment: null },
-        { id: 'demo-exp', type: 'expense', amount: 7500, label: 'Carburant & repas', category: 'Transport', subcategory: '', wallet: 'Mobile Money', envelopeId: 'env-poche', date: today, attachment: null }
-      ];
-      db.lastCreatedId = null;
-      saveDb(); renderDashboard();
-    });
-
-    window.FinTrackSmartBackup = {
-      getPayload: function () { return { envelopes: db.envelopes.slice(), smartOperations: db.operations.slice() }; },
-      restorePayload: function (p) {
-        if (!p || typeof p !== 'object') return;
-        if (Array.isArray(p.envelopes) && p.envelopes.length) db.envelopes = p.envelopes;
-        if (Array.isArray(p.smartOperations)) db.operations = p.smartOperations;
-        saveDb(); renderDashboard();
-      },
-      downloadJson: exportJsonFile,
-      handleFileImport: importJsonFile
-    };
-
-    // Initialisation
-    applyWaTheme();
-    resetDraft(true);
-    applyPinLock();
-    renderDashboard();
-  })();
-  </script>
+ <main class="app-shell">
+   <header class="app-header">
+     <h1>Générateur de Badge — Semaine de l'Évangile</h1>
+   </header>
+
+   <div class="main-grid">
+     <!-- Formulaire de personnalisation et actions d'export / partage -->
+     <section class="panel" aria-label="Personnalisation du badge">
+       <div id="nameBlock" class="field-block">
+         <label for="fullNameInput" class="field-label">
+           Nom & Prénom <span class="req-star">*</span>
+         </label>
+         <input
+           id="fullNameInput"
+           type="text"
+           class="text-input"
+           placeholder="Ex. : Jean-Marc KOUASSI"
+           maxlength="44"
+           autocomplete="name"
+         />
+       </div>
+
+       <div id="photoBlock" class="field-block">
+         <label for="photoFileInput" class="field-label">
+           Photo <span class="req-star">*</span>
+         </label>
+         <div id="dropzone" class="upload-dropzone">
+           <input
+             id="photoFileInput"
+             type="file"
+             accept="image/*"
+           />
+           <span class="upload-main-text">
+             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+               <rect x="3" y="3" width="18" height="18" rx="3" ry="3"></rect>
+               <circle cx="8.5" cy="8.5" r="1.5"></circle>
+               <polyline points="21 15 16 10 5 21"></polyline>
+             </svg>
+             <span>Choisir une photo</span>
+           </span>
+         </div>
+         <div id="photoStatusRow" class="photo-status-row">
+           <span id="photoFileName" class="photo-file-name">Photo chargée</span>
+           <button type="button" id="clearPhotoBtn" class="clear-photo-btn">Retirer</button>
+         </div>
+       </div>
+
+       <div id="validationAlert" class="validation-alert" role="alert" aria-live="assertive"></div>
+       <div id="toastNotice" class="toast-notice" role="status" aria-live="polite"></div>
+
+       <div class="actions-stack">
+         <button type="button" id="shareAppBtn" class="btn-action btn-share incomplete">
+           <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+             <circle cx="18" cy="5" r="3"></circle>
+             <circle cx="6" cy="12" r="3"></circle>
+             <circle cx="18" cy="19" r="3"></circle>
+             <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+             <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+           </svg>
+           <span>Partager (WhatsApp, Facebook...)</span>
+         </button>
+
+         <button type="button" id="downloadPngBtn" class="btn-action btn-download incomplete">
+           <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+             <polyline points="7 10 12 15 17 10"></polyline>
+             <line x1="12" y1="15" x2="12" y2="3"></line>
+           </svg>
+           <span>Télécharger le badge PNG</span>
+         </button>
+       </div>
+     </section>
+
+     <!-- Aperçu interactif haute résolution et commandes de recadrage -->
+     <section class="preview-column" aria-label="Aperçu du badge">
+       <div id="canvasFrameBox" class="canvas-frame-box">
+         <!-- Tampon interne 2x (2160 x 2160 px) mappé sur 0..1080 en coordonnées logiques -->
+         <canvas id="badgeCanvas" width="2160" height="2160"></canvas>
+       </div>
+
+       <div id="cropToolbar" class="crop-toolbar disabled" aria-label="Outils de recadrage photo">
+         <div class="zoom-group">
+           <button type="button" id="zoomOutBtn" class="crop-btn" title="Dézoomer" aria-label="Dézoomer">−</button>
+           <span id="zoomReadout" class="zoom-readout">100%</span>
+           <button type="button" id="zoomInBtn" class="crop-btn" title="Zoomer" aria-label="Zoomer">+</button>
+         </div>
+         <button type="button" id="resetCropBtn" class="crop-btn reset-btn">Recentrer</button>
+       </div>
+     </section>
+   </div>
+ </main>
+
+ <script>
+   (function () {
+     'use strict';
+
+     // Dimensions logiques 1080x1080 rendues sur tampon 2x (2160x2160)
+     const LOGICAL_SIZE = 1080;
+     const SUPERSAMPLE = 2;
+     const INTERNAL_SIZE = LOGICAL_SIZE * SUPERSAMPLE;
+
+     // Palette officielle : fond bleu nuit #0A1E47 et orange doré #D49A2A
+     const NAVY_PURE = '#0A1E47';
+     const NAVY_RADIAL = '#16377A';
+     const ORANGE_GOLD = '#D49A2A';
+     const WHITE_PURE = '#FFFFFF';
+
+     // Cadre photo carré arrondi au centre-gauche (450 x 450 px)
+     const PHOTO_BOX = Object.freeze({
+       x: 52,
+       y: 282,
+       size: 450,
+       radius: 28
+     });
+
+     const ZOOM_MIN = 0.5;
+     const ZOOM_MAX = 3.5;
+     const ZOOM_STEP = 0.12;
+
+     // Textes officiels exacts de l'événement
+     const COPY = Object.freeze({
+       logoCode: 'CUA',
+       logoFull: 'Centre Universitaire Apostolique',
+       pill: "SEMAINE DE L'ÉVANGILE",
+       headline: "J'Y SERAI !",
+       subline1: 'POUR PRÊCHER ET GAGNER',
+       subline2: 'DES ÂMES À CHRIST',
+       dateText: 'Du Lundi 30 Novembre au Samedi 05 Décembre 2026',
+       placeText: "Université d'Abomey-Calavi",
+       timeText: 'Départ 16h45 • Ensemble pour Christ',
+       placeholderName: 'VOTRE NOM & PRÉNOM',
+       verseText: '« Allez par tout le monde, et prêchez la bonne nouvelle à toute la création. » — Marc 16:15',
+       footerText: 'GAGNER DES ÂMES • ENSEMBLE POUR CHRIST'
+     });
+
+     const canvas = document.getElementById('badgeCanvas');
+     const canvasFrameBox = document.getElementById('canvasFrameBox');
+     const fullNameInput = document.getElementById('fullNameInput');
+     const nameBlock = document.getElementById('nameBlock');
+     const photoFileInput = document.getElementById('photoFileInput');
+     const photoBlock = document.getElementById('photoBlock');
+     const dropzone = document.getElementById('dropzone');
+     const photoStatusRow = document.getElementById('photoStatusRow');
+     const photoFileName = document.getElementById('photoFileName');
+     const clearPhotoBtn = document.getElementById('clearPhotoBtn');
+     const validationAlert = document.getElementById('validationAlert');
+     const toastNotice = document.getElementById('toastNotice');
+     const shareAppBtn = document.getElementById('shareAppBtn');
+     const downloadPngBtn = document.getElementById('downloadPngBtn');
+     const cropToolbar = document.getElementById('cropToolbar');
+     const zoomOutBtn = document.getElementById('zoomOutBtn');
+     const zoomInBtn = document.getElementById('zoomInBtn');
+     const zoomReadout = document.getElementById('zoomReadout');
+     const resetCropBtn = document.getElementById('resetCropBtn');
+
+     const state = {
+       fullName: '',
+       photoImg: null,
+       photoLoaded: false,
+       zoom: 1,
+       offsetX: 0,
+       offsetY: 0,
+       dragging: false,
+       dragStartX: 0,
+       dragStartY: 0,
+       pinchStartDist: 0,
+       pinchStartZoom: 1,
+       holdTimer: null,
+       holdInterval: null,
+       attemptedSubmit: false
+     };
+
+     // Helper universel de rectangle arrondi compatible avec tous les navigateurs
+     function drawRoundedRect(ctx, x, y, w, h, r) {
+       const radius = Math.max(0, Math.min(r, Math.min(w, h) / 2));
+       ctx.beginPath();
+       ctx.moveTo(x + radius, y);
+       ctx.arcTo(x + w, y, x + w, y + h, radius);
+       ctx.arcTo(x + w, y + h, x, y + h, radius);
+       ctx.arcTo(x, y + h, x, y, radius);
+       ctx.arcTo(x, y, x + w, y, radius);
+       ctx.closePath();
+     }
+
+     // Exécution protégée d'une étape de dessin avec fonction de secours
+     function safeDrawStep(fn, fallbackFn) {
+       try {
+         fn();
+       } catch (err) {
+         if (typeof console !== 'undefined' && console.warn) {
+           console.warn('Étape de rendu interceptée :', err);
+         }
+         if (typeof fallbackFn === 'function') {
+           try {
+             fallbackFn();
+           } catch (_) {}
+         }
+       }
+     }
+
+     function clamp(value, min, max) {
+       return Math.max(min, Math.min(max, value));
+     }
+
+     function getCleanName() {
+       return (state.fullName || '').trim().replace(/\s+/g, ' ');
+     }
+
+     function isNameValid() {
+       return getCleanName().length >= 2;
+     }
+
+     function isPhotoValid() {
+       return Boolean(state.photoLoaded && state.photoImg && state.photoImg.width > 0);
+     }
+
+     function showToast(message) {
+       if (!toastNotice) return;
+       toastNotice.textContent = message;
+       toastNotice.classList.add('visible');
+       setTimeout(function () {
+         if (toastNotice.textContent === message) {
+           toastNotice.classList.remove('visible');
+         }
+       }, 4200);
+     }
+
+     // Synchronise l'état visuel du formulaire, des boutons et de la barre de recadrage
+     function syncUiState() {
+       const nameOk = isNameValid();
+       const photoOk = isPhotoValid();
+       const allOk = nameOk && photoOk;
+
+       if (shareAppBtn) shareAppBtn.classList.toggle('incomplete', !allOk);
+       if (downloadPngBtn) downloadPngBtn.classList.toggle('incomplete', !allOk);
+
+       if (cropToolbar) cropToolbar.classList.toggle('disabled', !photoOk);
+       if (canvasFrameBox) canvasFrameBox.classList.toggle('can-drag', photoOk);
+       if (zoomReadout) zoomReadout.textContent = Math.round(state.zoom * 100) + '%';
+
+       if (state.attemptedSubmit) {
+         if (nameBlock) nameBlock.classList.toggle('field-error', !nameOk);
+         if (fullNameInput) fullNameInput.classList.toggle('input-invalid', !nameOk);
+         if (photoBlock) photoBlock.classList.toggle('field-error', !photoOk);
+         if (dropzone) dropzone.classList.toggle('invalid-zone', !photoOk);
+
+         if (allOk && validationAlert) {
+           validationAlert.classList.remove('visible');
+           validationAlert.textContent = '';
+         }
+       } else {
+         if (nameBlock) nameBlock.classList.remove('field-error');
+         if (fullNameInput) fullNameInput.classList.remove('input-invalid');
+         if (photoBlock) photoBlock.classList.remove('field-error');
+         if (dropzone) dropzone.classList.remove('invalid-zone');
+       }
+     }
+
+     // Valide les champs obligatoires avant téléchargement ou partage
+     function validateAndHighlight() {
+       state.attemptedSubmit = true;
+       const nameOk = isNameValid();
+       const photoOk = isPhotoValid();
+       syncUiState();
+
+       if (!nameOk && !photoOk) {
+         if (validationAlert) {
+           validationAlert.textContent = 'Veuillez saisir votre Nom & Prénom (2 caractères min.) et choisir une photo.';
+           validationAlert.classList.add('visible');
+         }
+         if (fullNameInput) fullNameInput.focus();
+         return false;
+       }
+
+       if (!nameOk) {
+         if (validationAlert) {
+           validationAlert.textContent = 'Veuillez saisir votre Nom & Prénom (au moins 2 caractères).';
+           validationAlert.classList.add('visible');
+         }
+         if (fullNameInput) fullNameInput.focus();
+         return false;
+       }
+
+       if (!photoOk) {
+         if (validationAlert) {
+           validationAlert.textContent = 'Veuillez importer votre photo avant de partager ou télécharger.';
+           validationAlert.classList.add('visible');
+         }
+         if (photoFileInput) photoFileInput.focus();
+         return false;
+       }
+
+       if (validationAlert) {
+         validationAlert.classList.remove('visible');
+         validationAlert.textContent = '';
+       }
+       return true;
+     }
+
+     // Fond bleu nuit #0A1E47 avec dégradé radial, anneaux discrets, courbes dorées subtiles et bordure dorée
+     function drawBackground(ctx) {
+       ctx.save();
+       ctx.fillStyle = NAVY_PURE;
+       ctx.fillRect(0, 0, LOGICAL_SIZE, LOGICAL_SIZE);
+
+       const radGrad = ctx.createRadialGradient(
+         LOGICAL_SIZE * 0.5,
+         LOGICAL_SIZE * 0.44,
+         40,
+         LOGICAL_SIZE * 0.5,
+         LOGICAL_SIZE * 0.48,
+         LOGICAL_SIZE * 0.72
+       );
+       radGrad.addColorStop(0, NAVY_RADIAL);
+       radGrad.addColorStop(0.58, NAVY_PURE);
+       radGrad.addColorStop(1, '#06132E');
+       ctx.fillStyle = radGrad;
+       ctx.fillRect(0, 0, LOGICAL_SIZE, LOGICAL_SIZE);
+
+       ctx.strokeStyle = 'rgba(255, 255, 255, 0.045)';
+       ctx.lineWidth = 2;
+       const rings = [220, 350, 480, 610];
+       for (let i = 0; i < rings.length; i += 1) {
+         ctx.beginPath();
+         ctx.arc(LOGICAL_SIZE / 2, 500, rings[i], 0, Math.PI * 2);
+         ctx.stroke();
+       }
+
+       ctx.strokeStyle = 'rgba(212, 154, 42, 0.14)';
+       ctx.lineWidth = 2;
+       ctx.beginPath();
+       ctx.moveTo(-25, 168);
+       ctx.bezierCurveTo(240, 108, 295, 412, 540, 452);
+       ctx.stroke();
+
+       ctx.beginPath();
+       ctx.moveTo(LOGICAL_SIZE + 25, 232);
+       ctx.bezierCurveTo(820, 202, 790, 522, 540, 572);
+       ctx.stroke();
+
+       ctx.strokeStyle = ORANGE_GOLD;
+       ctx.lineWidth = 4;
+       drawRoundedRect(ctx, 26, 26, LOGICAL_SIZE - 52, LOGICAL_SIZE - 52, 34);
+       ctx.stroke();
+       ctx.restore();
+     }
+
+     // Cartouche supérieure blanche (356x126) avec logo CUA (#23408E), livre ouvert et sous-titre
+     function drawCuaPlaque(ctx) {
+       const cardW = 356;
+       const cardH = 126;
+       const cardX = (LOGICAL_SIZE - cardW) / 2;
+       const cardY = 38;
+       const cardR = 20;
+       const cx = LOGICAL_SIZE / 2;
+
+       ctx.save();
+       ctx.shadowColor = 'rgba(3, 10, 28, 0.42)';
+       ctx.shadowBlur = 14;
+       ctx.shadowOffsetY = 5;
+
+       drawRoundedRect(ctx, cardX, cardY, cardW, cardH, cardR);
+       ctx.fillStyle = WHITE_PURE;
+       ctx.fill();
+
+       ctx.shadowColor = 'transparent';
+       ctx.strokeStyle = ORANGE_GOLD;
+       ctx.lineWidth = 2.8;
+       ctx.stroke();
+
+       ctx.fillStyle = '#23408E';
+       ctx.font = '900 47px "Inter", system-ui, -apple-system, sans-serif';
+       ctx.textAlign = 'center';
+       ctx.textBaseline = 'middle';
+       ctx.fillText(COPY.logoCode, cx, cardY + 36);
+
+       const spineY = cardY + 71;
+       ctx.fillStyle = '#A7A9AC';
+
+       ctx.beginPath();
+       ctx.moveTo(cx - 5, spineY - 2.5);
+       ctx.quadraticCurveTo(cx - 48, spineY - 11.5, cx - 104, spineY - 3.5);
+       ctx.quadraticCurveTo(cx - 48, spineY - 7.5, cx - 5, spineY + 0.5);
+       ctx.closePath();
+       ctx.fill();
+
+       ctx.beginPath();
+       ctx.moveTo(cx - 5, spineY + 3.5);
+       ctx.quadraticCurveTo(cx - 48, spineY - 5.5, cx - 104, spineY + 2.5);
+       ctx.quadraticCurveTo(cx - 48, spineY - 1.5, cx - 5, spineY + 6.5);
+       ctx.closePath();
+       ctx.fill();
+
+       ctx.beginPath();
+       ctx.moveTo(cx + 5, spineY - 2.5);
+       ctx.quadraticCurveTo(cx + 48, spineY - 11.5, cx + 104, spineY - 3.5);
+       ctx.quadraticCurveTo(cx + 48, spineY - 7.5, cx + 5, spineY + 0.5);
+       ctx.closePath();
+       ctx.fill();
+
+       ctx.beginPath();
+       ctx.moveTo(cx + 5, spineY + 3.5);
+       ctx.quadraticCurveTo(cx + 48, spineY - 5.5, cx + 104, spineY + 2.5);
+       ctx.quadraticCurveTo(cx + 48, spineY - 1.5, cx + 5, spineY + 6.5);
+       ctx.closePath();
+       ctx.fill();
+
+       ctx.fillStyle = '#E2AE34';
+       ctx.beginPath();
+       ctx.moveTo(cx - 124, spineY + 8.5);
+       ctx.quadraticCurveTo(cx - 55, spineY - 1.5, cx - 10, spineY + 8.5);
+       ctx.quadraticCurveTo(cx, spineY + 12.5, cx + 10, spineY + 8.5);
+       ctx.quadraticCurveTo(cx + 55, spineY - 1.5, cx + 124, spineY + 8.5);
+       ctx.quadraticCurveTo(cx + 55, spineY + 4.5, cx + 11, spineY + 14.5);
+       ctx.quadraticCurveTo(cx, spineY + 18.5, cx - 11, spineY + 14.5);
+       ctx.quadraticCurveTo(cx - 55, spineY + 4.5, cx - 124, spineY + 8.5);
+       ctx.closePath();
+       ctx.fill();
+
+       ctx.fillStyle = '#34425E';
+       let subLogoSize = 18.8;
+       ctx.font = '700 ' + subLogoSize + 'px Georgia, "Times New Roman", serif';
+       while (ctx.measureText(COPY.logoFull).width > cardW - 28 && subLogoSize > 13) {
+         subLogoSize -= 0.4;
+         ctx.font = '700 ' + subLogoSize + 'px Georgia, "Times New Roman", serif';
+       }
+       ctx.fillText(COPY.logoFull, cx, cardY + 107);
+       ctx.restore();
+     }
+
+     // Pilule dorée "SEMAINE DE L'ÉVANGILE" en #D49A2A avec texte #0A1E47
+     function drawEventPill(ctx) {
+       const pillW = 790;
+       const pillH = 60;
+       const pillX = (LOGICAL_SIZE - pillW) / 2;
+       const pillY = 186;
+
+       ctx.save();
+       ctx.shadowColor = 'rgba(3, 10, 28, 0.36)';
+       ctx.shadowBlur = 12;
+       ctx.shadowOffsetY = 4;
+
+       drawRoundedRect(ctx, pillX, pillY, pillW, pillH, pillH / 2);
+       ctx.fillStyle = ORANGE_GOLD;
+       ctx.fill();
+
+       ctx.shadowColor = 'transparent';
+       ctx.strokeStyle = WHITE_PURE;
+       ctx.lineWidth = 2;
+       ctx.stroke();
+
+       ctx.fillStyle = NAVY_PURE;
+       ctx.font = '900 37px "Inter", system-ui, sans-serif';
+       ctx.textAlign = 'center';
+       ctx.textBaseline = 'middle';
+       ctx.fillText(COPY.pill, LOGICAL_SIZE / 2, pillY + pillH / 2 + 1);
+       ctx.restore();
+     }
+
+     // Cadre photo carré arrondi à gauche (x: 52, y: 282, taille: 450, rayon: 28)
+     function drawPhotoFrame(ctx) {
+       const px = PHOTO_BOX.x;
+       const py = PHOTO_BOX.y;
+       const pSize = PHOTO_BOX.size;
+       const pRadius = PHOTO_BOX.radius;
+
+       ctx.save();
+       ctx.shadowColor = 'rgba(3, 10, 28, 0.45)';
+       ctx.shadowBlur = 16;
+       ctx.shadowOffsetY = 6;
+
+       drawRoundedRect(ctx, px - 6, py - 6, pSize + 12, pSize + 12, pRadius + 6);
+       ctx.fillStyle = ORANGE_GOLD;
+       ctx.fill();
+       ctx.restore();
+
+       ctx.save();
+       drawRoundedRect(ctx, px, py, pSize, pSize, pRadius);
+       ctx.clip();
+
+       ctx.fillStyle = '#071636';
+       ctx.fillRect(px, py, pSize, pSize);
+
+       if (isPhotoValid()) {
+         const imgW = state.photoImg.width;
+         const imgH = state.photoImg.height;
+         const coverScale = Math.max(pSize / imgW, pSize / imgH);
+         const finalScale = coverScale * state.zoom;
+         const drawW = imgW * finalScale;
+         const drawH = imgH * finalScale;
+         const centerX = px + pSize / 2 + state.offsetX;
+         const centerY = py + pSize / 2 + state.offsetY;
+
+         ctx.drawImage(
+           state.photoImg,
+           centerX - drawW / 2,
+           centerY - drawH / 2,
+           drawW,
+           drawH
+         );
+       } else {
+         const cx = px + pSize / 2;
+         const cy = py + pSize / 2 - 22;
+
+         ctx.strokeStyle = 'rgba(212, 154, 42, 0.48)';
+         ctx.setLineDash([10, 8]);
+         ctx.lineWidth = 2.4;
+         drawRoundedRect(ctx, px + 22, py + 22, pSize - 44, pSize - 44, Math.max(12, pRadius - 8));
+         ctx.stroke();
+         ctx.setLineDash([]);
+
+         ctx.fillStyle = 'rgba(212, 154, 42, 0.2)';
+         ctx.beginPath();
+         ctx.arc(cx, cy - 22, 42, 0, Math.PI * 2);
+         ctx.fill();
+
+         ctx.strokeStyle = ORANGE_GOLD;
+         ctx.lineWidth = 3.5;
+         ctx.beginPath();
+         ctx.arc(cx, cy - 22, 42, 0, Math.PI * 2);
+         ctx.stroke();
+
+         ctx.beginPath();
+         ctx.arc(cx, cy + 72, 68, Math.PI * 1.12, Math.PI * 1.88);
+         ctx.stroke();
+
+         ctx.fillStyle = ORANGE_GOLD;
+         ctx.font = '800 25px "Inter", system-ui, sans-serif';
+         ctx.textAlign = 'center';
+         ctx.textBaseline = 'middle';
+         ctx.fillText('Votre photo ici', cx, py + pSize / 2 + 78);
+       }
+       ctx.restore();
+
+       ctx.save();
+       ctx.strokeStyle = 'rgba(255, 255, 255, 0.42)';
+       ctx.lineWidth = 2;
+       drawRoundedRect(ctx, px + 2, py + 2, pSize - 4, pSize - 4, Math.max(8, pRadius - 2));
+       ctx.stroke();
+       ctx.restore();
+     }
+
+     // Double soulignement ondulé décoratif avec losanges sous "J'Y SERAI !"
+     function drawDoubleWaveUnderline(ctx, centerX, startY, width, color) {
+       ctx.save();
+       const halfW = width * 0.48;
+       const leftX = centerX - halfW;
+       const rightX = centerX + halfW;
+       const segments = 6;
+       const stepW = (rightX - leftX) / segments;
+
+       ctx.strokeStyle = color;
+       ctx.lineWidth = 3.6;
+       ctx.lineCap = 'round';
+       ctx.lineJoin = 'round';
+       ctx.beginPath();
+       ctx.moveTo(leftX, startY);
+       for (let i = 0; i < segments; i += 1) {
+         const x0 = leftX + i * stepW;
+         const xMid = x0 + stepW * 0.5;
+         const x1 = x0 + stepW;
+         const amp = (i % 2 === 0 ? -1 : 1) * 5.5;
+         ctx.quadraticCurveTo(xMid, startY + amp, x1, startY);
+       }
+       ctx.stroke();
+
+       ctx.lineWidth = 1.9;
+       ctx.globalAlpha = 0.9;
+       ctx.beginPath();
+       const innerLeft = leftX + 14;
+       const innerRight = rightX - 14;
+       const innerSegs = segments - 1;
+       const innerStep = (innerRight - innerLeft) / innerSegs;
+       ctx.moveTo(innerLeft, startY + 8);
+       for (let i = 0; i < innerSegs; i += 1) {
+         const x0 = innerLeft + i * innerStep;
+         const xMid = x0 + innerStep * 0.5;
+         const x1 = x0 + innerStep;
+         const amp = (i % 2 === 0 ? 1 : -1) * 3.8;
+         ctx.quadraticCurveTo(xMid, startY + 8 + amp, x1, startY + 8);
+       }
+       ctx.stroke();
+
+       ctx.globalAlpha = 1;
+       ctx.fillStyle = color;
+       const drawDiamond = function (dx, dy) {
+         ctx.beginPath();
+         ctx.moveTo(dx, dy - 4.4);
+         ctx.lineTo(dx + 4.4, dy);
+         ctx.lineTo(dx, dy + 4.4);
+         ctx.lineTo(dx - 4.4, dy);
+         ctx.closePath();
+         ctx.fill();
+       };
+       drawDiamond(leftX - 10, startY);
+       drawDiamond(rightX + 10, startY);
+       ctx.restore();
+     }
+
+     // Icônes vectorielles pour les informations pratiques
+     function drawCalendarIcon(ctx, cx, cy, size, color) {
+       ctx.save();
+       ctx.strokeStyle = color;
+       ctx.fillStyle = color;
+       ctx.lineWidth = 2.4;
+       ctx.lineCap = 'round';
+       ctx.lineJoin = 'round';
+
+       const w = size;
+       const h = size * 0.92;
+       const x = cx - w / 2;
+       const y = cy - h / 2;
+
+       drawRoundedRect(ctx, x, y + 2, w, h - 2, 4);
+       ctx.stroke();
+
+       ctx.beginPath();
+       ctx.moveTo(x + 1, y + 9.5);
+       ctx.lineTo(x + w - 1, y + 9.5);
+       ctx.stroke();
+
+       ctx.beginPath();
+       ctx.moveTo(x + w * 0.3, y);
+       ctx.lineTo(x + w * 0.3, y + 4.8);
+       ctx.moveTo(x + w * 0.7, y);
+       ctx.lineTo(x + w * 0.7, y + 4.8);
+       ctx.stroke();
+
+       ctx.beginPath();
+       ctx.arc(cx, y + h * 0.68, 2.3, 0, Math.PI * 2);
+       ctx.fill();
+       ctx.restore();
+     }
+
+     function drawPinIcon(ctx, cx, cy, size, color) {
+       ctx.save();
+       ctx.strokeStyle = color;
+       ctx.fillStyle = color;
+       ctx.lineWidth = 2.4;
+       ctx.lineCap = 'round';
+       ctx.lineJoin = 'round';
+
+       const r = size * 0.35;
+       const headY = cy - size * 0.14;
+       const tipY = cy + size * 0.48;
+
+       ctx.beginPath();
+       ctx.arc(cx, headY, r, Math.PI * 0.85, Math.PI * 2.15, false);
+       ctx.lineTo(cx, tipY);
+       ctx.closePath();
+       ctx.stroke();
+
+       ctx.beginPath();
+       ctx.arc(cx, headY, r * 0.38, 0, Math.PI * 2);
+       ctx.fill();
+       ctx.restore();
+     }
+
+     function drawClockIcon(ctx, cx, cy, size, color) {
+       ctx.save();
+       ctx.strokeStyle = color;
+       ctx.fillStyle = color;
+       ctx.lineWidth = 2.4;
+       ctx.lineCap = 'round';
+       ctx.lineJoin = 'round';
+
+       const r = size * 0.44;
+       ctx.beginPath();
+       ctx.arc(cx, cy, r, 0, Math.PI * 2);
+       ctx.stroke();
+
+       ctx.beginPath();
+       ctx.moveTo(cx, cy);
+       ctx.lineTo(cx, cy - r * 0.56);
+       ctx.moveTo(cx, cy);
+       ctx.lineTo(cx + r * 0.46, cy + r * 0.16);
+       ctx.stroke();
+
+       ctx.beginPath();
+       ctx.arc(cx, cy, 2.1, 0, Math.PI * 2);
+       ctx.fill();
+       ctx.restore();
+     }
+
+     // Colonne droite : titre "J'Y SERAI !", double vague, slogan 2 lignes et encadré doré d'informations pratiques
+     function drawRightColumn(ctx) {
+       const px = PHOTO_BOX.x;
+       const py = PHOTO_BOX.y;
+       const pSize = PHOTO_BOX.size;
+       const photoBottomY = py + pSize;
+
+       const rightX = px + pSize + 24;
+       const rightW = LOGICAL_SIZE - rightX - 46;
+       const rightCenterX = rightX + rightW / 2;
+
+       ctx.save();
+       ctx.textBaseline = 'middle';
+       ctx.textAlign = 'center';
+
+       const infoW = rightW;
+       const infoH = 152;
+       const infoX = rightX;
+       const infoY = photoBottomY - infoH;
+
+       ctx.fillStyle = WHITE_PURE;
+       let subSize = 30.5;
+       ctx.font = '800 ' + subSize + 'px "Inter", system-ui, sans-serif';
+       while (
+         (ctx.measureText(COPY.subline1).width > rightW ||
+           ctx.measureText(COPY.subline2).width > rightW) &&
+         subSize > 18
+       ) {
+         subSize -= 0.5;
+         ctx.font = '800 ' + subSize + 'px "Inter", system-ui, sans-serif';
+       }
+       const lineGap = Math.round(subSize * 1.16);
+       const subLine2Y = infoY - 24;
+       const subLine1Y = subLine2Y - lineGap;
+
+       ctx.fillText(COPY.subline1, rightCenterX, subLine1Y);
+       ctx.fillText(COPY.subline2, rightCenterX, subLine2Y);
+
+       let headlineSize = 86;
+       ctx.font = '900 ' + headlineSize + 'px "Inter", system-ui, sans-serif';
+       while (ctx.measureText(COPY.headline).width > rightW && headlineSize > 54) {
+         headlineSize -= 2;
+         ctx.font = '900 ' + headlineSize + 'px "Inter", system-ui, sans-serif';
+       }
+       const headlineY = subLine1Y - 82;
+       ctx.fillStyle = ORANGE_GOLD;
+       ctx.fillText(COPY.headline, rightCenterX, headlineY);
+
+       const measuredHeadlineW = Math.min(rightW - 10, ctx.measureText(COPY.headline).width);
+       const waveY = headlineY + headlineSize * 0.5;
+       drawDoubleWaveUnderline(ctx, rightCenterX, waveY, measuredHeadlineW, ORANGE_GOLD);
+
+       ctx.shadowColor = 'rgba(3, 10, 28, 0.34)';
+       ctx.shadowBlur = 12;
+       ctx.shadowOffsetY = 4;
+
+       drawRoundedRect(ctx, infoX, infoY, infoW, infoH, 18);
+       ctx.fillStyle = ORANGE_GOLD;
+       ctx.fill();
+
+       ctx.shadowColor = 'transparent';
+       ctx.strokeStyle = WHITE_PURE;
+       ctx.lineWidth = 2.2;
+       ctx.stroke();
+
+       const dateLine1 = 'Du Lundi 30 Novembre';
+       const dateLine2 = 'au Samedi 05 Décembre 2026';
+
+       const iconCenterX = infoX + 24;
+       const textLeftX = infoX + 43;
+       const maxTextW = infoW - 53;
+
+       const dateBlockCenterY = infoY + 42;
+       const dateLine1Y = dateBlockCenterY - 12.5;
+       const dateLine2Y = dateBlockCenterY + 12.5;
+       const rowPlaceY = infoY + 96;
+       const rowTimeY = infoY + 131;
+
+       ctx.textAlign = 'left';
+
+       drawCalendarIcon(ctx, iconCenterX, dateBlockCenterY, 22, NAVY_PURE);
+       ctx.fillStyle = NAVY_PURE;
+
+       let dateLine1Size = 23.5;
+       ctx.font = '800 ' + dateLine1Size + 'px "Inter", system-ui, sans-serif';
+       while (ctx.measureText(dateLine1).width > maxTextW && dateLine1Size > 14) {
+         dateLine1Size -= 0.4;
+         ctx.font = '800 ' + dateLine1Size + 'px "Inter", system-ui, sans-serif';
+       }
+       ctx.fillText(dateLine1, textLeftX, dateLine1Y);
+
+       let dateLine2Size = 22.5;
+       ctx.font = '800 ' + dateLine2Size + 'px "Inter", system-ui, sans-serif';
+       while (ctx.measureText(dateLine2).width > maxTextW && dateLine2Size > 14) {
+         dateLine2Size -= 0.4;
+         ctx.font = '800 ' + dateLine2Size + 'px "Inter", system-ui, sans-serif';
+       }
+       ctx.fillText(dateLine2, textLeftX, dateLine2Y);
+
+       drawPinIcon(ctx, iconCenterX, rowPlaceY, 21, NAVY_PURE);
+       ctx.fillStyle = NAVY_PURE;
+       let placeSize = 21.5;
+       ctx.font = '800 ' + placeSize + 'px "Inter", system-ui, sans-serif';
+       while (ctx.measureText(COPY.placeText).width > maxTextW && placeSize > 13) {
+         placeSize -= 0.4;
+         ctx.font = '800 ' + placeSize + 'px "Inter", system-ui, sans-serif';
+       }
+       ctx.fillText(COPY.placeText, textLeftX, rowPlaceY);
+
+       drawClockIcon(ctx, iconCenterX, rowTimeY, 20.5, NAVY_PURE);
+       ctx.fillStyle = NAVY_PURE;
+       let timeSize = 19.5;
+       ctx.font = '700 ' + timeSize + 'px "Inter", system-ui, sans-serif';
+       while (ctx.measureText(COPY.timeText).width > maxTextW && timeSize > 13) {
+         timeSize -= 0.4;
+         ctx.font = '700 ' + timeSize + 'px "Inter", system-ui, sans-serif';
+       }
+       ctx.fillText(COPY.timeText, textLeftX, rowTimeY);
+
+       ctx.restore();
+     }
+
+     // Cartouche nominative blanche, verset Marc 16:15 (#F8E3B4) et mention finale (#D49A2A)
+     function drawLowerSection(ctx) {
+       const nameBoxW = 870;
+       const nameBoxH = 68;
+       const nameBoxX = (LOGICAL_SIZE - nameBoxW) / 2;
+       const nameBoxY = 774;
+
+       ctx.save();
+       ctx.shadowColor = 'rgba(3, 10, 28, 0.36)';
+       ctx.shadowBlur = 12;
+       ctx.shadowOffsetY = 4;
+
+       drawRoundedRect(ctx, nameBoxX, nameBoxY, nameBoxW, nameBoxH, nameBoxH / 2);
+       ctx.fillStyle = WHITE_PURE;
+       ctx.fill();
+
+       ctx.shadowColor = 'transparent';
+       ctx.strokeStyle = ORANGE_GOLD;
+       ctx.lineWidth = 3;
+       ctx.stroke();
+
+       const cleanName = getCleanName();
+       const shownName = cleanName ? cleanName.toUpperCase() : COPY.placeholderName;
+       let nameFontSize = 35;
+       ctx.font = '900 ' + nameFontSize + 'px "Inter", system-ui, sans-serif';
+       while (ctx.measureText(shownName).width > nameBoxW - 56 && nameFontSize > 19) {
+         nameFontSize -= 1;
+         ctx.font = '900 ' + nameFontSize + 'px "Inter", system-ui, sans-serif';
+       }
+
+       ctx.fillStyle = cleanName ? NAVY_PURE : '#64748B';
+       ctx.textAlign = 'center';
+       ctx.textBaseline = 'middle';
+       ctx.fillText(shownName, LOGICAL_SIZE / 2, nameBoxY + nameBoxH / 2 + 1);
+       ctx.restore();
+
+       ctx.save();
+       ctx.textAlign = 'center';
+       ctx.textBaseline = 'middle';
+
+       let verseSize = 24.5;
+       ctx.font = 'italic 600 ' + verseSize + 'px Georgia, "Times New Roman", serif';
+       while (ctx.measureText(COPY.verseText).width > 980 && verseSize > 16) {
+         verseSize -= 0.5;
+         ctx.font = 'italic 600 ' + verseSize + 'px Georgia, "Times New Roman", serif';
+       }
+       ctx.fillStyle = '#F8E3B4';
+       ctx.fillText(COPY.verseText, LOGICAL_SIZE / 2, 892);
+
+       ctx.fillStyle = ORANGE_GOLD;
+       let footerSize = 26;
+       ctx.font = '900 ' + footerSize + 'px "Inter", system-ui, sans-serif';
+       while (ctx.measureText(COPY.footerText).width > 940 && footerSize > 16) {
+         footerSize -= 1;
+         ctx.font = '900 ' + footerSize + 'px "Inter", system-ui, sans-serif';
+       }
+       ctx.fillText(COPY.footerText, LOGICAL_SIZE / 2, 974);
+       ctx.restore();
+     }
+
+     // Rendu complet sur le canvas 2160x2160 mappé en coordonnées logiques 1080x1080
+     function renderBadge() {
+       if (!canvas) return;
+       let ctx = null;
+       try {
+         ctx = canvas.getContext('2d');
+       } catch (_) {
+         ctx = null;
+       }
+       if (!ctx) return;
+
+       try {
+         if (canvas.width !== INTERNAL_SIZE) canvas.width = INTERNAL_SIZE;
+         if (canvas.height !== INTERNAL_SIZE) canvas.height = INTERNAL_SIZE;
+       } catch (_) {}
+
+       try {
+         ctx.setTransform(SUPERSAMPLE, 0, 0, SUPERSAMPLE, 0, 0);
+       } catch (_) {
+         try {
+           ctx.resetTransform();
+           ctx.scale(SUPERSAMPLE, SUPERSAMPLE);
+         } catch (__) {}
+       }
+
+       try {
+         ctx.imageSmoothingEnabled = true;
+         ctx.imageSmoothingQuality = 'high';
+       } catch (_) {}
+
+       safeDrawStep(
+         function () { drawBackground(ctx); },
+         function () {
+           ctx.fillStyle = NAVY_PURE;
+           ctx.fillRect(0, 0, LOGICAL_SIZE, LOGICAL_SIZE);
+         }
+       );
+       safeDrawStep(function () { drawCuaPlaque(ctx); });
+       safeDrawStep(function () { drawEventPill(ctx); });
+       safeDrawStep(function () { drawPhotoFrame(ctx); });
+       safeDrawStep(function () { drawRightColumn(ctx); });
+       safeDrawStep(function () { drawLowerSection(ctx); });
+     }
+
+     function handlePhotoFile(file) {
+       if (!file) return;
+       if (file.type && !file.type.startsWith('image/')) {
+         if (validationAlert) {
+           validationAlert.textContent = 'Veuillez choisir un fichier image valide (JPG, PNG, WEBP).';
+           validationAlert.classList.add('visible');
+         }
+         return;
+       }
+
+       const applyLoadedImage = function (img) {
+         state.photoImg = img;
+         state.photoLoaded = true;
+         state.zoom = 1;
+         state.offsetX = 0;
+         state.offsetY = 0;
+
+         if (photoFileName) photoFileName.textContent = file.name || 'Photo importée';
+         if (photoStatusRow) photoStatusRow.classList.add('visible');
+         syncUiState();
+         renderBadge();
+       };
+
+       try {
+         const reader = new FileReader();
+         reader.onload = function (evt) {
+           const img = new Image();
+           img.onload = function () {
+             applyLoadedImage(img);
+           };
+           img.onerror = function () {
+             if (validationAlert) {
+               validationAlert.textContent = 'Impossible de lire cette image.';
+               validationAlert.classList.add('visible');
+             }
+           };
+           img.src = String(evt && evt.target && evt.target.result ? evt.target.result : '');
+         };
+         reader.onerror = function () {
+           if (validationAlert) {
+             validationAlert.textContent = 'Erreur lors de la lecture de la photo.';
+             validationAlert.classList.add('visible');
+           }
+         };
+         reader.readAsDataURL(file);
+       } catch (_) {
+         try {
+           const url = URL.createObjectURL(file);
+           const img = new Image();
+           img.onload = function () {
+             applyLoadedImage(img);
+             setTimeout(function () {
+               try { URL.revokeObjectURL(url); } catch (__) {}
+             }, 2000);
+           };
+           img.src = url;
+         } catch (__) {}
+       }
+     }
+
+     function clearPhoto() {
+       state.photoImg = null;
+       state.photoLoaded = false;
+       state.zoom = 1;
+       state.offsetX = 0;
+       state.offsetY = 0;
+       if (photoFileInput) photoFileInput.value = '';
+       if (photoStatusRow) photoStatusRow.classList.remove('visible');
+       syncUiState();
+       renderBadge();
+     }
+
+     function setZoom(nextZoom) {
+       if (!isPhotoValid()) return;
+       state.zoom = clamp(Number(nextZoom.toFixed(2)), ZOOM_MIN, ZOOM_MAX);
+       if (zoomReadout) zoomReadout.textContent = Math.round(state.zoom * 100) + '%';
+       renderBadge();
+     }
+
+     function resetCrop() {
+       if (!isPhotoValid()) return;
+       state.zoom = 1;
+       state.offsetX = 0;
+       state.offsetY = 0;
+       if (zoomReadout) zoomReadout.textContent = '100%';
+       renderBadge();
+     }
+
+     function clientToBadgeCoords(clientX, clientY) {
+       if (!canvasFrameBox) return { x: 0, y: 0 };
+       const rect = canvasFrameBox.getBoundingClientRect();
+       if (!rect.width || !rect.height) return { x: 0, y: 0 };
+       return {
+         x: ((clientX - rect.left) / rect.width) * LOGICAL_SIZE,
+         y: ((clientY - rect.top) / rect.height) * LOGICAL_SIZE
+       };
+     }
+
+     function isInsidePhotoBox(bx, by) {
+       return (
+         bx >= PHOTO_BOX.x &&
+         bx <= PHOTO_BOX.x + PHOTO_BOX.size &&
+         by >= PHOTO_BOX.y &&
+         by <= PHOTO_BOX.y + PHOTO_BOX.size
+       );
+     }
+
+     function getTouchDistance(t1, t2) {
+       return Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+     }
+
+     // Interactions souris et tactiles pour déplacer, zoomer et pincer la photo dans le cadre
+     if (canvasFrameBox) {
+       canvasFrameBox.addEventListener('mousedown', function (e) {
+         if (!isPhotoValid() || e.button !== 0) return;
+         const pt = clientToBadgeCoords(e.clientX, e.clientY);
+         if (!isInsidePhotoBox(pt.x, pt.y)) return;
+
+         state.dragging = true;
+         state.dragStartX = pt.x - state.offsetX;
+         state.dragStartY = pt.y - state.offsetY;
+         canvasFrameBox.classList.add('is-dragging');
+       });
+
+       window.addEventListener('mousemove', function (e) {
+         if (!state.dragging || !isPhotoValid()) return;
+         const pt = clientToBadgeCoords(e.clientX, e.clientY);
+         state.offsetX = clamp(pt.x - state.dragStartX, -550, 550);
+         state.offsetY = clamp(pt.y - state.dragStartY, -550, 550);
+         renderBadge();
+       });
+
+       window.addEventListener('mouseup', function () {
+         if (state.dragging) {
+           state.dragging = false;
+           canvasFrameBox.classList.remove('is-dragging');
+         }
+       });
+
+       canvasFrameBox.addEventListener('wheel', function (e) {
+         if (!isPhotoValid()) return;
+         const pt = clientToBadgeCoords(e.clientX, e.clientY);
+         if (!isInsidePhotoBox(pt.x, pt.y)) return;
+         e.preventDefault();
+         setZoom(state.zoom + (e.deltaY < 0 ? ZOOM_STEP : -ZOOM_STEP));
+       }, { passive: false });
+
+       canvasFrameBox.addEventListener('touchstart', function (e) {
+         if (!isPhotoValid()) return;
+
+         if (e.touches.length === 2) {
+           state.dragging = false;
+           state.pinchStartDist = getTouchDistance(e.touches[0], e.touches[1]);
+           state.pinchStartZoom = state.zoom;
+           e.preventDefault();
+           return;
+         }
+
+         if (e.touches.length === 1) {
+           const t = e.touches[0];
+           const pt = clientToBadgeCoords(t.clientX, t.clientY);
+           if (!isInsidePhotoBox(pt.x, pt.y)) return;
+           state.dragging = true;
+           state.dragStartX = pt.x - state.offsetX;
+           state.dragStartY = pt.y - state.offsetY;
+           canvasFrameBox.classList.add('is-dragging');
+           e.preventDefault();
+         }
+       }, { passive: false });
+
+       canvasFrameBox.addEventListener('touchmove', function (e) {
+         if (!isPhotoValid()) return;
+
+         if (e.touches.length === 2 && state.pinchStartDist > 0) {
+           const dist = getTouchDistance(e.touches[0], e.touches[1]);
+           setZoom(state.pinchStartZoom * (dist / state.pinchStartDist));
+           e.preventDefault();
+           return;
+         }
+
+         if (e.touches.length === 1 && state.dragging) {
+           const t = e.touches[0];
+           const pt = clientToBadgeCoords(t.clientX, t.clientY);
+           state.offsetX = clamp(pt.x - state.dragStartX, -550, 550);
+           state.offsetY = clamp(pt.y - state.dragStartY, -550, 550);
+           renderBadge();
+           e.preventDefault();
+         }
+       }, { passive: false });
+
+       canvasFrameBox.addEventListener('touchend', function (e) {
+         if (e.touches.length < 2) state.pinchStartDist = 0;
+         if (e.touches.length === 0) {
+           state.dragging = false;
+           canvasFrameBox.classList.remove('is-dragging');
+         }
+       });
+     }
+
+     function bindHoldZoom(btn, delta) {
+       if (!btn) return;
+       const stopHold = function () {
+         if (state.holdTimer) {
+           clearTimeout(state.holdTimer);
+           state.holdTimer = null;
+         }
+         if (state.holdInterval) {
+           clearInterval(state.holdInterval);
+           state.holdInterval = null;
+         }
+       };
+
+       btn.addEventListener('click', function () {
+         setZoom(state.zoom + delta);
+       });
+
+       btn.addEventListener('mousedown', function () {
+         stopHold();
+         state.holdTimer = setTimeout(function () {
+           state.holdInterval = setInterval(function () {
+             setZoom(state.zoom + delta * 0.5);
+           }, 80);
+         }, 260);
+       });
+
+       btn.addEventListener('touchstart', function () {
+         stopHold();
+         state.holdTimer = setTimeout(function () {
+           state.holdInterval = setInterval(function () {
+             setZoom(state.zoom + delta * 0.5);
+           }, 80);
+         }, 260);
+       }, { passive: true });
+
+       ['mouseup', 'mouseleave', 'touchend', 'touchcancel'].forEach(function (ev) {
+         btn.addEventListener(ev, stopHold);
+       });
+     }
+
+     bindHoldZoom(zoomOutBtn, -ZOOM_STEP);
+     bindHoldZoom(zoomInBtn, ZOOM_STEP);
+     if (resetCropBtn) resetCropBtn.addEventListener('click', resetCrop);
+
+     // Export PNG 1080 x 1080 px depuis le tampon interne 2160 x 2160 px
+     function buildExport1080Canvas() {
+       renderBadge();
+       const exportCanvas = document.createElement('canvas');
+       exportCanvas.width = LOGICAL_SIZE;
+       exportCanvas.height = LOGICAL_SIZE;
+       const eCtx = exportCanvas.getContext('2d');
+       if (!eCtx) {
+         throw new Error('Contexte export indisponible');
+       }
+       eCtx.imageSmoothingEnabled = true;
+       eCtx.imageSmoothingQuality = 'high';
+       eCtx.drawImage(canvas, 0, 0, LOGICAL_SIZE, LOGICAL_SIZE);
+       return exportCanvas;
+     }
+
+     function canvasToPngBlob(sourceCanvas) {
+       return new Promise(function (resolve, reject) {
+         try {
+           sourceCanvas.toBlob(function (blob) {
+             if (blob) {
+               resolve(blob);
+               return;
+             }
+             try {
+               const dataUrl = sourceCanvas.toDataURL('image/png');
+               const parts = dataUrl.split(',');
+               const byteString = atob(parts[1]);
+               const ab = new ArrayBuffer(byteString.length);
+               const ia = new Uint8Array(ab);
+               for (let i = 0; i < byteString.length; i += 1) {
+                 ia[i] = byteString.charCodeAt(i);
+               }
+               resolve(new Blob([ab], { type: 'image/png' }));
+             } catch (fallbackErr) {
+               reject(fallbackErr);
+             }
+           }, 'image/png', 1);
+         } catch (err) {
+           reject(err);
+         }
+       });
+     }
+
+     function exportBadge1080Blob() {
+       return new Promise(function (resolve, reject) {
+         try {
+           const exportCanvas = buildExport1080Canvas();
+           canvasToPngBlob(exportCanvas).then(resolve).catch(reject);
+         } catch (err) {
+           reject(err);
+         }
+       });
+     }
+
+     function saveBlobAsFile(blob, filename) {
+       const url = URL.createObjectURL(blob);
+       const link = document.createElement('a');
+       link.href = url;
+       link.download = filename;
+       document.body.appendChild(link);
+       link.click();
+       document.body.removeChild(link);
+       setTimeout(function () {
+         try { URL.revokeObjectURL(url); } catch (_) {}
+       }, 3000);
+     }
+
+     async function handleDownloadPng() {
+       if (!validateAndHighlight()) return;
+       try {
+         const blob = await exportBadge1080Blob();
+         saveBlobAsFile(blob, 'badge-semaine-evangile-cua.png');
+         showToast('Badge PNG 1080×1080 px téléchargé avec succès.');
+       } catch (_) {
+         if (validationAlert) {
+           validationAlert.textContent = 'Impossible de télécharger le badge pour le moment.';
+           validationAlert.classList.add('visible');
+         }
+       }
+     }
+
+     // Télécharge automatiquement le PNG puis ouvre directement le tiroir de partage natif avec l'image PNG
+     async function handleSystemShare() {
+       if (!validateAndHighlight()) return;
+
+       const fileName = 'badge-semaine-evangile-cua.png';
+
+       let pngBlob = null;
+       try {
+         pngBlob = await exportBadge1080Blob();
+       } catch (_) {
+         pngBlob = null;
+       }
+
+       if (!pngBlob) {
+         if (validationAlert) {
+           validationAlert.textContent = 'Impossible de préparer l’image PNG du badge.';
+           validationAlert.classList.add('visible');
+         }
+         return;
+       }
+
+       // Téléchargement automatique du fichier PNG sur l'appareil
+       saveBlobAsFile(pngBlob, fileName);
+
+       const pngFile = new File([pngBlob], fileName, { type: 'image/png' });
+       const hasNativeShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
+       let canShareImage = false;
+
+       if (hasNativeShare) {
+         if (typeof navigator.canShare === 'function') {
+           try {
+             canShareImage = Boolean(navigator.canShare({ files: [pngFile] }));
+           } catch (_) {
+             canShareImage = false;
+           }
+         } else {
+           canShareImage = true;
+         }
+       }
+
+       if (canShareImage) {
+         try {
+           await navigator.share({
+             files: [pngFile]
+           });
+           showToast('Badge PNG téléchargé et partagé.');
+           return;
+         } catch (err) {
+           if (err && err.name === 'AbortError') {
+             showToast('Badge PNG téléchargé sur votre appareil.');
+             return;
+           }
+         }
+       }
+
+       showToast('Badge PNG téléchargé ! Sélectionnez badge-semaine-evangile-cua.png dans WhatsApp ou Facebook.');
+     }
+
+     if (fullNameInput) {
+       fullNameInput.addEventListener('input', function () {
+         state.fullName = fullNameInput.value;
+         syncUiState();
+         renderBadge();
+       });
+     }
+
+     if (photoFileInput) {
+       photoFileInput.addEventListener('change', function () {
+         const f = photoFileInput.files && photoFileInput.files[0];
+         if (f) handlePhotoFile(f);
+       });
+     }
+
+     if (dropzone) {
+       dropzone.addEventListener('dragover', function (e) {
+         e.preventDefault();
+         dropzone.classList.add('dragover');
+       });
+       dropzone.addEventListener('dragleave', function () {
+         dropzone.classList.remove('dragover');
+       });
+       dropzone.addEventListener('drop', function (e) {
+         e.preventDefault();
+         dropzone.classList.remove('dragover');
+         const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+         if (f) handlePhotoFile(f);
+       });
+     }
+
+     if (clearPhotoBtn) clearPhotoBtn.addEventListener('click', clearPhoto);
+     if (shareAppBtn) shareAppBtn.addEventListener('click', handleSystemShare);
+     if (downloadPngBtn) downloadPngBtn.addEventListener('click', handleDownloadPng);
+
+     function renderAll() {
+       syncUiState();
+       renderBadge();
+     }
+
+     renderAll();
+
+     if (typeof requestAnimationFrame === 'function') {
+       requestAnimationFrame(renderAll);
+     }
+
+     if (document.readyState === 'loading') {
+       document.addEventListener('DOMContentLoaded', renderAll, { once: true });
+     }
+
+     window.addEventListener('load', renderAll);
+     window.addEventListener('resize', renderAll);
+     window.addEventListener('orientationchange', function () {
+       renderAll();
+       setTimeout(renderAll, 150);
+     });
+
+     if (document.fonts && document.fonts.ready && typeof document.fonts.ready.then === 'function') {
+       document.fonts.ready.then(renderAll).catch(function () {});
+     }
+
+     if (typeof ResizeObserver === 'function' && canvasFrameBox) {
+       try {
+         const observer = new ResizeObserver(function () {
+           renderBadge();
+         });
+         observer.observe(canvasFrameBox);
+       } catch (_) {}
+     }
+
+     setTimeout(renderAll, 120);
+   })();
+ </script>
 </body>
 </html>
